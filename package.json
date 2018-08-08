@@ -4,8 +4,28 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack --watch & http-server -s -c-1 ./static & echo 'Web Server on: http://127.0.0.1:8080'",
+    "build": "rm -Rf ./static/build && NODE_ENV=production webpack"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "bulma": "^0.7.1",
+    "preact": "^8.3.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.1.0",
+    "copy-webpack-plugin": "^4.5.2",
+    "css-loader": "^1.0.0",
+    "http-server": "^0.11.1",
+    "node-sass": "^4.9.2",
+    "postcss-loader": "^2.1.6",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.22.0",
+    "ts-loader": "^4.4.2",
+    "typescript": "^2.9.2",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
+  }
 }

@@ -1,0 +1,19 @@
+@charset "utf-8";
+// Change theme variables here
+// availbe variables can be found: https://bulma.io/documentation/customize/variables/
+
+// import needed base lib only.
+@import "../../node_modules/bulma/sass/utilities/_all.sass";
+@import "../../node_modules/bulma/sass/base/_all.sass";
+@import "../../node_modules/bulma/sass/components/navbar.sass";
+@import "../../node_modules/bulma/sass/elements/button.sass";
+
+
+// Other
+body{
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}

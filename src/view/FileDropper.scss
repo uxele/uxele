@@ -1,0 +1,58 @@
+.fileDropper{
+  padding: 1.5em;
+  // padding-top:100px;
+  // padding-bottom:100px;
+  text-align: center;
+  color:#96A0A7;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  cursor: pointer;
+  transition: all 300ms ease-out;
+  justify-content: center;
+  &.dragging{
+    background: rgba(86, 195, 249,0.1)   ;
+    >i{
+      font-size:5em;
+      color: #00910e;
+    }
+    >.dragDropFiles{
+      font-size: 1em;
+    }
+    >.browseFile{
+      font-size:0px;
+      padding:0;
+      border:none;
+    }
+    >.or{
+      font-size: 0px;
+    }
+    >button{
+      opacity: 0;
+    }
+  }
+  >*{
+    margin-bottom:0.5em;
+    pointer-events: none;
+    transition: all 300ms ease-out;
+  }
+  >i{
+    font-size: 3em;
+  }
+  >.dragDropFiles{
+    font-size: 1.5em;
+    font-weight: lighter;
+  }
+  >.browseFile{
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #57C4FA;
+    padding:1em;   
+    border:3px solid #57C4FA;
+    border-radius: 0.7em;
+  }
+  >.loadedFile{
+    color:#428CD0;
+
+  }
+}
