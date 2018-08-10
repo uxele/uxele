@@ -11,8 +11,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/sprintf-js": "^1.1.0",
     "bulma": "^0.7.1",
-    "preact": "^8.3.0"
+    "preact": "^8.3.0",
+    "psdetch-core": "git+ssh://git@gitlab.com/psdetch/psdetch-core.git",
+    "psdetch-fileadapter-image": "git+ssh://git@gitlab.com/psdetch/psdetch-fileadapter-image.git",
+    "psdetch-fileadapter-psd": "git+ssh://git@gitlab.com/psdetch/psdetch-fileadapter-psd.git",
+    "psdetch-render-fabric": "git+ssh://git@gitlab.com/psdetch/psdetch-render-fabric.git",
+    "psdetch-tool-hand": "git+ssh://git@gitlab.com/psdetch/psdetch-tool-hand.git",
+    "psdetch-utils": "git+ssh://git@gitlab.com/psdetch/psdetch-utils.git",
+    "sprintf-js": "^1.1.1"
   },
   "devDependencies": {
     "autoprefixer": "^9.1.0",

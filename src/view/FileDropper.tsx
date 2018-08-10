@@ -54,8 +54,15 @@ export class FileDropper extends Component<IDataLoaderProps, any> {
         onDrop={this.dropFile}
         onClick={this.openFromDisk}
         class={`fileDropper ${this.state.dragging}`}>
-        <i class="fas fa-upload" />
-        <div class="dragDropFiles">Drag&amp;Drop files here</div>
+        <i 
+        class=
+        {`fas fa-upload 
+        ${this.state.dragging?'has-text-success is-size-1':'has-text-primary is-size-3'}`} />
+        <div class={`dragDropFiles 
+        has-text-grey-light
+        has-text-weight-light
+        ${this.state.dragging?"is-size-5":"is-size-4"} `}
+        >Drag &amp; Drop files here</div>
         <div class="or">OR</div>
         <button class="button">Browse File</button>
         {
