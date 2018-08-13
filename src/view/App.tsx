@@ -3,14 +3,15 @@ import { FileDropper } from "./FileDropper";
 import {Nav} from "./Nav";
 import "./App.scss";
 // import { initCore, Session } from "../model/Session";
-import { IProject, CoreProvider, IFileBlob, IPage } from "psdetch-core";
+import { IProject, CoreProvider, IFileBlob, IPage } from "psdetch-core/build";
 import { FabricRenderer } from "psdetch-render-fabric";
 import { PSDAdapter } from "psdetch-fileadapter-psd";
 import { ImageAdapter } from "psdetch-fileadapter-image";
 import { lang } from "../i18n/lang";
 import { Modal, falert } from "./Modal";
-import {Canvas} from "./Canvas";
 import { session } from "../model/Session";
+import {Main} from "./Main";
+
 interface AppState {
 
   // curProject?: IProject;
@@ -67,9 +68,7 @@ export class App extends Component<{},AppState> {
         { !this.state.loading && !session.project && <FileDropper onFile={this.loadFile}></FileDropper>}
         { this.state.loading && <div class="loading is-size-4 has-text-grey"><i class="fas fa-spinner is-size-2 has-text-primary animated infinite spin"></i> Parsing... Please be patient.</div> }
         {session.project && 
-        <div class="canvasWrapper">
-          <Canvas></Canvas>
-        </div>
+        <Main></Main>
         }
         <Modal></Modal>
       </div>

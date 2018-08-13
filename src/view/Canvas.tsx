@@ -1,6 +1,6 @@
 import {h, Component} from "preact";
 import "./Canvas.scss";
-import { IPage } from "psdetch-core";
+import { IPage } from "psdetch-core/build";
 import { FabricRenderer } from "psdetch-render-fabric";
 import { session } from "../model/Session";
 interface CanvasProps{

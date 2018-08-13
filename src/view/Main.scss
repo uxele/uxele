@@ -1,0 +1,35 @@
+.mainContainer {
+  display: flex;
+  flex-grow: 1;
+  .flexColumn {
+    flex-direction: column;
+  }
+  .flexItem {
+    flex: 1;
+  }
+}
+
+.main {
+  order: 2;
+  border-left: 1px solid #777777;
+  border-right: 1px solid #777777;
+  display: flex;
+  .canvasWrapper{
+    flex:1 1 auto;
+    position: relative;
+  }
+}
+
+.sidebar {
+  width: 20%;
+  
+}
+.sidebarLeft {
+  order: 1;
+}
+.sidebarRight {
+  order: 3;
+}
+
+
+

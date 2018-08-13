@@ -98,7 +98,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, ".app {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  max-height: 100%; }\n  .app > .fileDropper {\n    flex: 1 1 auto; }\n  .app > .loading {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    flex: 1 1 auto; }\n    .app > .loading > i {\n      margin-right: 12px; }\n  .app .canvasWrapper {\n    flex: 1 1 auto;\n    position: relative; }\n", ""]);
+exports.push([module.i, ".app {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  max-height: 100%; }\n  .app > .fileDropper {\n    flex: 1 1 auto; }\n  .app > .loading {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    flex: 1 1 auto; }\n    .app > .loading > i {\n      margin-right: 12px; }\n", ""]);
 
 // exports
 
@@ -162,6 +162,25 @@ exports.push([module.i, ".fileDropper {\n  text-align: center;\n  display: flex;
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/Main.scss":
+/*!*********************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/Main.scss ***!
+  \*********************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".mainContainer {\n  display: flex;\n  flex-grow: 1; }\n  .mainContainer .flexColumn {\n    flex-direction: column; }\n  .mainContainer .flexItem {\n    flex: 1; }\n\n.main {\n  order: 2;\n  border-left: 1px solid #777777;\n  border-right: 1px solid #777777;\n  display: flex; }\n  .main .canvasWrapper {\n    flex: 1 1 auto;\n    position: relative; }\n\n.sidebar {\n  width: 20%; }\n\n.sidebarLeft {\n  order: 1; }\n\n.sidebarRight {\n  order: 3; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/Modal.scss":
 /*!**********************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/Modal.scss ***!
@@ -212,7 +231,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, ".toolbar {\n  display: flex;\n  flex: 1 1 auto; }\n  .toolbar .toolBtn {\n    width: 4rem;\n    font-size: 2rem;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, ".toolbar {\n  display: flex;\n  flex: 1 1 auto; }\n  .toolbar .toolBtn {\n    width: 4rem;\n    font-size: 1.5rem;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -9058,18 +9077,18 @@ var FileDropper_1 = __webpack_require__(/*! ./FileDropper */ "./src/view/FileDro
 var Nav_1 = __webpack_require__(/*! ./Nav */ "./src/view/Nav.tsx");
 __webpack_require__(/*! ./App.scss */ "./src/view/App.scss");
 // import { initCore, Session } from "../model/Session";
-var psdetch_core_1 = __webpack_require__(/*! psdetch-core */ "./node_modules/psdetch-core/build/index.js");
+var build_1 = __webpack_require__(/*! psdetch-core/build */ "./node_modules/psdetch-core/build/index.js");
 var psdetch_fileadapter_psd_1 = __webpack_require__(/*! psdetch-fileadapter-psd */ "./node_modules/psdetch-fileadapter-psd/index.js");
 var psdetch_fileadapter_image_1 = __webpack_require__(/*! psdetch-fileadapter-image */ "./node_modules/psdetch-fileadapter-image/index.js");
 var lang_1 = __webpack_require__(/*! ../i18n/lang */ "./src/i18n/lang.ts");
 var Modal_1 = __webpack_require__(/*! ./Modal */ "./src/view/Modal.tsx");
-var Canvas_1 = __webpack_require__(/*! ./Canvas */ "./src/view/Canvas.tsx");
 var Session_1 = __webpack_require__(/*! ../model/Session */ "./src/model/Session.ts");
+var Main_1 = __webpack_require__(/*! ./Main */ "./src/view/Main.tsx");
 var App = /** @class */ (function (_super) {
     __extends(App, _super);
     function App() {
         var _this = _super.call(this) || this;
-        _this.core = new psdetch_core_1.CoreProvider();
+        _this.core = new build_1.CoreProvider();
         _this.loadFile = function (_f) { return __awaiter(_this, void 0, void 0, function () {
             var adps, file, _loop_1, this_1, _i, adps_1, adp, state_1;
             return __generator(this, function (_a) {
@@ -9152,8 +9171,7 @@ var App = /** @class */ (function (_super) {
                 preact_1.h("i", { class: "fas fa-spinner is-size-2 has-text-primary animated infinite spin" }),
                 " Parsing... Please be patient."),
             Session_1.session.project &&
-                preact_1.h("div", { class: "canvasWrapper" },
-                    preact_1.h(Canvas_1.Canvas, null)),
+                preact_1.h(Main_1.Main, null),
             preact_1.h(Modal_1.Modal, null)));
     };
     return App;
@@ -9439,6 +9457,86 @@ var LogoText = /** @class */ (function (_super) {
     return LogoText;
 }(preact_1.Component));
 exports.LogoText = LogoText;
+
+
+/***/ }),
+
+/***/ "./src/view/Main.scss":
+/*!****************************!*\
+  !*** ./src/view/Main.scss ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/postcss-loader/lib!../../node_modules/sass-loader/lib/loader.js!./Main.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/Main.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/view/Main.tsx":
+/*!***************************!*\
+  !*** ./src/view/Main.tsx ***!
+  \***************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
+__webpack_require__(/*! ./Main.scss */ "./src/view/Main.scss");
+var Canvas_1 = __webpack_require__(/*! ./Canvas */ "./src/view/Canvas.tsx");
+var Main = /** @class */ (function (_super) {
+    __extends(Main, _super);
+    function Main() {
+        return _super.call(this) || this;
+    }
+    Main.prototype.render = function () {
+        return (preact_1.h("div", { class: "mainContainer flexColumn" },
+            preact_1.h("div", { class: "mainContainer flexItem" },
+                preact_1.h("aside", { class: "sidebar sidebarLeft" },
+                    preact_1.h("h2", null, "Left Sidebar"),
+                    preact_1.h("p", null, "content"),
+                    preact_1.h("p", null, "content"),
+                    preact_1.h("p", null, "content")),
+                preact_1.h("main", { class: "flexItem main" },
+                    preact_1.h("div", { class: "canvasWrapper" },
+                        preact_1.h(Canvas_1.Canvas, null))),
+                preact_1.h("aside", { class: "sidebar sidebarRight" },
+                    preact_1.h("h2", null, "Right Sidebar"),
+                    preact_1.h("p", null, "content")))));
+    };
+    return Main;
+}(preact_1.Component));
+exports.Main = Main;
 
 
 /***/ }),
@@ -9771,33 +9869,37 @@ var ToolBar = /** @class */ (function (_super) {
             _this.handTool = new psdetch_tool_hand_1.HandTool(r);
             _this.handTool.activate();
             _this.setTool(_this.handTool);
-            _this._toolButtons = [
-                _this.bindButton(_this.handTool)
-            ];
         });
         _this.state = { display: false };
         return _this;
     }
     ToolBar.prototype.render = function () {
         if (this.state.display) {
-            return (preact_1.h("div", { class: "toolbar" }, this._toolButtons));
+            return (preact_1.h("div", { class: "toolbar" }, this.bindTool(this.handTool)));
         }
         else {
             return null;
         }
     };
     ToolBar.prototype.setTool = function (tool) {
+        var _this = this;
         if (this.curTool !== tool) {
             if (this.curTool) {
                 this.curTool.deactivate();
             }
+            tool.once("onActivated", function () {
+                _this.forceUpdate();
+            });
             tool.activate();
             this.curTool = tool;
         }
+        else {
+            this.render();
+        }
     };
-    ToolBar.prototype.bindButton = function (tool) {
+    ToolBar.prototype.bindTool = function (tool) {
         var _this = this;
-        return (preact_1.h("div", { onClick: function () { return _this.setTool(tool); }, class: "toolBtn " + (tool.activated ? 'has-background-grey-light' : '') },
+        return (preact_1.h("div", { onClick: function () { return _this.setTool(tool); }, class: "toolBtn " + (tool.activated ? 'has-background-black-ter' : '') },
             preact_1.h("i", { class: faMaper[tool.slug] })));
     };
     return ToolBar;
