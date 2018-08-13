@@ -9,6 +9,7 @@ import { PSDAdapter } from "psdetch-fileadapter-psd";
 import { ImageAdapter } from "psdetch-fileadapter-image";
 import { lang } from "../i18n/lang";
 import { Modal, falert } from "./Modal";
+import {Main} from "./components/Main/main";
 
 interface AppState {
 
@@ -58,6 +59,8 @@ export class App extends Component<{},AppState> {
           <div class="navbar-item is-size-4 has-text-weight-bold"><LogoText></LogoText></div>
         </nav>
         { !this.state.loading && !this.state.curProject && <FileDropper onFile={this.loadFile}></FileDropper>}
+        { !this.state.loading && this.state.curProject && <Main ></Main>}
+
         { this.state.loading && <div class="loading is-size-4 has-text-grey"><i class="fas fa-spinner is-size-2 has-text-primary animated infinite spin"></i> Parsing... Please be patient.</div> }
         {this.state.curProject }
         <Modal></Modal>

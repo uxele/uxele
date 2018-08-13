@@ -162,6 +162,25 @@ exports.push([module.i, ".psdetch-modal .modal-card-foot {\n  justify-content: f
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/components/Main/Main.scss":
+/*!*************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/components/Main/Main.scss ***!
+  \*************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".mainContainer {\n  display: flex;\n  flex-grow: 1; }\n  .mainContainer .flexColumn {\n    flex-direction: column; }\n  .mainContainer .flexItem {\n    flex: 1; }\n\n.main {\n  order: 2;\n  border-left: 1px solid #777777;\n  border-right: 1px solid #777777; }\n\n.sidebar {\n  width: 20%; }\n\n.sidebarLeft {\n  order: 1; }\n\n.sidebarRight {\n  order: 3; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/lib/css-base.js":
 /*!*************************************************!*\
   !*** ./node_modules/css-loader/lib/css-base.js ***!
@@ -7041,6 +7060,7 @@ var psdetch_fileadapter_psd_1 = __webpack_require__(/*! psdetch-fileadapter-psd 
 var psdetch_fileadapter_image_1 = __webpack_require__(/*! psdetch-fileadapter-image */ "./node_modules/psdetch-fileadapter-image/index.js");
 var lang_1 = __webpack_require__(/*! ../i18n/lang */ "./src/i18n/lang.ts");
 var Modal_1 = __webpack_require__(/*! ./Modal */ "./src/view/Modal.tsx");
+var main_1 = __webpack_require__(/*! ./components/Main/main */ "./src/view/components/Main/main.tsx");
 var App = /** @class */ (function (_super) {
     __extends(App, _super);
     function App() {
@@ -7102,6 +7122,7 @@ var App = /** @class */ (function (_super) {
                 preact_1.h("div", { class: "navbar-item is-size-4 has-text-weight-bold" },
                     preact_1.h(LogoText_1.LogoText, null))),
             !this.state.loading && !this.state.curProject && preact_1.h(FileDropper_1.FileDropper, { onFile: this.loadFile }),
+            !this.state.loading && this.state.curProject && preact_1.h(main_1.Main, null),
             this.state.loading && preact_1.h("div", { class: "loading is-size-4 has-text-grey" },
                 preact_1.h("i", { class: "fas fa-spinner is-size-2 has-text-primary animated infinite spin" }),
                 " Parsing... Please be patient."),
@@ -7481,6 +7502,83 @@ var Modal = /** @class */ (function (_super) {
     return Modal;
 }(preact_1.Component));
 exports.Modal = Modal;
+
+
+/***/ }),
+
+/***/ "./src/view/components/Main/Main.scss":
+/*!********************************************!*\
+  !*** ./src/view/components/Main/Main.scss ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader!../../../../node_modules/postcss-loader/lib!../../../../node_modules/sass-loader/lib/loader.js!./Main.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/components/Main/Main.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/view/components/Main/main.tsx":
+/*!*******************************************!*\
+  !*** ./src/view/components/Main/main.tsx ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
+__webpack_require__(/*! ./Main.scss */ "./src/view/components/Main/Main.scss");
+var Main = /** @class */ (function (_super) {
+    __extends(Main, _super);
+    function Main() {
+        return _super.call(this) || this;
+    }
+    Main.prototype.render = function () {
+        return (preact_1.h("div", { class: "mainContainer flexColumn" },
+            preact_1.h("div", { class: "mainContainer flexItem" },
+                preact_1.h("aside", { class: "sidebar sidebarLeft" },
+                    preact_1.h("h2", null, "Left Sidebar"),
+                    preact_1.h("p", null, "content"),
+                    preact_1.h("p", null, "content"),
+                    preact_1.h("p", null, "content")),
+                preact_1.h("main", { class: "flexItem main" }, "center content"),
+                preact_1.h("aside", { class: "sidebar sidebarRight" },
+                    preact_1.h("h2", null, "Right Sidebar"),
+                    preact_1.h("p", null, "content")))));
+    };
+    return Main;
+}(preact_1.Component));
+exports.Main = Main;
 
 
 /***/ })
