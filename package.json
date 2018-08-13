@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack --watch & http-server -s -c-1 ./static & echo 'Web Server on: http://127.0.0.1:8080'",
+    "dev": "sh -c \"echo 'Web Server on: http://127.0.0.1:8080' \" & webpack --watch & http-server -s -c-1 ./static  ",
     "build": "rm -Rf ./static/build && NODE_ENV=production webpack"
   },
   "author": "",

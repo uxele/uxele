@@ -1,0 +1,12 @@
+.toolbar{
+  display: flex;
+  flex: 1 1 auto;
+  .toolBtn{
+    width: 4rem;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}

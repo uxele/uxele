@@ -1,18 +1,20 @@
 import { h, Component } from "preact";
 import { FileDropper } from "./FileDropper";
-import { LogoText } from "./LogoText";
+import {Nav} from "./Nav";
 import "./App.scss";
 // import { initCore, Session } from "../model/Session";
-import { IProject, CoreProvider, IFileBlob } from "psdetch-core";
+import { IProject, CoreProvider, IFileBlob, IPage } from "psdetch-core";
 import { FabricRenderer } from "psdetch-render-fabric";
 import { PSDAdapter } from "psdetch-fileadapter-psd";
 import { ImageAdapter } from "psdetch-fileadapter-image";
 import { lang } from "../i18n/lang";
 import { Modal, falert } from "./Modal";
-
+import {Canvas} from "./Canvas";
+import { session } from "../model/Session";
 interface AppState {
 
-  curProject?: IProject;
+  // curProject?: IProject;
+  // curPage?:IPage;
   loading:boolean;
 }
 
@@ -40,7 +42,14 @@ export class App extends Component<{},AppState> {
         this.setState({loading:true});
         try{
           const proj = await adp.decodeProject(file);
-          this.setState({ curProject: proj,loading:false });
+          this.setState({loading:false });
+          session.project=proj
+          const pgs=await proj.getPages();
+
+          setTimeout(()=>{
+            // this.setState({curPage:pgs[0]});  
+            session.curPage=pgs[0];
+          },500);
         }catch(e){
           falert(e.toString());
           this.setState({loading:false});
@@ -54,12 +63,14 @@ export class App extends Component<{},AppState> {
   render() {
     return (
       <div class="app">
-        <nav class="navbar is-dark">
-          <div class="navbar-item is-size-4 has-text-weight-bold"><LogoText></LogoText></div>
-        </nav>
-        { !this.state.loading && !this.state.curProject && <FileDropper onFile={this.loadFile}></FileDropper>}
+        <Nav></Nav>
+        { !this.state.loading && !session.project && <FileDropper onFile={this.loadFile}></FileDropper>}
         { this.state.loading && <div class="loading is-size-4 has-text-grey"><i class="fas fa-spinner is-size-2 has-text-primary animated infinite spin"></i> Parsing... Please be patient.</div> }
-        {this.state.curProject }
+        {session.project && 
+        <div class="canvasWrapper">
+          <Canvas></Canvas>
+        </div>
+        }
         <Modal></Modal>
       </div>
     );

@@ -1,0 +1,9 @@
+nav.navbar{
+  display: flex;
+  min-height: 4rem;
+  align-items: stretch;
+  .navbar-item{
+    display: flex;
+    align-items: center;
+  }
+}
