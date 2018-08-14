@@ -24,14 +24,14 @@ export class Canvas extends Component<CanvasProps,{}>{
       this.renderer=new FabricRenderer(this.canvas,this.canvas.width,this.canvas.height);
     }
     // this.props.onRendererReady(this.renderer);
-    session.renderer=this.renderer;
-    session.on("onPage",(p)=>{
+    session.set("renderer",this.renderer);
+    session.on("curPage",(p)=>{
       if (p){
         this.onPage(p as IPage);
       }
     });
-    if (session.curPage && session.curPage!==this.renderer!.getPage()){
-      this.renderer!.renderPage(session.curPage);
+    if (session.get("curPage") && session.get("curPage")!==this.renderer!.getPage()){
+      this.renderer!.renderPage(session.get("curPage")!);
     }
   }
   componentDidUpdate(prevProps:CanvasProps){

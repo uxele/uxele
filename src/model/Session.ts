@@ -1,42 +1,43 @@
 import { FabricRenderer } from "psdetch-render-fabric";
 import { IProject, IPage, BasicEvents } from "psdetch-core/build";
+import { HandTool } from "psdetch-tool-hand";
 
-export type SessioEvents="onRenderer" | "onProject" | "onPage";
-export type SessionEventArg=FabricRenderer | IProject | IPage;
-export class Session extends BasicEvents<SessioEvents,SessionEventArg,(v?:SessionEventArg)=>void>{
-  private _renderer?:FabricRenderer;
-  private _project?:IProject;
-  private _curPage?:IPage;
-  get renderer():FabricRenderer | undefined{
-    return this._renderer;
+export interface SessionProps{
+  curPage?:IPage;
+  curProject?:IProject;
+  renderer?:FabricRenderer;
+  handtool?:HandTool;
+  curTool?:ITool;
+}
+export interface ITool{
+  activate(): void;
+  deactivate(): void;
+  once(evt:string,handler:any):void;
+  activated: boolean;
+  name: string;
+  slug: string;
+}
+const props:SessionProps={};
+export class Session extends BasicEvents<keyof SessionProps, SessionProps[keyof SessionProps], (v?: SessionProps[keyof SessionProps]) => void>{
+
+  get<T extends keyof SessionProps>(key: T):SessionProps[T] {
+    return props[key];
   }
-  set renderer(v:FabricRenderer | undefined){
-    if (this._renderer===v){
+  set<T extends keyof SessionProps>(key: T, val?: SessionProps[T]){
+    if (props[key] === val){
       return;
     }
-    this._renderer=v;
-    this.emit("onRenderer",this._renderer);
+    props[key]=val;
+    this.emit(key,val);
   }
-  get project():IProject | undefined{
-    return this._project;
-  }
-  set project(v:IProject | undefined){
-    if (this._project===v){
-      return;
-    }
-    this._project=v;
-    this.emit("onProject",this._project);
-  }
-  get curPage():IPage | undefined{
-    return this._curPage;
-  }
-  set curPage(v:IPage | undefined){
-    if (this._curPage===v){
-      return;
-    }
-    this._curPage=v;
-    this.emit("onPage",this._curPage);
+  constructor(){
+    super();
+    this.once("renderer",(r)=>{
+      const renderer=r as FabricRenderer;
+      // once renderer exists, register all tools.
+      this.set("handtool",new HandTool(renderer));
+    })
   }
 }
 
-export const session=new Session();
+export const session = new Session();

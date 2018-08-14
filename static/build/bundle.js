@@ -1762,7 +1762,9 @@ var BasicEvents = /** @class */ (function () {
     BasicEvents.prototype.once = function (evt, handler) {
         var _this = this;
         var wrapper = (function (arg) {
-            _this.off(evt, wrapper);
+            setTimeout(function () {
+                _this.off(evt, wrapper);
+            });
             handler(arg);
         });
         this.on(evt, wrapper);
@@ -5708,7 +5710,9 @@ var BasicEvents = /** @class */ (function () {
     BasicEvents.prototype.once = function (evt, handler) {
         var _this = this;
         var wrapper = (function (arg) {
-            _this.off(evt, wrapper);
+            setTimeout(function () {
+                _this.off(evt, wrapper);
+            });
             handler(arg);
         });
         this.on(evt, wrapper);
@@ -8932,53 +8936,29 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var build_1 = __webpack_require__(/*! psdetch-core/build */ "./node_modules/psdetch-core/build/index.js");
+var psdetch_tool_hand_1 = __webpack_require__(/*! psdetch-tool-hand */ "./node_modules/psdetch-tool-hand/index.js");
+var props = {};
 var Session = /** @class */ (function (_super) {
     __extends(Session, _super);
     function Session() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.once("renderer", function (r) {
+            var renderer = r;
+            // once renderer exists, register all tools.
+            _this.set("handtool", new psdetch_tool_hand_1.HandTool(renderer));
+        });
+        return _this;
     }
-    Object.defineProperty(Session.prototype, "renderer", {
-        get: function () {
-            return this._renderer;
-        },
-        set: function (v) {
-            if (this._renderer === v) {
-                return;
-            }
-            this._renderer = v;
-            this.emit("onRenderer", this._renderer);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Session.prototype, "project", {
-        get: function () {
-            return this._project;
-        },
-        set: function (v) {
-            if (this._project === v) {
-                return;
-            }
-            this._project = v;
-            this.emit("onProject", this._project);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Session.prototype, "curPage", {
-        get: function () {
-            return this._curPage;
-        },
-        set: function (v) {
-            if (this._curPage === v) {
-                return;
-            }
-            this._curPage = v;
-            this.emit("onPage", this._curPage);
-        },
-        enumerable: true,
-        configurable: true
-    });
+    Session.prototype.get = function (key) {
+        return props[key];
+    };
+    Session.prototype.set = function (key, val) {
+        if (props[key] === val) {
+            return;
+        }
+        props[key] = val;
+        this.emit(key, val);
+    };
     return Session;
 }(build_1.BasicEvents));
 exports.Session = Session;
@@ -9116,13 +9096,13 @@ var App = /** @class */ (function (_super) {
                                     case 2:
                                         proj = _a.sent();
                                         this_1.setState({ loading: false });
-                                        Session_1.session.project = proj;
+                                        Session_1.session.set("curProject", proj);
                                         return [4 /*yield*/, proj.getPages()];
                                     case 3:
                                         pgs_1 = _a.sent();
                                         setTimeout(function () {
                                             // this.setState({curPage:pgs[0]});  
-                                            Session_1.session.curPage = pgs_1[0];
+                                            Session_1.session.set("curPage", pgs_1[0]);
                                         }, 500);
                                         return [3 /*break*/, 5];
                                     case 4:
@@ -9166,11 +9146,11 @@ var App = /** @class */ (function (_super) {
     App.prototype.render = function () {
         return (preact_1.h("div", { class: "app" },
             preact_1.h(Nav_1.Nav, null),
-            !this.state.loading && !Session_1.session.project && preact_1.h(FileDropper_1.FileDropper, { onFile: this.loadFile }),
+            !this.state.loading && !Session_1.session.get("curProject") && preact_1.h(FileDropper_1.FileDropper, { onFile: this.loadFile }),
             this.state.loading && preact_1.h("div", { class: "loading is-size-4 has-text-grey" },
                 preact_1.h("i", { class: "fas fa-spinner is-size-2 has-text-primary animated infinite spin" }),
                 " Parsing... Please be patient."),
-            Session_1.session.project &&
+            Session_1.session.get("curProject") &&
                 preact_1.h(Main_1.Main, null),
             preact_1.h(Modal_1.Modal, null)));
     };
@@ -9284,14 +9264,14 @@ var Canvas = /** @class */ (function (_super) {
             this.renderer = new psdetch_render_fabric_1.FabricRenderer(this.canvas, this.canvas.width, this.canvas.height);
         }
         // this.props.onRendererReady(this.renderer);
-        Session_1.session.renderer = this.renderer;
-        Session_1.session.on("onPage", function (p) {
+        Session_1.session.set("renderer", this.renderer);
+        Session_1.session.on("curPage", function (p) {
             if (p) {
                 _this.onPage(p);
             }
         });
-        if (Session_1.session.curPage && Session_1.session.curPage !== this.renderer.getPage()) {
-            this.renderer.renderPage(Session_1.session.curPage);
+        if (Session_1.session.get("curPage") && Session_1.session.get("curPage") !== this.renderer.getPage()) {
+            this.renderer.renderPage(Session_1.session.get("curPage"));
         }
     };
     Canvas.prototype.componentDidUpdate = function (prevProps) {
@@ -9853,7 +9833,6 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
 __webpack_require__(/*! ./ToolBar.scss */ "./src/view/ToolBar.scss");
-var psdetch_tool_hand_1 = __webpack_require__(/*! psdetch-tool-hand */ "./node_modules/psdetch-tool-hand/index.js");
 var Session_1 = __webpack_require__(/*! ../model/Session */ "./src/model/Session.ts");
 var faMaper = {
     "tool_hand": "fas fa-hand-paper"
@@ -9862,28 +9841,34 @@ var ToolBar = /** @class */ (function (_super) {
     __extends(ToolBar, _super);
     function ToolBar() {
         var _this = _super.call(this) || this;
-        _this._toolButtons = [];
-        Session_1.session.once("onRenderer", function (r) {
-            var renderer = r;
+        Session_1.session.once("renderer", function (r) {
             _this.setState({ display: true });
-            _this.handTool = new psdetch_tool_hand_1.HandTool(r);
-            _this.handTool.activate();
-            _this.setTool(_this.handTool);
+            _this.setExclusiveTool(Session_1.session.get('handtool'));
         });
         _this.state = { display: false };
         return _this;
     }
+    Object.defineProperty(ToolBar.prototype, "curTool", {
+        get: function () {
+            return Session_1.session.get("curTool");
+        },
+        set: function (v) {
+            Session_1.session.set("curTool", v);
+        },
+        enumerable: true,
+        configurable: true
+    });
     ToolBar.prototype.render = function () {
         if (this.state.display) {
-            return (preact_1.h("div", { class: "toolbar" }, this.bindTool(this.handTool)));
+            return (preact_1.h("div", { class: "toolbar" }, this.bindExclusiveTool(Session_1.session.get('handtool'))));
         }
         else {
             return null;
         }
     };
-    ToolBar.prototype.setTool = function (tool) {
+    ToolBar.prototype.setExclusiveTool = function (tool) {
         var _this = this;
-        if (this.curTool !== tool) {
+        if (tool && this.curTool !== tool) {
             if (this.curTool) {
                 this.curTool.deactivate();
             }
@@ -9893,14 +9878,16 @@ var ToolBar = /** @class */ (function (_super) {
             tool.activate();
             this.curTool = tool;
         }
-        else {
-            this.render();
-        }
     };
-    ToolBar.prototype.bindTool = function (tool) {
+    ToolBar.prototype.bindExclusiveTool = function (tool) {
         var _this = this;
-        return (preact_1.h("div", { onClick: function () { return _this.setTool(tool); }, class: "toolBtn " + (tool.activated ? 'has-background-black-ter' : '') },
-            preact_1.h("i", { class: faMaper[tool.slug] })));
+        if (tool) {
+            return (preact_1.h("div", { onClick: function () { return _this.setExclusiveTool(tool); }, class: "toolBtn " + (tool.activated ? 'has-background-black-ter has-text-primary' : '') },
+                preact_1.h("i", { class: faMaper[tool.slug] })));
+        }
+        else {
+            return null;
+        }
     };
     return ToolBar;
 }(preact_1.Component));

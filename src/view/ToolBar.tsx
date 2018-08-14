@@ -1,35 +1,29 @@
 import {h, Component} from "preact";
 import "./ToolBar.scss";
 import {HandTool} from "psdetch-tool-hand";
-import { session } from "../model/Session";
+import { session, ITool } from "../model/Session";
 import { FabricRenderer } from "psdetch-render-fabric";
 
 interface ToolBarState{
   display:boolean
 }
-interface ITool{
-  activate(): void;
-  deactivate(): void;
-  once(evt:string,handler:any):void;
-  activated: boolean;
-  name: string;
-  slug: string;
-}
+
 const faMaper:any={
   "tool_hand":"fas fa-hand-paper"
 }
 export class ToolBar extends Component<{},ToolBarState>{
-  private _toolButtons:ITool[]=[];
   private handTool?:HandTool;
-  private curTool?:ITool;
+  get curTool(){
+    return session.get("curTool");
+  }
+  set curTool(v:ITool | undefined){
+    session.set("curTool",v);
+  }
   constructor(){
     super();
-    session.once("onRenderer",(r)=>{
-      const renderer=r as FabricRenderer;
+    session.once("renderer",(r)=>{
       this.setState({display:true});
-      this.handTool=new HandTool(r as FabricRenderer)
-      this.handTool.activate();
-      this.setTool(this.handTool);
+      this.setExclusiveTool(session.get('handtool'));
 
     })
     this.state={display:false};
@@ -38,7 +32,7 @@ export class ToolBar extends Component<{},ToolBarState>{
     if (this.state.display){
       return (
         <div class="toolbar">
-          {this.bindTool(this.handTool!)}
+          {this.bindExclusiveTool(session.get('handtool'))}
         </div>
       )
     }else{
@@ -46,8 +40,8 @@ export class ToolBar extends Component<{},ToolBarState>{
     }
     
   }
-  private setTool(tool:ITool){
-    if (this.curTool!==tool){
+  private setExclusiveTool(tool?:ITool){
+    if (tool && this.curTool!==tool){
       if (this.curTool){
         this.curTool.deactivate();
       }
@@ -57,15 +51,18 @@ export class ToolBar extends Component<{},ToolBarState>{
       tool.activate();
       this.curTool=tool;
 
-    }else{
-      this.render();
     }
   }
-  private bindTool(tool: ITool){
-    return (
-      <div onClick={()=>this.setTool(tool)} class={`toolBtn ${tool.activated?'has-background-black-ter':''}`}>
-        <i class={faMaper[tool.slug]}></i>
-      </div>
-    )
+  private bindExclusiveTool(tool?: ITool){
+    if (tool){
+      return (
+        <div onClick={()=>this.setExclusiveTool(tool)} class={`toolBtn ${tool.activated?'has-background-black-ter has-text-primary':''}`}>
+          <i class={faMaper[tool.slug]}></i>
+        </div>
+      )
+    }else{
+      return null;
+    }
+    
   }
 }

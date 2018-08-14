@@ -44,12 +44,12 @@ export class App extends Component<{},AppState> {
         try{
           const proj = await adp.decodeProject(file);
           this.setState({loading:false });
-          session.project=proj
+          session.set("curProject",proj);
           const pgs=await proj.getPages();
 
           setTimeout(()=>{
             // this.setState({curPage:pgs[0]});  
-            session.curPage=pgs[0];
+            session.set("curPage", pgs[0]);
           },500);
         }catch(e){
           falert(e.toString());
@@ -65,9 +65,9 @@ export class App extends Component<{},AppState> {
     return (
       <div class="app">
         <Nav></Nav>
-        { !this.state.loading && !session.project && <FileDropper onFile={this.loadFile}></FileDropper>}
+        { !this.state.loading && !session.get("curProject") && <FileDropper onFile={this.loadFile}></FileDropper>}
         { this.state.loading && <div class="loading is-size-4 has-text-grey"><i class="fas fa-spinner is-size-2 has-text-primary animated infinite spin"></i> Parsing... Please be patient.</div> }
-        {session.project && 
+        {session.get("curProject") && 
         <Main></Main>
         }
         <Modal></Modal>
