@@ -4,5 +4,8 @@
   right: 0;
   top: 0;
   bottom: 0;
-
+  cursor: default;
+  &.tool_hand{
+    cursor: grab;
+  }
 }
