@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 
 import "./Main.scss";
-import { IProject } from "psdetch-core/build";
+import { IProject } from "psdetch-core";
 import { Canvas } from "./Canvas";
 interface IMainProps {
   curProject?: IProject;
