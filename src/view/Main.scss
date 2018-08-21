@@ -1,4 +1,5 @@
 .mainContainer {
+  
   display: flex;
   flex-grow: 1;
   .flexColumn {
@@ -21,7 +22,7 @@
 }
 
 .sidebar {
-  width: 20%;
+  width: 300px;
   
 }
 .sidebarLeft {
