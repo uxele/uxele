@@ -2,7 +2,7 @@ import { h, Component } from "preact";
 import { IPage, IProject } from "psdetch-core/build";
 
 import "./PagesPreview.scss";
-import { session } from "../model/Session";
+import { session } from "psdetch-faced";
 import { PagePreview } from "./PagePreview";
 
 

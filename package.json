@@ -2,10 +2,10 @@
   "name": "psdetch-studio",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "sh -c \"echo 'Web Server on: http://127.0.0.1:8080' \" & webpack --watch & http-server -s -c-1 ./static  ",
+    "dep:local": "cd node_modules && rm -Rf ./psdetch-* && ln -s ../../psdetch-* ./",
     "build": "rm -Rf ./static/build && NODE_ENV=production webpack"
   },
   "author": "",
@@ -19,7 +19,9 @@
     "psdetch-fileadapter-psd": "git+ssh://git@gitlab.com/psdetch/psdetch-fileadapter-psd.git",
     "psdetch-render-fabric": "git+ssh://git@gitlab.com/psdetch/psdetch-render-fabric.git",
     "psdetch-tool-hand": "git+ssh://git@gitlab.com/psdetch/psdetch-tool-hand.git",
+    "psdetch-tool-inspect": "git+ssh://git@gitlab.com/psdetch/psdetch-tool-inspect.git",
     "psdetch-utils": "git+ssh://git@gitlab.com/psdetch/psdetch-utils.git",
+    "psdetch-faced": "git+ssh://git@gitlab.com/psdetch/psdetch-faced.git",
     "sprintf-js": "^1.1.1"
   },
   "devDependencies": {
@@ -32,6 +34,7 @@
     "sass-loader": "^7.1.0",
     "style-loader": "^0.22.0",
     "ts-loader": "^4.4.2",
+    "tslint": "^5.11.0",
     "typescript": "^2.9.2",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0"

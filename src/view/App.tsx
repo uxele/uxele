@@ -3,13 +3,13 @@ import { FileDropper } from "./FileDropper";
 import {Nav} from "./Nav";
 import "./App.scss";
 // import { initCore, Session } from "../model/Session";
-import { IProject, CoreProvider, IFileBlob, IPage } from "psdetch-core/build";
+import { IProject, CoreProvider, IFileBlob } from "psdetch-core";
 import { FabricRenderer } from "psdetch-render-fabric";
 import { PSDAdapter } from "psdetch-fileadapter-psd";
 import { ImageAdapter } from "psdetch-fileadapter-image";
 import { lang } from "../i18n/lang";
 import { Modal, falert } from "./Modal";
-import { session } from "../model/Session";
+import { session } from "psdetch-faced";
 import {Main} from "./Main";
 
 interface AppState {

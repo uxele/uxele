@@ -21,7 +21,7 @@ export class PagePreview extends Component<IPageListItemProps, IPageListItemStat
     this.renderPageItem();
   }
   async renderPageItem() {
-    const _pagePreview: HTMLImageElement = await this.props.page.getPreview(0);
+    const _pagePreview: HTMLImageElement = await this.props.page.getPreview(1);
     this.setState({ currentImage: _pagePreview });
 
   }
