@@ -2,15 +2,14 @@ import { h, Component } from "preact";
 import "./ToolBar.scss";
 import { HandTool } from "psdetch-tool-hand";
 import { session, ITool } from "psdetch-faced";
-import { FabricRenderer } from "psdetch-render-fabric";
-import { InspectTool } from "psdetch-tool-inspect";
 interface ToolBarState {
   display: boolean
 }
 
 const faMaper: any = {
   "tool_hand": "fas fa-hand-paper",
-  "tool_inspect":"fas fa-mouse-pointer"
+  "tool_inspect":"fas fa-mouse-pointer",
+  "tool_color":"fas fa-eye-dropper"
 }
 export class ToolBar extends Component<{}, ToolBarState>{
   private handTool?: HandTool;
@@ -34,6 +33,7 @@ export class ToolBar extends Component<{}, ToolBarState>{
         <div class="toolbar">
           {this.bindToggleTool(session.get('handtool'))}
           {this.bindExclusiveTool(session.get("inspectTool"))}
+          {this.bindExclusiveTool(session.get("colorTool"))}
         </div>
       )
     } else {

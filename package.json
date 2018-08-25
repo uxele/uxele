@@ -20,6 +20,7 @@
     "psdetch-render-fabric": "git+ssh://git@gitlab.com/psdetch/psdetch-render-fabric.git",
     "psdetch-tool-hand": "git+ssh://git@gitlab.com/psdetch/psdetch-tool-hand.git",
     "psdetch-tool-inspect": "git+ssh://git@gitlab.com/psdetch/psdetch-tool-inspect.git",
+    "psdetch-tool-color": "git+ssh://git@gitlab.com/psdetch/psdetch-tool-color.git",
     "psdetch-utils": "git+ssh://git@gitlab.com/psdetch/psdetch-utils.git",
     "psdetch-faced": "git+ssh://git@gitlab.com/psdetch/psdetch-faced.git",
     "sprintf-js": "^1.1.1"
