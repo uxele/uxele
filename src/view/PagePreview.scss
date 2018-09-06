@@ -1,5 +1,9 @@
-
-.card-content{
-  padding:0.5rem !important;
-  
+.card {
+  .card-content {
+    padding: 0.5rem !important;
+  }
+  margin-bottom:10px;
+}
+.activePage{
+ opacity: 0.5;
 }
