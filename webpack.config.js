@@ -1,5 +1,7 @@
 var webpack = require("webpack");
+var Visualizer = require('webpack-visualizer-plugin');
 var mode = process.env.NODE_ENV ? process.env.NODE_ENV : "development";
+// var mode="development";
 module.exports = {
   entry: "./src/index.tsx",
   output: {
@@ -29,4 +31,7 @@ module.exports = {
       }
     ],
   },
+  plugins:[new Visualizer({
+    filename: './statistics.html'
+  })]
 };

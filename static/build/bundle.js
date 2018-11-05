@@ -213,12 +213,11 @@ var BaseRenderer = /** @class */ (function (_super) {
         };
     };
     BaseRenderer.prototype.getPage = function () {
-        if (this.curPage) {
-            return this.curPage;
-        }
-        else {
-            throw new Error("Not page is rendered.");
-        }
+        return this.curPage;
+        // if (this.curPage) {
+        // } else {
+        //   throw new Error("No page is rendered.");
+        // }
     };
     BaseRenderer.prototype.renderPage = function (page) {
         return __awaiter(this, void 0, void 0, function () {
@@ -258,45 +257,30 @@ exports.BaseRenderer = BaseRenderer;
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var BasicEvents_1 = __webpack_require__(/*! ./BasicEvents */ "../psdetch-core/build/BasicEvents.js");
-var BaseTool = /** @class */ (function (_super) {
-    __extends(BaseTool, _super);
+// export type BaseToolEvents = "onActivated" | "onDeactivated";
+var BaseTool = /** @class */ (function () {
     function BaseTool(renderer) {
-        var _this = _super.call(this) || this;
-        _this.renderer = renderer;
-        _this.activated = false;
-        return _this;
+        this.renderer = renderer;
+        this.activated = false;
     }
     BaseTool.prototype.activate = function () {
         var _this = this;
         // renderer.clearDrawing();
-        this.bindRenderer()
+        return this.bindRenderer()
             .then(function () {
             _this.activated = true;
-            _this.emit("onActivated");
         });
     };
     BaseTool.prototype.deactivate = function () {
         var _this = this;
-        this.unbindRenderer()
+        return this.unbindRenderer()
             .then(function () {
             _this.activated = false;
-            _this.emit("onDeactivated");
         });
     };
     return BaseTool;
-}(BasicEvents_1.BasicEvents));
+}());
 exports.BaseTool = BaseTool;
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/BaseTool.js.map
 
@@ -716,7 +700,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__(/*! ./types */ "../psdetch-core/build/types.js"));
 __export(__webpack_require__(/*! ./Rect */ "../psdetch-core/build/Rect.js"));
 __export(__webpack_require__(/*! ./Progress */ "../psdetch-core/build/Progress.js"));
-__export(__webpack_require__(/*! ./provider */ "../psdetch-core/build/provider.js"));
 var _layer = __importStar(__webpack_require__(/*! ./layer */ "../psdetch-core/build/layer.js"));
 exports.layer = _layer;
 __export(__webpack_require__(/*! ./BaseRenderer */ "../psdetch-core/build/BaseRenderer.js"));
@@ -857,44 +840,6 @@ exports.bestLayerByCoords = bestLayerByCoords;
 
 /***/ }),
 
-/***/ "../psdetch-core/build/provider.js":
-/*!*****************************************!*\
-  !*** ../psdetch-core/build/provider.js ***!
-  \*****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var CoreProvider = /** @class */ (function () {
-    function CoreProvider() {
-        this.adapters = [];
-    }
-    CoreProvider.prototype.addAdapter = function (adp) {
-        this.adapters.push(adp);
-    };
-    CoreProvider.prototype.getAdapters = function () {
-        return this.adapters;
-    };
-    CoreProvider.prototype.setRenderer = function (r) {
-        this.render = r;
-    };
-    CoreProvider.prototype.getRenderer = function () {
-        if (this.render) {
-            return this.render;
-        }
-        else {
-            throw (new Error("No renderer was set when calling getRenderer.."));
-        }
-    };
-    return CoreProvider;
-}());
-exports.CoreProvider = CoreProvider;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/provider.js.map
-
-/***/ }),
-
 /***/ "../psdetch-core/build/types.js":
 /*!**************************************!*\
   !*** ../psdetch-core/build/types.js ***!
@@ -916,62 +861,196 @@ var LayerType;
 
 /***/ }),
 
-/***/ "../psdetch-faced/build/Session.js":
-/*!*****************************************!*\
-  !*** ../psdetch-faced/build/Session.js ***!
-  \*****************************************/
+/***/ "../psdetch-faced/build/adapters.js":
+/*!******************************************!*\
+  !*** ../psdetch-faced/build/adapters.js ***!
+  \******************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var psdetch_core_1 = __webpack_require__(/*! psdetch-core */ "../psdetch-core/build/index.js");
-var psdetch_tool_hand_1 = __webpack_require__(/*! psdetch-tool-hand */ "../psdetch-tool-hand/index.js");
-var psdetch_tool_inspect_1 = __webpack_require__(/*! psdetch-tool-inspect */ "../psdetch-tool-inspect/build/index.js");
-var psdetch_tool_color_1 = __webpack_require__(/*! psdetch-tool-color */ "../psdetch-tool-color/build/index.js");
-var props = {};
-var Session = /** @class */ (function (_super) {
-    __extends(Session, _super);
-    function Session() {
-        var _this = _super.call(this) || this;
-        _this.once("renderer", function (r) {
-            var renderer = r;
-            // once renderer exists, register all tools.
-            _this.bindTools(renderer);
-        });
-        return _this;
+var psdetch_fileadapter_psd_1 = __webpack_require__(/*! psdetch-fileadapter-psd */ "../psdetch-fileadapter-psd/index.js");
+var psdetch_fileadapter_image_1 = __webpack_require__(/*! psdetch-fileadapter-image */ "../psdetch-fileadapter-image/index.js");
+exports.adapters = [new psdetch_fileadapter_psd_1.PSDAdapter(), new psdetch_fileadapter_image_1.ImageAdapter()];
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/adapters.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/faced/index.js":
+/*!*********************************************!*\
+  !*** ../psdetch-faced/build/faced/index.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(__webpack_require__(/*! ./projectOpenLocalFile */ "../psdetch-faced/build/faced/projectOpenLocalFile.js"));
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/faced/index.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/faced/projectOpenLocalFile.js":
+/*!************************************************************!*\
+  !*** ../psdetch-faced/build/faced/projectOpenLocalFile.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
-    Session.prototype.get = function (key) {
-        return props[key];
-    };
-    Session.prototype.set = function (key, val) {
-        if (props[key] === val) {
-            return;
-        }
-        props[key] = val;
-        this.emit(key, val);
-    };
-    Session.prototype.bindTools = function (renderer) {
-        this.set("handtool", new psdetch_tool_hand_1.HandTool(renderer));
-        this.set("inspectTool", new psdetch_tool_inspect_1.InspectTool(renderer));
-        this.set("colorTool", new psdetch_tool_color_1.ColorTool(renderer));
-    };
-    return Session;
-}(psdetch_core_1.BasicEvents));
-exports.Session = Session;
-exports.session = new Session();
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/Session.js.map
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var adapters_1 = __webpack_require__(/*! ../adapters */ "../psdetch-faced/build/adapters.js");
+var lang_1 = __webpack_require__(/*! ../i18n/lang */ "../psdetch-faced/build/i18n/lang.js");
+var states_1 = __webpack_require__(/*! ../states */ "../psdetch-faced/build/states/index.js");
+function projectOpenLocalFile(_f) {
+    return __awaiter(this, void 0, void 0, function () {
+        var adps, file, _i, adps_1, adp, proj, pgs, e_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    adps = adapters_1.adapters;
+                    file = {
+                        meta: {
+                            name: _f.name,
+                            mime: _f.type
+                        },
+                        file: _f
+                    };
+                    _i = 0, adps_1 = adps;
+                    _a.label = 1;
+                case 1:
+                    if (!(_i < adps_1.length)) return [3 /*break*/, 7];
+                    adp = adps_1[_i];
+                    if (!adp.checkFileMeta(file.meta)) return [3 /*break*/, 6];
+                    _a.label = 2;
+                case 2:
+                    _a.trys.push([2, 5, , 6]);
+                    return [4 /*yield*/, adp.decodeProject(file)];
+                case 3:
+                    proj = _a.sent();
+                    states_1.store.dispatch(states_1.actionProjectLoaded(proj));
+                    return [4 /*yield*/, proj.getPages()];
+                case 4:
+                    pgs = _a.sent();
+                    return [2 /*return*/, proj];
+                case 5:
+                    e_1 = _a.sent();
+                    return [2 /*return*/, Promise.reject(e_1.toString())];
+                case 6:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 7: return [2 /*return*/, Promise.reject(lang_1.lang("error_openfile_no_adapter", file.meta.name))];
+            }
+        });
+    });
+}
+exports.projectOpenLocalFile = projectOpenLocalFile;
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/faced/projectOpenLocalFile.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/i18n/lang.js":
+/*!*******************************************!*\
+  !*** ../psdetch-faced/build/i18n/lang.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var sprintf_js_1 = __webpack_require__(/*! sprintf-js */ "../psdetch-faced/node_modules/sprintf-js/src/sprintf.js");
+var en_1 = __webpack_require__(/*! ./langs/en */ "../psdetch-faced/build/i18n/langs/en.js");
+var langs = [en_1.en];
+var curLang = en_1.en;
+function lang(key) {
+    var args = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        args[_i - 1] = arguments[_i];
+    }
+    return sprintf_js_1.sprintf.apply(void 0, [curLang.dict[key]].concat(args));
+}
+exports.lang = lang;
+function setCurLang(_lang) {
+    curLang = _lang;
+}
+exports.setCurLang = setCurLang;
+function getLangs() {
+    return langs;
+}
+exports.getLangs = getLangs;
+function getCurLang() {
+    return curLang;
+}
+exports.getCurLang = getCurLang;
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/i18n/lang.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/i18n/langs/en.js":
+/*!***********************************************!*\
+  !*** ../psdetch-faced/build/i18n/langs/en.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.en = {
+    "name": "English",
+    "slug": "en",
+    "dict": {
+        error_openfile_no_adapter: "Cannot find decoder for file: %s",
+        tool_hand_name: "Hand",
+        ok: "OK",
+        no: "NO",
+        yes: "YES"
+    }
+};
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/i18n/langs/en.js.map
 
 /***/ }),
 
@@ -987,9 +1066,1286 @@ exports.session = new Session();
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./Session */ "../psdetch-faced/build/Session.js"));
+// export * from "Session";
+__export(__webpack_require__(/*! ./states */ "../psdetch-faced/build/states/index.js"));
+var _f = __importStar(__webpack_require__(/*! ./faced */ "../psdetch-faced/build/faced/index.js"));
+exports.faced = _f;
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/index.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/states/ChoseLayerState.js":
+/*!********************************************************!*\
+  !*** ../psdetch-faced/build/states/ChoseLayerState.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function actionChoseLayer(layer) {
+    return {
+        type: "choseLayer",
+        layer: layer
+    };
+}
+exports.actionChoseLayer = actionChoseLayer;
+exports.choseLayerReducer = function (state, action) {
+    if (!state) {
+        return {};
+    }
+    switch (action.type) {
+        case "choseLayer":
+            if (state.layer && state.layer === action.layer) {
+                return state;
+            }
+            return { layer: action.layer };
+    }
+    return state;
+};
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/states/ChoseLayerState.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/states/ChosePageState.js":
+/*!*******************************************************!*\
+  !*** ../psdetch-faced/build/states/ChosePageState.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function actionChosePage(page) {
+    return {
+        type: "chosePage",
+        page: page
+    };
+}
+exports.actionChosePage = actionChosePage;
+exports.chosePageReducer = function (state, action) {
+    if (!state) {
+        return {};
+    }
+    switch (action.type) {
+        case "chosePage":
+            if (state.page === action.page) {
+                return state;
+            }
+            return { page: action.page };
+    }
+    return state;
+};
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/states/ChosePageState.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/states/ChoseToolState.js":
+/*!*******************************************************!*\
+  !*** ../psdetch-faced/build/states/ChoseToolState.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function actionChoseTool(tool) {
+    return {
+        type: "chooseTool",
+        tool: tool
+    };
+}
+exports.actionChoseTool = actionChoseTool;
+exports.chooseToolReducer = function (state, action) {
+    if (!state) {
+        return {};
+    }
+    switch (action.type) {
+        case "chooseTool":
+            if (state.tool && state.tool === action.tool) {
+                return state;
+            }
+            return { tool: action.tool };
+    }
+    return state;
+};
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/states/ChoseToolState.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/states/ColorToolState.js":
+/*!*******************************************************!*\
+  !*** ../psdetch-faced/build/states/ColorToolState.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+function actionColorToolHover(color) {
+    return {
+        type: "toolsColorToolHover",
+        color: color
+    };
+}
+exports.actionColorToolHover = actionColorToolHover;
+function actionColorToolPick(color) {
+    return {
+        type: "toolsColorToolPick",
+        color: color
+    };
+}
+exports.actionColorToolPick = actionColorToolPick;
+exports.colorToolReducer = function (state, action) {
+    if (!state) {
+        return {
+            lastPicked: "",
+            pickedColors: []
+        };
+    }
+    switch (action.type) {
+        case "toolsColorToolHover":
+            return __assign({}, state, { hoverColor: action.color });
+        case "toolsColorToolPick":
+            return __assign({}, state, { lastPicked: action.color, pickedColors: state.pickedColors.concat([action.color]) });
+    }
+    return state;
+};
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/states/ColorToolState.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/states/HandToolState.js":
+/*!******************************************************!*\
+  !*** ../psdetch-faced/build/states/HandToolState.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function actionHandToolPanStart() {
+    return {
+        type: "toolsHandToolPanStart"
+    };
+}
+exports.actionHandToolPanStart = actionHandToolPanStart;
+function actionHandToolPanEnd() {
+    return {
+        type: "toolsHandToolPanEnd"
+    };
+}
+exports.actionHandToolPanEnd = actionHandToolPanEnd;
+exports.handToolReducer = function (state, action) {
+    if (!state) {
+        return { panStarted: false };
+    }
+    switch (action.type) {
+        case "toolsHandToolPanStart":
+            return { panStarted: true };
+        case "toolsHandToolPanEnd":
+            return { panStarted: false };
+    }
+    return state;
+};
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/states/HandToolState.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/states/ProjectState.js":
+/*!*****************************************************!*\
+  !*** ../psdetch-faced/build/states/ProjectState.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function actionProjectLoaded(project) {
+    return {
+        type: "projectLoaded",
+        project: project
+    };
+}
+exports.actionProjectLoaded = actionProjectLoaded;
+exports.projectReducer = function (state, action) {
+    if (!state) {
+        return {
+            loading: false
+        };
+    }
+    switch (action.type) {
+        case "projectLoaded":
+            if (state.project === action.project) {
+                return state;
+            }
+            return { project: action.project, loading: false };
+    }
+    return state;
+};
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/states/ProjectState.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/states/RendererState.js":
+/*!******************************************************!*\
+  !*** ../psdetch-faced/build/states/RendererState.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function actionRendererSet(renderer) {
+    return {
+        type: "rendererSet",
+        renderer: renderer
+    };
+}
+exports.actionRendererSet = actionRendererSet;
+exports.rendererReducer = function (state, action) {
+    if (!state) {
+        return {};
+    }
+    switch (action.type) {
+        case "rendererSet":
+            if (state.renderer === action.renderer) {
+                return state;
+            }
+            return { renderer: action.renderer };
+    }
+    return state;
+};
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/states/RendererState.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/states/index.js":
+/*!**********************************************!*\
+  !*** ../psdetch-faced/build/states/index.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(__webpack_require__(/*! ./store */ "../psdetch-faced/build/states/store.js"));
+__export(__webpack_require__(/*! ./HandToolState */ "../psdetch-faced/build/states/HandToolState.js"));
+__export(__webpack_require__(/*! ./ColorToolState */ "../psdetch-faced/build/states/ColorToolState.js"));
+__export(__webpack_require__(/*! ./ChoseLayerState */ "../psdetch-faced/build/states/ChoseLayerState.js"));
+__export(__webpack_require__(/*! ./ChosePageState */ "../psdetch-faced/build/states/ChosePageState.js"));
+__export(__webpack_require__(/*! ./ProjectState */ "../psdetch-faced/build/states/ProjectState.js"));
+__export(__webpack_require__(/*! ./ChoseToolState */ "../psdetch-faced/build/states/ChoseToolState.js"));
+__export(__webpack_require__(/*! ./RendererState */ "../psdetch-faced/build/states/RendererState.js"));
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/states/index.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/build/states/store.js":
+/*!**********************************************!*\
+  !*** ../psdetch-faced/build/states/store.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var redux_1 = __webpack_require__(/*! redux */ "../psdetch-faced/node_modules/redux/es/redux.js");
+var HandToolState_1 = __webpack_require__(/*! ./HandToolState */ "../psdetch-faced/build/states/HandToolState.js");
+var ChoseLayerState_1 = __webpack_require__(/*! ./ChoseLayerState */ "../psdetch-faced/build/states/ChoseLayerState.js");
+var ChosePageState_1 = __webpack_require__(/*! ./ChosePageState */ "../psdetch-faced/build/states/ChosePageState.js");
+var ColorToolState_1 = __webpack_require__(/*! ./ColorToolState */ "../psdetch-faced/build/states/ColorToolState.js");
+var ProjectState_1 = __webpack_require__(/*! ./ProjectState */ "../psdetch-faced/build/states/ProjectState.js");
+var ChoseToolState_1 = __webpack_require__(/*! ./ChoseToolState */ "../psdetch-faced/build/states/ChoseToolState.js");
+var RendererState_1 = __webpack_require__(/*! ./RendererState */ "../psdetch-faced/build/states/RendererState.js");
+var rootReducer = redux_1.combineReducers({
+    handTool: HandToolState_1.handToolReducer,
+    choseLayer: ChoseLayerState_1.choseLayerReducer,
+    chosePage: ChosePageState_1.chosePageReducer,
+    project: ProjectState_1.projectReducer,
+    colorTool: ColorToolState_1.colorToolReducer,
+    choseTool: ChoseToolState_1.chooseToolReducer,
+    renderer: RendererState_1.rendererReducer
+});
+exports.store = redux_1.createStore(rootReducer);
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-faced/src/states/store.js.map
+
+/***/ }),
+
+/***/ "../psdetch-faced/node_modules/redux/es/redux.js":
+/*!*******************************************************!*\
+  !*** ../psdetch-faced/node_modules/redux/es/redux.js ***!
+  \*******************************************************/
+/*! exports provided: createStore, combineReducers, bindActionCreators, applyMiddleware, compose, __DO_NOT_USE__ActionTypes */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createStore", function() { return createStore; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "combineReducers", function() { return combineReducers; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "bindActionCreators", function() { return bindActionCreators; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyMiddleware", function() { return applyMiddleware; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "compose", function() { return compose; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__DO_NOT_USE__ActionTypes", function() { return ActionTypes; });
+/* harmony import */ var symbol_observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! symbol-observable */ "../psdetch-faced/node_modules/symbol-observable/es/index.js");
+
+
+/**
+ * These are private action types reserved by Redux.
+ * For any unknown actions, you must return the current state.
+ * If the current state is undefined, you must return the initial state.
+ * Do not reference these action types directly in your code.
+ */
+var randomString = function randomString() {
+  return Math.random().toString(36).substring(7).split('').join('.');
+};
+
+var ActionTypes = {
+  INIT: "@@redux/INIT" + randomString(),
+  REPLACE: "@@redux/REPLACE" + randomString(),
+  PROBE_UNKNOWN_ACTION: function PROBE_UNKNOWN_ACTION() {
+    return "@@redux/PROBE_UNKNOWN_ACTION" + randomString();
+  }
+};
+
+/**
+ * @param {any} obj The object to inspect.
+ * @returns {boolean} True if the argument appears to be a plain object.
+ */
+function isPlainObject(obj) {
+  if (typeof obj !== 'object' || obj === null) return false;
+  var proto = obj;
+
+  while (Object.getPrototypeOf(proto) !== null) {
+    proto = Object.getPrototypeOf(proto);
+  }
+
+  return Object.getPrototypeOf(obj) === proto;
+}
+
+/**
+ * Creates a Redux store that holds the state tree.
+ * The only way to change the data in the store is to call `dispatch()` on it.
+ *
+ * There should only be a single store in your app. To specify how different
+ * parts of the state tree respond to actions, you may combine several reducers
+ * into a single reducer function by using `combineReducers`.
+ *
+ * @param {Function} reducer A function that returns the next state tree, given
+ * the current state tree and the action to handle.
+ *
+ * @param {any} [preloadedState] The initial state. You may optionally specify it
+ * to hydrate the state from the server in universal apps, or to restore a
+ * previously serialized user session.
+ * If you use `combineReducers` to produce the root reducer function, this must be
+ * an object with the same shape as `combineReducers` keys.
+ *
+ * @param {Function} [enhancer] The store enhancer. You may optionally specify it
+ * to enhance the store with third-party capabilities such as middleware,
+ * time travel, persistence, etc. The only store enhancer that ships with Redux
+ * is `applyMiddleware()`.
+ *
+ * @returns {Store} A Redux store that lets you read the state, dispatch actions
+ * and subscribe to changes.
+ */
+
+function createStore(reducer, preloadedState, enhancer) {
+  var _ref2;
+
+  if (typeof preloadedState === 'function' && typeof enhancer === 'function' || typeof enhancer === 'function' && typeof arguments[3] === 'function') {
+    throw new Error('It looks like you are passing several store enhancers to ' + 'createStore(). This is not supported. Instead, compose them ' + 'together to a single function');
+  }
+
+  if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
+    enhancer = preloadedState;
+    preloadedState = undefined;
+  }
+
+  if (typeof enhancer !== 'undefined') {
+    if (typeof enhancer !== 'function') {
+      throw new Error('Expected the enhancer to be a function.');
+    }
+
+    return enhancer(createStore)(reducer, preloadedState);
+  }
+
+  if (typeof reducer !== 'function') {
+    throw new Error('Expected the reducer to be a function.');
+  }
+
+  var currentReducer = reducer;
+  var currentState = preloadedState;
+  var currentListeners = [];
+  var nextListeners = currentListeners;
+  var isDispatching = false;
+
+  function ensureCanMutateNextListeners() {
+    if (nextListeners === currentListeners) {
+      nextListeners = currentListeners.slice();
+    }
+  }
+  /**
+   * Reads the state tree managed by the store.
+   *
+   * @returns {any} The current state tree of your application.
+   */
+
+
+  function getState() {
+    if (isDispatching) {
+      throw new Error('You may not call store.getState() while the reducer is executing. ' + 'The reducer has already received the state as an argument. ' + 'Pass it down from the top reducer instead of reading it from the store.');
+    }
+
+    return currentState;
+  }
+  /**
+   * Adds a change listener. It will be called any time an action is dispatched,
+   * and some part of the state tree may potentially have changed. You may then
+   * call `getState()` to read the current state tree inside the callback.
+   *
+   * You may call `dispatch()` from a change listener, with the following
+   * caveats:
+   *
+   * 1. The subscriptions are snapshotted just before every `dispatch()` call.
+   * If you subscribe or unsubscribe while the listeners are being invoked, this
+   * will not have any effect on the `dispatch()` that is currently in progress.
+   * However, the next `dispatch()` call, whether nested or not, will use a more
+   * recent snapshot of the subscription list.
+   *
+   * 2. The listener should not expect to see all state changes, as the state
+   * might have been updated multiple times during a nested `dispatch()` before
+   * the listener is called. It is, however, guaranteed that all subscribers
+   * registered before the `dispatch()` started will be called with the latest
+   * state by the time it exits.
+   *
+   * @param {Function} listener A callback to be invoked on every dispatch.
+   * @returns {Function} A function to remove this change listener.
+   */
+
+
+  function subscribe(listener) {
+    if (typeof listener !== 'function') {
+      throw new Error('Expected the listener to be a function.');
+    }
+
+    if (isDispatching) {
+      throw new Error('You may not call store.subscribe() while the reducer is executing. ' + 'If you would like to be notified after the store has been updated, subscribe from a ' + 'component and invoke store.getState() in the callback to access the latest state. ' + 'See https://redux.js.org/api-reference/store#subscribe(listener) for more details.');
+    }
+
+    var isSubscribed = true;
+    ensureCanMutateNextListeners();
+    nextListeners.push(listener);
+    return function unsubscribe() {
+      if (!isSubscribed) {
+        return;
+      }
+
+      if (isDispatching) {
+        throw new Error('You may not unsubscribe from a store listener while the reducer is executing. ' + 'See https://redux.js.org/api-reference/store#subscribe(listener) for more details.');
+      }
+
+      isSubscribed = false;
+      ensureCanMutateNextListeners();
+      var index = nextListeners.indexOf(listener);
+      nextListeners.splice(index, 1);
+    };
+  }
+  /**
+   * Dispatches an action. It is the only way to trigger a state change.
+   *
+   * The `reducer` function, used to create the store, will be called with the
+   * current state tree and the given `action`. Its return value will
+   * be considered the **next** state of the tree, and the change listeners
+   * will be notified.
+   *
+   * The base implementation only supports plain object actions. If you want to
+   * dispatch a Promise, an Observable, a thunk, or something else, you need to
+   * wrap your store creating function into the corresponding middleware. For
+   * example, see the documentation for the `redux-thunk` package. Even the
+   * middleware will eventually dispatch plain object actions using this method.
+   *
+   * @param {Object} action A plain object representing “what changed”. It is
+   * a good idea to keep actions serializable so you can record and replay user
+   * sessions, or use the time travelling `redux-devtools`. An action must have
+   * a `type` property which may not be `undefined`. It is a good idea to use
+   * string constants for action types.
+   *
+   * @returns {Object} For convenience, the same action object you dispatched.
+   *
+   * Note that, if you use a custom middleware, it may wrap `dispatch()` to
+   * return something else (for example, a Promise you can await).
+   */
+
+
+  function dispatch(action) {
+    if (!isPlainObject(action)) {
+      throw new Error('Actions must be plain objects. ' + 'Use custom middleware for async actions.');
+    }
+
+    if (typeof action.type === 'undefined') {
+      throw new Error('Actions may not have an undefined "type" property. ' + 'Have you misspelled a constant?');
+    }
+
+    if (isDispatching) {
+      throw new Error('Reducers may not dispatch actions.');
+    }
+
+    try {
+      isDispatching = true;
+      currentState = currentReducer(currentState, action);
+    } finally {
+      isDispatching = false;
+    }
+
+    var listeners = currentListeners = nextListeners;
+
+    for (var i = 0; i < listeners.length; i++) {
+      var listener = listeners[i];
+      listener();
+    }
+
+    return action;
+  }
+  /**
+   * Replaces the reducer currently used by the store to calculate the state.
+   *
+   * You might need this if your app implements code splitting and you want to
+   * load some of the reducers dynamically. You might also need this if you
+   * implement a hot reloading mechanism for Redux.
+   *
+   * @param {Function} nextReducer The reducer for the store to use instead.
+   * @returns {void}
+   */
+
+
+  function replaceReducer(nextReducer) {
+    if (typeof nextReducer !== 'function') {
+      throw new Error('Expected the nextReducer to be a function.');
+    }
+
+    currentReducer = nextReducer;
+    dispatch({
+      type: ActionTypes.REPLACE
+    });
+  }
+  /**
+   * Interoperability point for observable/reactive libraries.
+   * @returns {observable} A minimal observable of state changes.
+   * For more information, see the observable proposal:
+   * https://github.com/tc39/proposal-observable
+   */
+
+
+  function observable() {
+    var _ref;
+
+    var outerSubscribe = subscribe;
+    return _ref = {
+      /**
+       * The minimal observable subscription method.
+       * @param {Object} observer Any object that can be used as an observer.
+       * The observer object should have a `next` method.
+       * @returns {subscription} An object with an `unsubscribe` method that can
+       * be used to unsubscribe the observable from the store, and prevent further
+       * emission of values from the observable.
+       */
+      subscribe: function subscribe(observer) {
+        if (typeof observer !== 'object' || observer === null) {
+          throw new TypeError('Expected the observer to be an object.');
+        }
+
+        function observeState() {
+          if (observer.next) {
+            observer.next(getState());
+          }
+        }
+
+        observeState();
+        var unsubscribe = outerSubscribe(observeState);
+        return {
+          unsubscribe: unsubscribe
+        };
+      }
+    }, _ref[symbol_observable__WEBPACK_IMPORTED_MODULE_0__["default"]] = function () {
+      return this;
+    }, _ref;
+  } // When a store is created, an "INIT" action is dispatched so that every
+  // reducer returns their initial state. This effectively populates
+  // the initial state tree.
+
+
+  dispatch({
+    type: ActionTypes.INIT
+  });
+  return _ref2 = {
+    dispatch: dispatch,
+    subscribe: subscribe,
+    getState: getState,
+    replaceReducer: replaceReducer
+  }, _ref2[symbol_observable__WEBPACK_IMPORTED_MODULE_0__["default"]] = observable, _ref2;
+}
+
+/**
+ * Prints a warning in the console if it exists.
+ *
+ * @param {String} message The warning message.
+ * @returns {void}
+ */
+function warning(message) {
+  /* eslint-disable no-console */
+  if (typeof console !== 'undefined' && typeof console.error === 'function') {
+    console.error(message);
+  }
+  /* eslint-enable no-console */
+
+
+  try {
+    // This error was thrown as a convenience so that if you enable
+    // "break on all exceptions" in your console,
+    // it would pause the execution at this line.
+    throw new Error(message);
+  } catch (e) {} // eslint-disable-line no-empty
+
+}
+
+function getUndefinedStateErrorMessage(key, action) {
+  var actionType = action && action.type;
+  var actionDescription = actionType && "action \"" + String(actionType) + "\"" || 'an action';
+  return "Given " + actionDescription + ", reducer \"" + key + "\" returned undefined. " + "To ignore an action, you must explicitly return the previous state. " + "If you want this reducer to hold no value, you can return null instead of undefined.";
+}
+
+function getUnexpectedStateShapeWarningMessage(inputState, reducers, action, unexpectedKeyCache) {
+  var reducerKeys = Object.keys(reducers);
+  var argumentName = action && action.type === ActionTypes.INIT ? 'preloadedState argument passed to createStore' : 'previous state received by the reducer';
+
+  if (reducerKeys.length === 0) {
+    return 'Store does not have a valid reducer. Make sure the argument passed ' + 'to combineReducers is an object whose values are reducers.';
+  }
+
+  if (!isPlainObject(inputState)) {
+    return "The " + argumentName + " has unexpected type of \"" + {}.toString.call(inputState).match(/\s([a-z|A-Z]+)/)[1] + "\". Expected argument to be an object with the following " + ("keys: \"" + reducerKeys.join('", "') + "\"");
+  }
+
+  var unexpectedKeys = Object.keys(inputState).filter(function (key) {
+    return !reducers.hasOwnProperty(key) && !unexpectedKeyCache[key];
+  });
+  unexpectedKeys.forEach(function (key) {
+    unexpectedKeyCache[key] = true;
+  });
+  if (action && action.type === ActionTypes.REPLACE) return;
+
+  if (unexpectedKeys.length > 0) {
+    return "Unexpected " + (unexpectedKeys.length > 1 ? 'keys' : 'key') + " " + ("\"" + unexpectedKeys.join('", "') + "\" found in " + argumentName + ". ") + "Expected to find one of the known reducer keys instead: " + ("\"" + reducerKeys.join('", "') + "\". Unexpected keys will be ignored.");
+  }
+}
+
+function assertReducerShape(reducers) {
+  Object.keys(reducers).forEach(function (key) {
+    var reducer = reducers[key];
+    var initialState = reducer(undefined, {
+      type: ActionTypes.INIT
+    });
+
+    if (typeof initialState === 'undefined') {
+      throw new Error("Reducer \"" + key + "\" returned undefined during initialization. " + "If the state passed to the reducer is undefined, you must " + "explicitly return the initial state. The initial state may " + "not be undefined. If you don't want to set a value for this reducer, " + "you can use null instead of undefined.");
+    }
+
+    if (typeof reducer(undefined, {
+      type: ActionTypes.PROBE_UNKNOWN_ACTION()
+    }) === 'undefined') {
+      throw new Error("Reducer \"" + key + "\" returned undefined when probed with a random type. " + ("Don't try to handle " + ActionTypes.INIT + " or other actions in \"redux/*\" ") + "namespace. They are considered private. Instead, you must return the " + "current state for any unknown actions, unless it is undefined, " + "in which case you must return the initial state, regardless of the " + "action type. The initial state may not be undefined, but can be null.");
+    }
+  });
+}
+/**
+ * Turns an object whose values are different reducer functions, into a single
+ * reducer function. It will call every child reducer, and gather their results
+ * into a single state object, whose keys correspond to the keys of the passed
+ * reducer functions.
+ *
+ * @param {Object} reducers An object whose values correspond to different
+ * reducer functions that need to be combined into one. One handy way to obtain
+ * it is to use ES6 `import * as reducers` syntax. The reducers may never return
+ * undefined for any action. Instead, they should return their initial state
+ * if the state passed to them was undefined, and the current state for any
+ * unrecognized action.
+ *
+ * @returns {Function} A reducer function that invokes every reducer inside the
+ * passed object, and builds a state object with the same shape.
+ */
+
+
+function combineReducers(reducers) {
+  var reducerKeys = Object.keys(reducers);
+  var finalReducers = {};
+
+  for (var i = 0; i < reducerKeys.length; i++) {
+    var key = reducerKeys[i];
+
+    if (true) {
+      if (typeof reducers[key] === 'undefined') {
+        warning("No reducer provided for key \"" + key + "\"");
+      }
+    }
+
+    if (typeof reducers[key] === 'function') {
+      finalReducers[key] = reducers[key];
+    }
+  }
+
+  var finalReducerKeys = Object.keys(finalReducers);
+  var unexpectedKeyCache;
+
+  if (true) {
+    unexpectedKeyCache = {};
+  }
+
+  var shapeAssertionError;
+
+  try {
+    assertReducerShape(finalReducers);
+  } catch (e) {
+    shapeAssertionError = e;
+  }
+
+  return function combination(state, action) {
+    if (state === void 0) {
+      state = {};
+    }
+
+    if (shapeAssertionError) {
+      throw shapeAssertionError;
+    }
+
+    if (true) {
+      var warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache);
+
+      if (warningMessage) {
+        warning(warningMessage);
+      }
+    }
+
+    var hasChanged = false;
+    var nextState = {};
+
+    for (var _i = 0; _i < finalReducerKeys.length; _i++) {
+      var _key = finalReducerKeys[_i];
+      var reducer = finalReducers[_key];
+      var previousStateForKey = state[_key];
+      var nextStateForKey = reducer(previousStateForKey, action);
+
+      if (typeof nextStateForKey === 'undefined') {
+        var errorMessage = getUndefinedStateErrorMessage(_key, action);
+        throw new Error(errorMessage);
+      }
+
+      nextState[_key] = nextStateForKey;
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+    }
+
+    return hasChanged ? nextState : state;
+  };
+}
+
+function bindActionCreator(actionCreator, dispatch) {
+  return function () {
+    return dispatch(actionCreator.apply(this, arguments));
+  };
+}
+/**
+ * Turns an object whose values are action creators, into an object with the
+ * same keys, but with every function wrapped into a `dispatch` call so they
+ * may be invoked directly. This is just a convenience method, as you can call
+ * `store.dispatch(MyActionCreators.doSomething())` yourself just fine.
+ *
+ * For convenience, you can also pass a single function as the first argument,
+ * and get a function in return.
+ *
+ * @param {Function|Object} actionCreators An object whose values are action
+ * creator functions. One handy way to obtain it is to use ES6 `import * as`
+ * syntax. You may also pass a single function.
+ *
+ * @param {Function} dispatch The `dispatch` function available on your Redux
+ * store.
+ *
+ * @returns {Function|Object} The object mimicking the original object, but with
+ * every action creator wrapped into the `dispatch` call. If you passed a
+ * function as `actionCreators`, the return value will also be a single
+ * function.
+ */
+
+
+function bindActionCreators(actionCreators, dispatch) {
+  if (typeof actionCreators === 'function') {
+    return bindActionCreator(actionCreators, dispatch);
+  }
+
+  if (typeof actionCreators !== 'object' || actionCreators === null) {
+    throw new Error("bindActionCreators expected an object or a function, instead received " + (actionCreators === null ? 'null' : typeof actionCreators) + ". " + "Did you write \"import ActionCreators from\" instead of \"import * as ActionCreators from\"?");
+  }
+
+  var keys = Object.keys(actionCreators);
+  var boundActionCreators = {};
+
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    var actionCreator = actionCreators[key];
+
+    if (typeof actionCreator === 'function') {
+      boundActionCreators[key] = bindActionCreator(actionCreator, dispatch);
+    }
+  }
+
+  return boundActionCreators;
+}
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
+    }
+
+    ownKeys.forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
+/**
+ * Composes single-argument functions from right to left. The rightmost
+ * function can take multiple arguments as it provides the signature for
+ * the resulting composite function.
+ *
+ * @param {...Function} funcs The functions to compose.
+ * @returns {Function} A function obtained by composing the argument functions
+ * from right to left. For example, compose(f, g, h) is identical to doing
+ * (...args) => f(g(h(...args))).
+ */
+function compose() {
+  for (var _len = arguments.length, funcs = new Array(_len), _key = 0; _key < _len; _key++) {
+    funcs[_key] = arguments[_key];
+  }
+
+  if (funcs.length === 0) {
+    return function (arg) {
+      return arg;
+    };
+  }
+
+  if (funcs.length === 1) {
+    return funcs[0];
+  }
+
+  return funcs.reduce(function (a, b) {
+    return function () {
+      return a(b.apply(void 0, arguments));
+    };
+  });
+}
+
+/**
+ * Creates a store enhancer that applies middleware to the dispatch method
+ * of the Redux store. This is handy for a variety of tasks, such as expressing
+ * asynchronous actions in a concise manner, or logging every action payload.
+ *
+ * See `redux-thunk` package as an example of the Redux middleware.
+ *
+ * Because middleware is potentially asynchronous, this should be the first
+ * store enhancer in the composition chain.
+ *
+ * Note that each middleware will be given the `dispatch` and `getState` functions
+ * as named arguments.
+ *
+ * @param {...Function} middlewares The middleware chain to be applied.
+ * @returns {Function} A store enhancer applying the middleware.
+ */
+
+function applyMiddleware() {
+  for (var _len = arguments.length, middlewares = new Array(_len), _key = 0; _key < _len; _key++) {
+    middlewares[_key] = arguments[_key];
+  }
+
+  return function (createStore) {
+    return function () {
+      var store = createStore.apply(void 0, arguments);
+
+      var _dispatch = function dispatch() {
+        throw new Error("Dispatching while constructing your middleware is not allowed. " + "Other middleware would not be applied to this dispatch.");
+      };
+
+      var middlewareAPI = {
+        getState: store.getState,
+        dispatch: function dispatch() {
+          return _dispatch.apply(void 0, arguments);
+        }
+      };
+      var chain = middlewares.map(function (middleware) {
+        return middleware(middlewareAPI);
+      });
+      _dispatch = compose.apply(void 0, chain)(store.dispatch);
+      return _objectSpread({}, store, {
+        dispatch: _dispatch
+      });
+    };
+  };
+}
+
+/*
+ * This is a dummy function to check if the function name has been altered by minification.
+ * If the function has been minified and NODE_ENV !== 'production', warn the user.
+ */
+
+function isCrushed() {}
+
+if ("development" !== 'production' && typeof isCrushed.name === 'string' && isCrushed.name !== 'isCrushed') {
+  warning('You are currently using minified code outside of NODE_ENV === "production". ' + 'This means that you are running a slower development build of Redux. ' + 'You can use loose-envify (https://github.com/zertosh/loose-envify) for browserify ' + 'or setting mode to production in webpack (https://webpack.js.org/concepts/mode/) ' + 'to ensure you have the correct code for your production build.');
+}
+
+
+
+
+/***/ }),
+
+/***/ "../psdetch-faced/node_modules/sprintf-js/src/sprintf.js":
+/*!***************************************************************!*\
+  !*** ../psdetch-faced/node_modules/sprintf-js/src/sprintf.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
+
+!function() {
+    'use strict'
+
+    var re = {
+        not_string: /[^s]/,
+        not_bool: /[^t]/,
+        not_type: /[^T]/,
+        not_primitive: /[^v]/,
+        number: /[diefg]/,
+        numeric_arg: /[bcdiefguxX]/,
+        json: /[j]/,
+        not_json: /[^j]/,
+        text: /^[^\x25]+/,
+        modulo: /^\x25{2}/,
+        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,
+        key: /^([a-z_][a-z_\d]*)/i,
+        key_access: /^\.([a-z_][a-z_\d]*)/i,
+        index_access: /^\[(\d+)\]/,
+        sign: /^[\+\-]/
+    }
+
+    function sprintf(key) {
+        // `arguments` is not an array, but should be fine for this call
+        return sprintf_format(sprintf_parse(key), arguments)
+    }
+
+    function vsprintf(fmt, argv) {
+        return sprintf.apply(null, [fmt].concat(argv || []))
+    }
+
+    function sprintf_format(parse_tree, argv) {
+        var cursor = 1, tree_length = parse_tree.length, arg, output = '', i, k, match, pad, pad_character, pad_length, is_positive, sign
+        for (i = 0; i < tree_length; i++) {
+            if (typeof parse_tree[i] === 'string') {
+                output += parse_tree[i]
+            }
+            else if (Array.isArray(parse_tree[i])) {
+                match = parse_tree[i] // convenience purposes only
+                if (match[2]) { // keyword argument
+                    arg = argv[cursor]
+                    for (k = 0; k < match[2].length; k++) {
+                        if (!arg.hasOwnProperty(match[2][k])) {
+                            throw new Error(sprintf('[sprintf] property "%s" does not exist', match[2][k]))
+                        }
+                        arg = arg[match[2][k]]
+                    }
+                }
+                else if (match[1]) { // positional argument (explicit)
+                    arg = argv[match[1]]
+                }
+                else { // positional argument (implicit)
+                    arg = argv[cursor++]
+                }
+
+                if (re.not_type.test(match[8]) && re.not_primitive.test(match[8]) && arg instanceof Function) {
+                    arg = arg()
+                }
+
+                if (re.numeric_arg.test(match[8]) && (typeof arg !== 'number' && isNaN(arg))) {
+                    throw new TypeError(sprintf('[sprintf] expecting number but found %T', arg))
+                }
+
+                if (re.number.test(match[8])) {
+                    is_positive = arg >= 0
+                }
+
+                switch (match[8]) {
+                    case 'b':
+                        arg = parseInt(arg, 10).toString(2)
+                        break
+                    case 'c':
+                        arg = String.fromCharCode(parseInt(arg, 10))
+                        break
+                    case 'd':
+                    case 'i':
+                        arg = parseInt(arg, 10)
+                        break
+                    case 'j':
+                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
+                        break
+                    case 'e':
+                        arg = match[7] ? parseFloat(arg).toExponential(match[7]) : parseFloat(arg).toExponential()
+                        break
+                    case 'f':
+                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
+                        break
+                    case 'g':
+                        arg = match[7] ? String(Number(arg.toPrecision(match[7]))) : parseFloat(arg)
+                        break
+                    case 'o':
+                        arg = (parseInt(arg, 10) >>> 0).toString(8)
+                        break
+                    case 's':
+                        arg = String(arg)
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                        break
+                    case 't':
+                        arg = String(!!arg)
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                        break
+                    case 'T':
+                        arg = Object.prototype.toString.call(arg).slice(8, -1).toLowerCase()
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                        break
+                    case 'u':
+                        arg = parseInt(arg, 10) >>> 0
+                        break
+                    case 'v':
+                        arg = arg.valueOf()
+                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
+                        break
+                    case 'x':
+                        arg = (parseInt(arg, 10) >>> 0).toString(16)
+                        break
+                    case 'X':
+                        arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase()
+                        break
+                }
+                if (re.json.test(match[8])) {
+                    output += arg
+                }
+                else {
+                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
+                        sign = is_positive ? '+' : '-'
+                        arg = arg.toString().replace(re.sign, '')
+                    }
+                    else {
+                        sign = ''
+                    }
+                    pad_character = match[4] ? match[4] === '0' ? '0' : match[4].charAt(1) : ' '
+                    pad_length = match[6] - (sign + arg).length
+                    pad = match[6] ? (pad_length > 0 ? pad_character.repeat(pad_length) : '') : ''
+                    output += match[5] ? sign + arg + pad : (pad_character === '0' ? sign + pad + arg : pad + sign + arg)
+                }
+            }
+        }
+        return output
+    }
+
+    var sprintf_cache = Object.create(null)
+
+    function sprintf_parse(fmt) {
+        if (sprintf_cache[fmt]) {
+            return sprintf_cache[fmt]
+        }
+
+        var _fmt = fmt, match, parse_tree = [], arg_names = 0
+        while (_fmt) {
+            if ((match = re.text.exec(_fmt)) !== null) {
+                parse_tree.push(match[0])
+            }
+            else if ((match = re.modulo.exec(_fmt)) !== null) {
+                parse_tree.push('%')
+            }
+            else if ((match = re.placeholder.exec(_fmt)) !== null) {
+                if (match[2]) {
+                    arg_names |= 1
+                    var field_list = [], replacement_field = match[2], field_match = []
+                    if ((field_match = re.key.exec(replacement_field)) !== null) {
+                        field_list.push(field_match[1])
+                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
+                                field_list.push(field_match[1])
+                            }
+                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
+                                field_list.push(field_match[1])
+                            }
+                            else {
+                                throw new SyntaxError('[sprintf] failed to parse named argument key')
+                            }
+                        }
+                    }
+                    else {
+                        throw new SyntaxError('[sprintf] failed to parse named argument key')
+                    }
+                    match[2] = field_list
+                }
+                else {
+                    arg_names |= 2
+                }
+                if (arg_names === 3) {
+                    throw new Error('[sprintf] mixing positional and named placeholders is not (yet) supported')
+                }
+                parse_tree.push(match)
+            }
+            else {
+                throw new SyntaxError('[sprintf] unexpected placeholder')
+            }
+            _fmt = _fmt.substring(match[0].length)
+        }
+        return sprintf_cache[fmt] = parse_tree
+    }
+
+    /**
+     * export to either browser or node.js
+     */
+    /* eslint-disable quote-props */
+    if (true) {
+        exports['sprintf'] = sprintf
+        exports['vsprintf'] = vsprintf
+    }
+    if (typeof window !== 'undefined') {
+        window['sprintf'] = sprintf
+        window['vsprintf'] = vsprintf
+
+        if (true) {
+            !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
+                return {
+                    'sprintf': sprintf,
+                    'vsprintf': vsprintf
+                }
+            }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+        }
+    }
+    /* eslint-enable quote-props */
+}()
+
+
+/***/ }),
+
+/***/ "../psdetch-faced/node_modules/symbol-observable/es/index.js":
+/*!*******************************************************************!*\
+  !*** ../psdetch-faced/node_modules/symbol-observable/es/index.js ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(global, module) {/* harmony import */ var _ponyfill_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ponyfill.js */ "../psdetch-faced/node_modules/symbol-observable/es/ponyfill.js");
+/* global window */
+
+
+var root;
+
+if (typeof self !== 'undefined') {
+  root = self;
+} else if (typeof window !== 'undefined') {
+  root = window;
+} else if (typeof global !== 'undefined') {
+  root = global;
+} else if (true) {
+  root = module;
+} else {}
+
+var result = Object(_ponyfill_js__WEBPACK_IMPORTED_MODULE_0__["default"])(root);
+/* harmony default export */ __webpack_exports__["default"] = (result);
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../psdetch-studio/node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../../../../psdetch-studio/node_modules/webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
+
+/***/ }),
+
+/***/ "../psdetch-faced/node_modules/symbol-observable/es/ponyfill.js":
+/*!**********************************************************************!*\
+  !*** ../psdetch-faced/node_modules/symbol-observable/es/ponyfill.js ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return symbolObservablePonyfill; });
+function symbolObservablePonyfill(root) {
+	var result;
+	var Symbol = root.Symbol;
+
+	if (typeof Symbol === 'function') {
+		if (Symbol.observable) {
+			result = Symbol.observable;
+		} else {
+			result = Symbol('observable');
+			Symbol.observable = result;
+		}
+	} else {
+		result = '@@observable';
+	}
+
+	return result;
+};
+
 
 /***/ }),
 
@@ -3613,11 +4969,12 @@ var FabricRenderer = /** @class */ (function (_super) {
                 this.getPage().getPreview(level)
                     .then(function (img) {
                     _this.setBackground(img);
+                    _this.zoomLevel = level;
                     // (this.canvasBackground! as any).setElement(img);
                     // this.canvasBackground!.setCoords();
                     // this.fabricCanvas.renderAll();
                 });
-                this.zoomLevel = level;
+                return level;
             }
         }
         return this.zoomLevel;
@@ -3793,21 +5150,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var build_1 = __webpack_require__(/*! ../../psdetch-core/build */ "../psdetch-core/build/index.js");
-var build_2 = __webpack_require__(/*! ../../psdetch-faced/build */ "../psdetch-faced/build/index.js");
 var canvas_1 = __webpack_require__(/*! psdetch-utils/build/canvas */ "../psdetch-utils/build/canvas.js");
+var psdetch_faced_1 = __webpack_require__(/*! psdetch-faced */ "../psdetch-faced/build/index.js");
 var ColorTool = /** @class */ (function (_super) {
     __extends(ColorTool, _super);
     function ColorTool() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "tool_color_name";
         _this.slug = "tool_color";
+        _this.cls = "fas fa-eye-dropper";
         _this.colorGroup = new window.fabric.Group(undefined, {
             selectable: false,
             shadow: "0px 0px 20px rgba(0,0,0,0.4)"
         });
         _this.onMouseDown = function (e) {
             if (_this.hoverColor) {
-                _this.emit("onPickColor", _this.hoverColor);
+                psdetch_faced_1.store.dispatch(psdetch_faced_1.actionColorToolPick(_this.hoverColor));
             }
         };
         // private zoomImg(img: ImageData, zoom: number) {
@@ -3844,7 +5202,7 @@ var ColorTool = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        curPage = build_2.session.get("curPage");
+                        curPage = psdetch_faced_1.store.getState().chosePage.page;
                         if (!(curPage && e)) return [3 /*break*/, 3];
                         if (!!this.curPageContext) return [3 /*break*/, 2];
                         times = 5;
@@ -3865,7 +5223,7 @@ var ColorTool = /** @class */ (function (_super) {
                         imageData = ctx.getImageData(coords.x, coords.y, 1, 1);
                         this.drawColor(imageData.data[0], imageData.data[1], imageData.data[2], coords);
                         this.hoverColor = "rgb(" + imageData.data[0] + ", " + imageData.data[1] + "," + imageData.data[2] + ")";
-                        this.emit("onHoverColor", this.hoverColor);
+                        psdetch_faced_1.store.dispatch(psdetch_faced_1.actionColorToolHover(this.hoverColor));
                         _a.label = 3;
                     case 3: return [2 /*return*/];
                 }
@@ -4043,13 +5401,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var psdetch_core_1 = __webpack_require__(/*! psdetch-core */ "../psdetch-tool-hand/node_modules/psdetch-core/build/index.js");
+var psdetch_core_1 = __webpack_require__(/*! psdetch-core */ "../psdetch-core/build/index.js");
+var psdetch_faced_1 = __webpack_require__(/*! psdetch-faced */ "../psdetch-faced/build/index.js");
+// export type HandToolEvents = "onPanStart" | "onPanEnd";
 var HandTool = /** @class */ (function (_super) {
     __extends(HandTool, _super);
     function HandTool() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "tool_hand_name";
         _this.slug = "tool_hand";
+        _this.cls = "fas fa-hand-paper";
         _this.mouseDown = false;
         _this.onMouseDown = function (e) {
             if (e) {
@@ -4059,7 +5420,8 @@ var HandTool = /** @class */ (function (_super) {
                     x: evt.clientX,
                     y: evt.clientY
                 };
-                _this.emit("onPanStart");
+                psdetch_faced_1.store.dispatch(psdetch_faced_1.actionHandToolPanStart());
+                // this.emit("onPanStart");
             }
         };
         _this.onMouseMove = function (e) {
@@ -4077,6 +5439,7 @@ var HandTool = /** @class */ (function (_super) {
         _this.onMouseUpAndLeave = function (e) {
             _this.mouseDown = false;
             _this.lastPoint = undefined;
+            psdetch_faced_1.store.dispatch(psdetch_faced_1.actionHandToolPanEnd());
         };
         return _this;
     }
@@ -4139,836 +5502,6 @@ __export(__webpack_require__(/*! ./HandTool */ "../psdetch-tool-hand/build/HandT
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports=__webpack_require__(/*! ./build */ "../psdetch-tool-hand/build/index.js");
-
-/***/ }),
-
-/***/ "../psdetch-tool-hand/node_modules/psdetch-core/build/BaseRenderer.js":
-/*!****************************************************************************!*\
-  !*** ../psdetch-tool-hand/node_modules/psdetch-core/build/BaseRenderer.js ***!
-  \****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var BasicEvents_1 = __webpack_require__(/*! ./BasicEvents */ "../psdetch-tool-hand/node_modules/psdetch-core/build/BasicEvents.js");
-var BaseRenderer = /** @class */ (function (_super) {
-    __extends(BaseRenderer, _super);
-    function BaseRenderer(ele, renderWidth, renderHeight) {
-        var _this = _super.call(this) || this;
-        _this.ele = ele;
-        _this.renderWidth = renderWidth;
-        _this.renderHeight = renderHeight;
-        return _this;
-    }
-    Object.defineProperty(BaseRenderer.prototype, "minX", {
-        get: function () {
-            return -this.renderWidth / 2;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "minY", {
-        get: function () {
-            return -this.renderHeight / 2;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "maxX", {
-        get: function () {
-            return this.getPage().width * this.zoom() - this.renderWidth / 2;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "maxY", {
-        get: function () {
-            return this.getPage().height * this.zoom() - this.renderHeight / 2;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "imgWidth", {
-        get: function () {
-            return this.getPage().width * this.zoom();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "imgHeight", {
-        get: function () {
-            return this.getPage().height * this.zoom();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    BaseRenderer.prototype.mouseEventToCoords = function (evt) {
-        var e = evt.e;
-        return {
-            x: e.offsetX,
-            y: e.offsetY
-        };
-    };
-    BaseRenderer.prototype.rendererPointToRealPoint = function (rendererPoint) {
-        return {
-            x: Math.min(Math.max(rendererPoint.x + this.panX(), 0), this.imgWidth) / this.zoom(),
-            y: Math.min(Math.max(rendererPoint.y + this.panY(), 0), this.imgHeight) / this.zoom()
-        };
-    };
-    BaseRenderer.prototype.realPointToRendererPoint = function (realPoint) {
-        return {
-            x: realPoint.x * this.zoom() - this.panX(),
-            y: realPoint.y * this.zoom() - this.panY(),
-        };
-    };
-    BaseRenderer.prototype.getPage = function () {
-        if (this.curPage) {
-            return this.curPage;
-        }
-        else {
-            throw new Error("Not page is rendered.");
-        }
-    };
-    BaseRenderer.prototype.renderPage = function (page) {
-        return __awaiter(this, void 0, void 0, function () {
-            var img;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.curPage = page;
-                        return [4 /*yield*/, page.getPreview(this.zoom())];
-                    case 1:
-                        img = _a.sent();
-                        this.setBackground(img);
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    BaseRenderer.prototype.realRectToRendererRect = function (realRect) {
-        return realRect.pan(-this.panX() / this.zoom(), -this.panY() / this.zoom()).zoom(this.zoom());
-    };
-    BaseRenderer.prototype.rendererRectToRealRect = function (rendererRect) {
-        return rendererRect.pan(this.panX(), this.panY()).zoom(1 / this.zoom());
-    };
-    return BaseRenderer;
-}(BasicEvents_1.BasicEvents));
-exports.BaseRenderer = BaseRenderer;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/BaseRenderer.js.map
-
-/***/ }),
-
-/***/ "../psdetch-tool-hand/node_modules/psdetch-core/build/BaseTool.js":
-/*!************************************************************************!*\
-  !*** ../psdetch-tool-hand/node_modules/psdetch-core/build/BaseTool.js ***!
-  \************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BasicEvents_1 = __webpack_require__(/*! ./BasicEvents */ "../psdetch-tool-hand/node_modules/psdetch-core/build/BasicEvents.js");
-var BaseTool = /** @class */ (function (_super) {
-    __extends(BaseTool, _super);
-    function BaseTool(renderer) {
-        var _this = _super.call(this) || this;
-        _this.renderer = renderer;
-        _this.activated = false;
-        return _this;
-    }
-    BaseTool.prototype.activate = function () {
-        var _this = this;
-        // renderer.clearDrawing();
-        this.bindRenderer()
-            .then(function () {
-            _this.activated = true;
-            _this.emit("onActivated");
-        });
-    };
-    BaseTool.prototype.deactivate = function () {
-        var _this = this;
-        this.unbindRenderer()
-            .then(function () {
-            _this.activated = false;
-            _this.emit("onDeactivated");
-        });
-    };
-    return BaseTool;
-}(BasicEvents_1.BasicEvents));
-exports.BaseTool = BaseTool;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/BaseTool.js.map
-
-/***/ }),
-
-/***/ "../psdetch-tool-hand/node_modules/psdetch-core/build/BasicEvents.js":
-/*!***************************************************************************!*\
-  !*** ../psdetch-tool-hand/node_modules/psdetch-core/build/BasicEvents.js ***!
-  \***************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var BasicEvents = /** @class */ (function () {
-    function BasicEvents() {
-        this.regEvents = {};
-    }
-    BasicEvents.prototype.off = function (evt, handler) {
-        if (evt === undefined) {
-            this.regEvents = {};
-        }
-        else {
-            if (handler === undefined) {
-                delete this.regEvents[evt];
-            }
-            else {
-                if (this.regEvents[evt]) {
-                    var idx = this.regEvents[evt].indexOf(handler);
-                    this.regEvents[evt].splice(idx, 1);
-                }
-            }
-        }
-    };
-    BasicEvents.prototype.on = function (evt, handler) {
-        if (!this.regEvents[evt]) {
-            this.regEvents[evt] = [];
-        }
-        if (this.regEvents[evt]) {
-            this.regEvents[evt].push(handler);
-        }
-    };
-    BasicEvents.prototype.once = function (evt, handler) {
-        var _this = this;
-        var wrapper = (function (arg) {
-            setTimeout(function () {
-                _this.off(evt, wrapper);
-            });
-            handler(arg);
-        });
-        this.on(evt, wrapper);
-    };
-    BasicEvents.prototype.emit = function (evt, value) {
-        if (this.regEvents[evt]) {
-            for (var _i = 0, _a = this.regEvents[evt]; _i < _a.length; _i++) {
-                var handler = _a[_i];
-                handler(value);
-            }
-        }
-    };
-    return BasicEvents;
-}());
-exports.BasicEvents = BasicEvents;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/BasicEvents.js.map
-
-/***/ }),
-
-/***/ "../psdetch-tool-hand/node_modules/psdetch-core/build/Progress.js":
-/*!************************************************************************!*\
-  !*** ../psdetch-tool-hand/node_modules/psdetch-core/build/Progress.js ***!
-  \************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Progress = /** @class */ (function () {
-    function Progress() {
-        var _this = this;
-        this._onProgress = function (num) { };
-        this._onComplete = function (data) { };
-        this._onError = function (err) { };
-        this._isFinished = false;
-        this.progress = function (num) {
-            if (!_this._isFinished) {
-                _this._onProgress(num);
-            }
-        };
-        this.error = function (err) {
-            if (!_this._isFinished) {
-                _this._err = err;
-                _this._isFinished = true;
-                _this._onError(err);
-            }
-        };
-        this.complete = function (data) {
-            if (!_this._isFinished) {
-                _this._data = data;
-                _this._isFinished = true;
-                try {
-                    _this._onComplete(data);
-                }
-                catch (e) {
-                    _this._err = e;
-                    _this._onError(e);
-                }
-            }
-        };
-    }
-    Progress.prototype.subscribe = function (onProgress, onError, onComplete) {
-        if (onProgress) {
-            this._onProgress = onProgress;
-        }
-        if (onError) {
-            this._onError = onError;
-        }
-        if (onComplete) {
-            this._onComplete = onComplete;
-        }
-        if (this._isFinished) {
-            this._onError(this._err);
-            this._onComplete(this._data);
-        }
-    };
-    Progress.prototype.toPromise = function () {
-        var _this = this;
-        if (this._isFinished) {
-            if (this._err) {
-                return Promise.reject(this._err);
-            }
-            else {
-                return Promise.resolve(this._data);
-            }
-        }
-        else {
-            return new Promise(function (resolve, reject) {
-                _this._onComplete = resolve;
-                _this._onError = reject;
-            });
-        }
-    };
-    return Progress;
-}());
-exports.Progress = Progress;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/Progress.js.map
-
-/***/ }),
-
-/***/ "../psdetch-tool-hand/node_modules/psdetch-core/build/Rect.js":
-/*!********************************************************************!*\
-  !*** ../psdetch-tool-hand/node_modules/psdetch-core/build/Rect.js ***!
-  \********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Rect = /** @class */ (function () {
-    function Rect(left, top, right, bottom) {
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
-        if (this.valid) {
-            this.norm();
-        }
-    }
-    Rect.fromJson = function (rectJson) {
-        return new Rect(rectJson.left, rectJson.top, rectJson.right, rectJson.bottom);
-    };
-    Rect.prototype.norm = function () {
-        if (this.right < this.left) {
-            var tmpV1 = this.right;
-            this.right = this.left;
-            this.left = tmpV1;
-        }
-        if (this.top > this.bottom) {
-            var tmpV2 = this.top;
-            this.top = this.bottom;
-            this.bottom = tmpV2;
-        }
-    };
-    Object.defineProperty(Rect.prototype, "valid", {
-        get: function () {
-            return this.left !== null && this.right !== null && this.top !== null && this.bottom !== null;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Rect.prototype, "width", {
-        get: function () {
-            return this.right - this.left;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Rect.prototype, "height", {
-        get: function () {
-            return this.bottom - this.top;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Rect.prototype, "centerPoint", {
-        get: function () {
-            return {
-                x: (this.left + this.right) / 2,
-                y: (this.top + this.bottom) / 2,
-            };
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Rect.prototype.contains = function (rect) {
-        return this.left <= rect.left && this.top <= rect.top && this.right >= rect.right && this.bottom >= rect.bottom;
-    };
-    Rect.prototype.containsCoords = function (x, y) {
-        return x >= this.left && x < this.right && y >= this.top && y < this.bottom;
-    };
-    Rect.prototype.zoom = function (ratio) {
-        return new Rect(this.left * ratio, this.top * ratio, this.right * ratio, this.bottom * ratio);
-    };
-    Rect.prototype.clone = function () {
-        return new Rect(this.left, this.top, this.right, this.bottom);
-    };
-    Rect.prototype.area = function () {
-        return this.width * this.height;
-    };
-    Rect.prototype.pan = function (x, y) {
-        var rtn = this.clone();
-        rtn.left += x;
-        rtn.right += x;
-        rtn.top += y;
-        rtn.bottom += y;
-        return rtn;
-    };
-    Rect.prototype.panMutate = function (x, y) {
-        this.left += x;
-        this.right += x;
-        this.top += y;
-        this.bottom += y;
-    };
-    Rect.prototype.combine = function (rect) {
-        if (!rect) {
-            return this.clone();
-        }
-        return new Rect(Math.min(this.left, rect.left), Math.min(this.top, rect.top), Math.max(this.right, rect.right), Math.max(this.bottom, rect.bottom));
-    };
-    /**
-     * return a new rect relative to current rect defined by a relative rect (start from 0,0); the result is clamped within current rect
-     * @param offset
-     */
-    Rect.prototype.clampedRelativeRect = function (relative) {
-        return this.relativeRect(relative).clampBy(this);
-    };
-    /**
-     * Convert absolute coords to relative coords to another rect
-     * @param rect the rect to compare to.
-     */
-    Rect.prototype.relativeTo = function (rect) {
-        return new Rect(this.left - rect.left, this.top - rect.top, this.right - rect.left, this.bottom - rect.top);
-    };
-    /**
-     * Relatively offset rect
-     * @param relative
-     */
-    Rect.prototype.relativeRect = function (relative) {
-        return new Rect(this.left + relative.left, this.top + relative.top, this.left + relative.right, this.top + relative.bottom);
-    };
-    Rect.prototype.clampBy = function (rect) {
-        return new Rect(Math.max(rect.left, this.left), Math.max(rect.top, this.top), Math.min(rect.right, this.right), Math.min(rect.bottom, this.bottom));
-    };
-    Rect.prototype.coordsToCenter = function (coord) {
-        var cx = (this.left + this.right) / 2;
-        var cy = (this.top + this.bottom) / 2;
-        return Math.sqrt(Math.pow((coord.x - cx), 2) + Math.pow((coord.y - cy), 2));
-    };
-    Rect.prototype.distanceToCoords = function (x, y) {
-        if (this.containsCoords(x, y)) {
-            return 0;
-        }
-        this.norm();
-        if (x >= this.left && x <= this.right) {
-            return Math.min(Math.abs(y - this.top), Math.abs(y - this.bottom));
-        }
-        if (y >= this.top && y <= this.bottom) {
-            return Math.min(Math.abs(x - this.left), Math.abs(x - this.right));
-        }
-        var dx = Math.min(Math.abs(x - this.left), Math.abs(x - this.right));
-        var dy = Math.min(Math.abs(y - this.top), Math.abs(y - this.bottom));
-        return Math.round(Math.sqrt(dx * dx + dy * dy));
-    };
-    Rect.prototype.includeCoordsMutate = function (x, y) {
-        this.left = Math.min(this.left, x);
-        this.right = Math.max(this.right, x);
-        this.top = Math.min(this.top, y);
-        this.bottom = Math.max(this.bottom, y);
-    };
-    Rect.prototype.isOverlapTo = function (t) {
-        return this.left < t.right && t.left < this.right && this.top < t.bottom && t.top < this.bottom;
-    };
-    Rect.prototype.distance = function (rect) {
-        var rect1 = this;
-        var rect2 = rect;
-        var rtn = {
-            ll: 0,
-            lr: 0,
-            rr: 0,
-            rl: 0,
-            tt: 0,
-            tb: 0,
-            bb: 0,
-            bt: 0,
-        };
-        for (var key in rtn) {
-            if (rtn.hasOwnProperty(key)) {
-                rtn[key] = getDistance(rect1, rect2, key);
-            }
-        }
-        var w1 = rect1.width;
-        var h1 = rect1.height;
-        if (rect1.left >= rect2.right) {
-            delete rtn.ll;
-        }
-        else {
-            delete rtn.lr;
-        }
-        if (rect1.right <= rect2.left) {
-            delete rtn.rr;
-        }
-        else {
-            delete rtn.rl;
-        }
-        var l = rtn.ll || rtn.lr;
-        var r = rtn.rr || rtn.rl;
-        var dlr = Math.abs(r - l);
-        if (Math.round(dlr - w1) === 0) {
-            if (l < r) {
-                delete rtn.rr;
-                delete rtn.rl;
-            }
-            else {
-                delete rtn.lr;
-                delete rtn.ll;
-            }
-        }
-        if (rect1.top >= rect2.bottom) {
-            delete rtn.tt;
-        }
-        else {
-            delete rtn.tb;
-        }
-        if (rect1.bottom <= rect2.top) {
-            delete rtn.bb;
-        }
-        else {
-            delete rtn.bt;
-        }
-        var t = rtn.tt || rtn.tb;
-        var b = rtn.bb || rtn.bt;
-        var dtb = Math.abs(t - b);
-        if (Math.round(dtb - h1) === 0) {
-            if (t < b) {
-                delete rtn.bb;
-                delete rtn.bt;
-            }
-            else {
-                delete rtn.tt;
-                delete rtn.tb;
-            }
-        }
-        return rtn;
-    };
-    return Rect;
-}());
-exports.Rect = Rect;
-function getDistance(rect1, rect2, mode) {
-    var map = {
-        l: "left",
-        r: "right",
-        t: "top",
-        b: "bottom",
-    };
-    var e1 = map[mode[0]];
-    var e2 = map[mode[1]];
-    var v1 = rect1[e1];
-    var v2 = rect2[e2];
-    return Math.abs(v1 - v2);
-}
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/Rect.js.map
-
-/***/ }),
-
-/***/ "../psdetch-tool-hand/node_modules/psdetch-core/build/index.js":
-/*!*********************************************************************!*\
-  !*** ../psdetch-tool-hand/node_modules/psdetch-core/build/index.js ***!
-  \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./types */ "../psdetch-tool-hand/node_modules/psdetch-core/build/types.js"));
-__export(__webpack_require__(/*! ./Rect */ "../psdetch-tool-hand/node_modules/psdetch-core/build/Rect.js"));
-__export(__webpack_require__(/*! ./Progress */ "../psdetch-tool-hand/node_modules/psdetch-core/build/Progress.js"));
-__export(__webpack_require__(/*! ./provider */ "../psdetch-tool-hand/node_modules/psdetch-core/build/provider.js"));
-var _layer = __importStar(__webpack_require__(/*! ./layer */ "../psdetch-tool-hand/node_modules/psdetch-core/build/layer.js"));
-exports.layer = _layer;
-__export(__webpack_require__(/*! ./BaseRenderer */ "../psdetch-tool-hand/node_modules/psdetch-core/build/BaseRenderer.js"));
-__export(__webpack_require__(/*! ./BasicEvents */ "../psdetch-tool-hand/node_modules/psdetch-core/build/BasicEvents.js"));
-__export(__webpack_require__(/*! ./BaseTool */ "../psdetch-tool-hand/node_modules/psdetch-core/build/BaseTool.js"));
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/index.js.map
-
-/***/ }),
-
-/***/ "../psdetch-tool-hand/node_modules/psdetch-core/build/layer.js":
-/*!*********************************************************************!*\
-  !*** ../psdetch-tool-hand/node_modules/psdetch-core/build/layer.js ***!
-  \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-function isPixelLayer(layer) {
-    return layer.getPixelImg !== undefined;
-}
-exports.isPixelLayer = isPixelLayer;
-function isVectorlLayer(layer) {
-    return layer.getSvgString !== undefined;
-}
-exports.isVectorlLayer = isVectorlLayer;
-function isTextLayer(layer) {
-    return layer.getText !== undefined;
-}
-exports.isTextLayer = isTextLayer;
-function isFolderLayer(layer) {
-    return layer.children !== undefined;
-}
-exports.isFolderLayer = isFolderLayer;
-/**
- *
- * @param x x coords on design file
- * @param y y coords on design file
- * @param layers
- */
-function bestLayerByCoords(coords, layers) {
-    return __awaiter(this, void 0, void 0, function () {
-        var curDist, curLayer, x, y, i, l, res, _a, _b, dist;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    curDist = 0;
-                    curLayer = undefined;
-                    x = coords.x, y = coords.y;
-                    i = layers.length - 1;
-                    _c.label = 1;
-                case 1:
-                    if (!(i >= 0)) return [3 /*break*/, 6];
-                    l = layers[i];
-                    if (!l.visible) {
-                        return [3 /*break*/, 5];
-                    }
-                    if (!l.rect.containsCoords(x, y)) {
-                        return [3 /*break*/, 5];
-                    }
-                    res = l;
-                    if (!isFolderLayer(l)) return [3 /*break*/, 4];
-                    if (!(l.childrenLength > 0)) return [3 /*break*/, 4];
-                    _a = bestLayerByCoords;
-                    _b = [coords];
-                    return [4 /*yield*/, l.children()];
-                case 2: return [4 /*yield*/, _a.apply(void 0, _b.concat([_c.sent()]))];
-                case 3:
-                    res = _c.sent();
-                    _c.label = 4;
-                case 4:
-                    if (!res) {
-                        return [3 /*break*/, 5];
-                    }
-                    dist = res.rect.coordsToCenter({ x: x, y: y });
-                    if (!curLayer) {
-                        curLayer = res;
-                        curDist = dist;
-                    }
-                    else if (curLayer.rect.contains(res.rect)) {
-                        curLayer = res;
-                        curDist = dist;
-                    }
-                    else if (res.rect.contains(curLayer.rect)) {
-                        return [3 /*break*/, 5];
-                    }
-                    else if (dist <= curDist) {
-                        curLayer = res;
-                        curDist = dist;
-                    }
-                    _c.label = 5;
-                case 5:
-                    i--;
-                    return [3 /*break*/, 1];
-                case 6: return [2 /*return*/, curLayer];
-            }
-        });
-    });
-}
-exports.bestLayerByCoords = bestLayerByCoords;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/layer.js.map
-
-/***/ }),
-
-/***/ "../psdetch-tool-hand/node_modules/psdetch-core/build/provider.js":
-/*!************************************************************************!*\
-  !*** ../psdetch-tool-hand/node_modules/psdetch-core/build/provider.js ***!
-  \************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var CoreProvider = /** @class */ (function () {
-    function CoreProvider() {
-        this.adapters = [];
-    }
-    CoreProvider.prototype.addAdapter = function (adp) {
-        this.adapters.push(adp);
-    };
-    CoreProvider.prototype.getAdapters = function () {
-        return this.adapters;
-    };
-    CoreProvider.prototype.setRenderer = function (r) {
-        this.render = r;
-    };
-    CoreProvider.prototype.getRenderer = function () {
-        if (this.render) {
-            return this.render;
-        }
-        else {
-            throw (new Error("No renderer was set when calling getRenderer.."));
-        }
-    };
-    return CoreProvider;
-}());
-exports.CoreProvider = CoreProvider;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/provider.js.map
-
-/***/ }),
-
-/***/ "../psdetch-tool-hand/node_modules/psdetch-core/build/types.js":
-/*!*********************************************************************!*\
-  !*** ../psdetch-tool-hand/node_modules/psdetch-core/build/types.js ***!
-  \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var LayerType;
-(function (LayerType) {
-    LayerType["folder"] = "folder";
-    LayerType["pixel"] = "pixel";
-    LayerType["vector"] = "vector";
-    LayerType["text"] = "text";
-})(LayerType = exports.LayerType || (exports.LayerType = {}));
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-core/src/types.js.map
 
 /***/ }),
 
@@ -5045,6 +5578,7 @@ var InspectTool = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = "tool_inspect_name";
         _this.slug = "tool_inspect";
+        _this.cls = "fas fa-mouse-pointer";
         _this.measureLinesGroup = new window.fabric.Group(undefined, {
             originX: "left",
             originY: "top",
@@ -5078,7 +5612,8 @@ var InspectTool = /** @class */ (function (_super) {
                 if (_this.hoverLayer !== _this.firstChoseLayer) {
                     _this.firstChoseLayer = _this.hoverLayer;
                     _this.drawFirstChoseLayer();
-                    psdetch_faced_1.session.set("choseLayer", _this.firstChoseLayer);
+                    psdetch_faced_1.store.dispatch(psdetch_faced_1.actionChoseLayer(_this.hoverLayer));
+                    // session.set("choseLayer", this.firstChoseLayer);
                     _this.prepareDrawMeasure();
                 }
             }
@@ -5088,7 +5623,7 @@ var InspectTool = /** @class */ (function (_super) {
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
-                        curPage = psdetch_faced_1.session.get("curPage");
+                        curPage = psdetch_faced_1.store.getState().chosePage.page;
                         if (!(curPage && e)) return [3 /*break*/, 3];
                         coords = this.renderer.rendererPointToRealPoint(this.renderer.mouseEventToCoords(e));
                         _b = (_a = build_1.layer).bestLayerByCoords;
@@ -5109,6 +5644,13 @@ var InspectTool = /** @class */ (function (_super) {
         }); };
         return _this;
     }
+    Object.defineProperty(InspectTool.prototype, "storeChoseLayer", {
+        get: function () {
+            return psdetch_faced_1.store.getState().choseLayer;
+        },
+        enumerable: true,
+        configurable: true
+    });
     InspectTool.prototype.prepareDrawMeasure = function () {
         var _a;
         this.renderer.clearDrawing(this.measureLinesGroup);
@@ -5124,8 +5666,8 @@ var InspectTool = /** @class */ (function (_super) {
         }
     };
     InspectTool.prototype.drawMeasurement = function (l1, l2) {
-        var rect1 = l1.rect;
-        var rect2 = l2.rect;
+        var rect1 = l1.rect.zoom(this.renderer.zoom());
+        var rect2 = l2.rect.zoom(this.renderer.zoom());
         // const coord1 = this.fileRectToCanvasRect(rect1);
         // const coord2 = this.fileRectToCanvasRect(rect2);
         var measure = rect1.distance(rect2);
@@ -5280,7 +5822,7 @@ var InspectTool = /** @class */ (function (_super) {
     };
     InspectTool.prototype.drawLayer = function (layerGroup, l) {
         if (l) {
-            layerGroup.setLayer(l);
+            layerGroup.setLayer(l, this.renderer.zoom());
             this.renderer.draw(layerGroup.getGroup());
         }
         else {
@@ -5306,10 +5848,9 @@ var InspectTool = /** @class */ (function (_super) {
                 // renderer.on("mousedown", this.onMouseDown);
                 renderer.on("mousemove", this.onMouseMove);
                 renderer.on("click", this.onMouseDown);
-                psdetch_faced_1.session.on("choseLayer", function (l) {
-                    var choseLayer = l;
-                    if (choseLayer !== _this.firstChoseLayer) {
-                        _this.firstChoseLayer = choseLayer;
+                this.unsubscribe = psdetch_faced_1.store.subscribe(function () {
+                    if (_this.storeChoseLayer !== _this.firstChoseLayer) {
+                        _this.firstChoseLayer = _this.storeChoseLayer.layer;
                         _this.drawFirstChoseLayer();
                     }
                 });
@@ -5327,7 +5868,10 @@ var InspectTool = /** @class */ (function (_super) {
                 renderer.clearDrawing(this.hoverLabelGroup.getGroup());
                 renderer.clearDrawing(this.firstChoseGroup.getGroup());
                 renderer.clearDrawing(this.measureLinesGroup);
-                psdetch_faced_1.session.set("choseLayer");
+                psdetch_faced_1.store.dispatch(psdetch_faced_1.actionChoseLayer());
+                if (this.unsubscribe) {
+                    this.unsubscribe();
+                }
                 return [2 /*return*/];
             });
         });
@@ -5357,44 +5901,42 @@ var LayerLabelGroup = /** @class */ (function () {
     LayerLabelGroup.prototype.getGroup = function () {
         return this.item;
     };
-    LayerLabelGroup.prototype.genLabel = function (targetLayer) {
+    LayerLabelGroup.prototype.genLabel = function (targetLayer, zoom) {
         if (this.label) {
             this.item.remove(this.label);
         }
-        this.label = new window.fabric.Text("", __assign({ text: "  " + targetLayer.rect.width + " x " + targetLayer.rect.height + "    ", left: targetLayer.rect.left, top: targetLayer.rect.top, fontFamily: '"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","Helvetica","Arial",sans-serif' }, this.labelStyle));
+        this.label = new window.fabric.Text("", __assign({ text: "  " + targetLayer.rect.width + " x " + targetLayer.rect.height + "    ", left: targetLayer.rect.left * zoom, top: targetLayer.rect.top * zoom, fontFamily: '"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","Helvetica","Arial",sans-serif' }, this.labelStyle));
         this.item.addWithUpdate(this.label);
     };
-    LayerLabelGroup.prototype.genRect = function (targetLayer) {
+    LayerLabelGroup.prototype.genRect = function (targetLayer, zoom) {
         if (this.rect) {
             this.item.remove(this.rect);
         }
-        this.rect = new window.fabric.Rect(__assign({ left: targetLayer.rect.left, top: targetLayer.rect.top, width: targetLayer.rect.width, height: targetLayer.rect.height, objectCaching: false }, this.rectStyle));
+        this.rect = new window.fabric.Rect(__assign({ left: targetLayer.rect.left * zoom, top: targetLayer.rect.top * zoom, width: targetLayer.rect.width * zoom, height: targetLayer.rect.height * zoom, objectCaching: false }, this.rectStyle));
         this.item.addWithUpdate(this.rect);
     };
-    LayerLabelGroup.prototype.setLayer = function (targetLayer) {
-        if (targetLayer) {
-            this.genRect(targetLayer);
-            this.genLabel(targetLayer);
-            // this.label.text = `  ${targetLayer.rect.width} x ${targetLayer.rect.height}    `;
-            // this.item.width = Math.round(Math.max(targetLayer.rect.width,this.label.width || 0));
-            // this.item.height =Math.round(Math.max(targetLayer.rect.height,this.label.height || 0));
-            // this.rect.left=Math.round(-this.item.width/2);
-            // this.rect.top=Math.round(-this.item.height/2);
-            // this.rect.width=Math.round(targetLayer.rect.width);
-            // this.rect.height=Math.round(targetLayer.rect.height);
-            // // this.rect.setCoords();
-            // this.label.left=this.rect.left;
-            // this.label.top=this.rect.top;
-            // // this.label.setCoords();
-            // this.item.left = targetLayer.rect.left;
-            // this.item.top = targetLayer.rect.top;
-            // console.log("a ", "with",targ);
-            // (this.item as any).addWithUpdate();
-            // console.log("b ", "group", this.item.left,this.item.top,"rect",this.rect.left,this.rect.top,"label",this.label.left,this.label.top);
-            // console.log(this.rect.left,this.rect.top,this.label.left,this.label.top);
-            // this.item.addWithUpdate(this.label);
-            // this.item.setCoords();
-        }
+    LayerLabelGroup.prototype.setLayer = function (targetLayer, zoom) {
+        this.genRect(targetLayer, zoom);
+        this.genLabel(targetLayer, zoom);
+        // this.label.text = `  ${targetLayer.rect.width} x ${targetLayer.rect.height}    `;
+        // this.item.width = Math.round(Math.max(targetLayer.rect.width,this.label.width || 0));
+        // this.item.height =Math.round(Math.max(targetLayer.rect.height,this.label.height || 0));
+        // this.rect.left=Math.round(-this.item.width/2);
+        // this.rect.top=Math.round(-this.item.height/2);
+        // this.rect.width=Math.round(targetLayer.rect.width);
+        // this.rect.height=Math.round(targetLayer.rect.height);
+        // // this.rect.setCoords();
+        // this.label.left=this.rect.left;
+        // this.label.top=this.rect.top;
+        // // this.label.setCoords();
+        // this.item.left = targetLayer.rect.left;
+        // this.item.top = targetLayer.rect.top;
+        // console.log("a ", "with",targ);
+        // (this.item as any).addWithUpdate();
+        // console.log("b ", "group", this.item.left,this.item.top,"rect",this.rect.left,this.rect.top,"label",this.label.left,this.label.top);
+        // console.log(this.rect.left,this.rect.top,this.label.left,this.label.top);
+        // this.item.addWithUpdate(this.label);
+        // this.item.setCoords();
         // this.item.setObjectsCoords();
         // this.label.setCoords();
         // this.rect.setCoords();
@@ -6002,7 +6544,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, ".card-content {\n  padding: 0.5rem !important; }\n", ""]);
+exports.push([module.i, ".card {\n  margin-bottom: 10px; }\n  .card .card-content {\n    padding: 0.5rem !important; }\n\n.activePage {\n  opacity: 0.5; }\n", ""]);
 
 // exports
 
@@ -8057,6 +8599,72 @@ module.exports = function (css) {
 
 /***/ }),
 
+/***/ "./node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack/buildin/harmony-module.js":
+/*!*******************************************!*\
+  !*** (webpack)/buildin/harmony-module.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function(originalModule) {
+	if (!originalModule.webpackPolyfill) {
+		var module = Object.create(originalModule);
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		Object.defineProperty(module, "exports", {
+			enumerable: true
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
+
+/***/ }),
+
 /***/ "./src/i18n/lang.ts":
 /*!**************************!*\
   !*** ./src/i18n/lang.ts ***!
@@ -8227,101 +8835,94 @@ var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/pre
 var FileDropper_1 = __webpack_require__(/*! ./FileDropper */ "./src/view/FileDropper.tsx");
 var Nav_1 = __webpack_require__(/*! ./Nav */ "./src/view/Nav.tsx");
 __webpack_require__(/*! ./App.scss */ "./src/view/App.scss");
-// import { initCore, Session } from "../model/Session";
-var psdetch_core_1 = __webpack_require__(/*! psdetch-core */ "../psdetch-core/build/index.js");
-var psdetch_fileadapter_psd_1 = __webpack_require__(/*! psdetch-fileadapter-psd */ "../psdetch-fileadapter-psd/index.js");
-var psdetch_fileadapter_image_1 = __webpack_require__(/*! psdetch-fileadapter-image */ "../psdetch-fileadapter-image/index.js");
-var lang_1 = __webpack_require__(/*! ../i18n/lang */ "./src/i18n/lang.ts");
 var Modal_1 = __webpack_require__(/*! ./Modal */ "./src/view/Modal.tsx");
-var psdetch_faced_1 = __webpack_require__(/*! psdetch-faced */ "../psdetch-faced/build/index.js");
+// import { session } from "psdetch-faced";
 var Main_1 = __webpack_require__(/*! ./Main */ "./src/view/Main.tsx");
+var psdetch_faced_1 = __webpack_require__(/*! psdetch-faced */ "../psdetch-faced/build/index.js");
 var App = /** @class */ (function (_super) {
     __extends(App, _super);
     function App() {
         var _this = _super.call(this) || this;
-        _this.core = new psdetch_core_1.CoreProvider();
-        _this.loadFile = function (_f) { return __awaiter(_this, void 0, void 0, function () {
-            var adps, file, _loop_1, this_1, _i, adps_1, adp, state_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        adps = this.core.getAdapters();
-                        file = {
-                            meta: {
-                                name: _f.name,
-                                mime: _f.type
-                            },
-                            file: _f
-                        };
-                        _loop_1 = function (adp) {
-                            var proj, pgs_1, e_1;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0:
-                                        if (!adp.checkFileMeta(file.meta)) return [3 /*break*/, 6];
-                                        this_1.setState({ loading: true });
-                                        _a.label = 1;
-                                    case 1:
-                                        _a.trys.push([1, 4, , 5]);
-                                        return [4 /*yield*/, adp.decodeProject(file)];
-                                    case 2:
-                                        proj = _a.sent();
-                                        this_1.setState({ loading: false });
-                                        psdetch_faced_1.session.set("curProject", proj);
-                                        return [4 /*yield*/, proj.getPages()];
-                                    case 3:
-                                        pgs_1 = _a.sent();
-                                        setTimeout(function () {
-                                            // this.setState({curPage:pgs[0]});  
-                                            psdetch_faced_1.session.set("curPage", pgs_1[0]);
-                                        }, 500);
-                                        return [3 /*break*/, 5];
-                                    case 4:
-                                        e_1 = _a.sent();
-                                        Modal_1.falert(e_1.toString());
-                                        this_1.setState({ loading: false });
-                                        return [3 /*break*/, 5];
-                                    case 5: return [2 /*return*/, { value: void 0 }];
-                                    case 6: return [2 /*return*/];
-                                }
-                            });
-                        };
-                        this_1 = this;
-                        _i = 0, adps_1 = adps;
-                        _a.label = 1;
-                    case 1:
-                        if (!(_i < adps_1.length)) return [3 /*break*/, 4];
-                        adp = adps_1[_i];
-                        return [5 /*yield**/, _loop_1(adp)];
-                    case 2:
-                        state_1 = _a.sent();
-                        if (typeof state_1 === "object")
-                            return [2 /*return*/, state_1.value];
-                        _a.label = 3;
-                    case 3:
-                        _i++;
-                        return [3 /*break*/, 1];
-                    case 4:
-                        Modal_1.falert(lang_1.lang("error_openfile_no_adapter", file.meta.name));
-                        return [2 /*return*/];
-                }
+        // componentDidMount(){
+        //   this.unsubscribe=store.subscribe(()=>{
+        //     this.setState({loading:this.projectState.loading});
+        //     if (this.projectState.errorReason){
+        //       falert(this.projectState.errorReason);
+        //     }
+        //   })
+        // }
+        // componentWillUnmount(){
+        //   this.unsubscribe!();
+        // }
+        _this.loadFile = function (_f) {
+            _this.setState({ loading: true });
+            psdetch_faced_1.faced.projectOpenLocalFile(_f)
+                .then(function (proj) { return __awaiter(_this, void 0, void 0, function () {
+                var pgs;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, proj.getPages()];
+                        case 1:
+                            pgs = _a.sent();
+                            psdetch_faced_1.store.dispatch(psdetch_faced_1.actionChosePage(pgs[0]));
+                            return [2 /*return*/];
+                    }
+                });
+            }); }, function (err) {
+                Modal_1.falert(err);
+            })
+                .then(function () {
+                _this.setState({ loading: false });
             });
-        }); };
-        _this.core.addAdapter(new psdetch_fileadapter_psd_1.PSDAdapter());
-        _this.core.addAdapter(new psdetch_fileadapter_image_1.ImageAdapter());
+            // const adps = this.core.getAdapters();
+            // const file: IFileBlob = {
+            //   meta: {
+            //     name: _f.name,
+            //     mime: _f.type
+            //   },
+            //   file: _f
+            // }
+            // for (const adp of adps) {
+            //   if (adp.checkFileMeta(file.meta)) {
+            //     this.setState({loading:true});
+            //     try{
+            //       const proj = await adp.decodeProject(file);
+            //       this.setState({loading:false });
+            //       session.set("curProject",proj);
+            //       const pgs=await proj.getPages();
+            //       setTimeout(()=>{
+            //         // this.setState({curPage:pgs[0]});  
+            //         session.set("curPage", pgs[0]);
+            //       },500);
+            //     }catch(e){
+            //       falert(e.toString());
+            //       this.setState({loading:false});
+            //     }
+            //     return
+            //   }
+            // }
+            // falert(lang("error_openfile_no_adapter", file.meta.name));
+        };
         _this.state = {
             loading: false
         };
         return _this;
     }
+    Object.defineProperty(App.prototype, "curPage", {
+        get: function () {
+            return psdetch_faced_1.store.getState().chosePage.page;
+        },
+        enumerable: true,
+        configurable: true
+    });
     App.prototype.render = function () {
         return (preact_1.h("div", { class: "app" },
             preact_1.h(Nav_1.Nav, null),
-            !this.state.loading && !psdetch_faced_1.session.get("curProject") && preact_1.h(FileDropper_1.FileDropper, { onFile: this.loadFile }),
+            !this.state.loading && !this.curPage && preact_1.h(FileDropper_1.FileDropper, { onFile: this.loadFile }),
             this.state.loading && preact_1.h("div", { class: "loading is-size-4 has-text-grey" },
                 preact_1.h("i", { class: "fas fa-spinner is-size-2 has-text-primary animated infinite spin" }),
                 " Parsing... Please be patient."),
-            psdetch_faced_1.session.get("curProject") &&
+            this.curPage &&
                 preact_1.h(Main_1.Main, null),
             preact_1.h(Modal_1.Modal, null)));
     };
@@ -8430,6 +9031,20 @@ var Canvas = /** @class */ (function (_super) {
         _this.canvas = document.createElement("canvas");
         return _this;
     }
+    Object.defineProperty(Canvas.prototype, "toolState", {
+        get: function () {
+            return psdetch_faced_1.store.getState().choseTool;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Canvas.prototype, "pageState", {
+        get: function () {
+            return psdetch_faced_1.store.getState().chosePage;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Canvas.prototype.componentDidMount = function () {
         var _this = this;
         if (!this.renderer) {
@@ -8438,22 +9053,24 @@ var Canvas = /** @class */ (function (_super) {
             this.canvasWrapper.appendChild(this.canvas);
             this.renderer = new psdetch_render_fabric_1.FabricRenderer(this.canvas, this.canvas.width, this.canvas.height);
         }
-        // this.props.onRendererReady(this.renderer);
-        psdetch_faced_1.session.on("curTool", this.onToolChange);
-        psdetch_faced_1.session.set("renderer", this.renderer);
-        psdetch_faced_1.session.on("curPage", function (p) {
-            if (p) {
-                _this.onPage(p);
+        psdetch_faced_1.store.dispatch(psdetch_faced_1.actionRendererSet(this.renderer));
+        this.unsubscribe = psdetch_faced_1.store.subscribe(function () {
+            if (_this.pageState.page && _this.renderer.getPage() !== _this.pageState.page) {
+                _this.onPage(_this.pageState.page);
+            }
+            if (_this.state.curTool !== _this.toolState.tool) {
+                _this.onToolChange(_this.toolState.tool);
             }
         });
-        if (psdetch_faced_1.session.get("curPage") && psdetch_faced_1.session.get("curPage") !== this.renderer.getPage()) {
-            this.renderer.renderPage(psdetch_faced_1.session.get("curPage"));
+        if (this.pageState.page && this.renderer.getPage() !== this.pageState.page) {
+            this.renderer.renderPage(this.pageState.page);
         }
     };
     Canvas.prototype.componentDidUpdate = function (prevProps) {
     };
     Canvas.prototype.componentWillUnmount = function () {
-        psdetch_faced_1.session.off("curTool", this.onToolChange);
+        this.unsubscribe();
+        // session.off("curTool",this.onToolChange);
     };
     Canvas.prototype.render = function () {
         var _this = this;
@@ -9047,8 +9664,13 @@ __webpack_require__(/*! ./PagePreview.scss */ "./src/view/PagePreview.scss");
 var PagePreview = /** @class */ (function (_super) {
     __extends(PagePreview, _super);
     function PagePreview() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this.onPageSelect = _this.onPageSelect.bind(_this);
+        return _this;
     }
+    PagePreview.prototype.onPageSelect = function (event) {
+        this.props.onPageSelect(this.props.page);
+    };
     PagePreview.prototype.componentWillMount = function () {
         this.renderPageItem();
     };
@@ -9068,15 +9690,26 @@ var PagePreview = /** @class */ (function (_super) {
     };
     PagePreview.prototype.render = function () {
         var _index = this.props.index + 1;
+        var _pageName = this.props.page.name;
         var currentImage = this.state.currentImage;
-        return (preact_1.h("div", { class: "card no-round-borders" },
+        var _isActive = this.props.isActive;
+        return (preact_1.h("div", { class: "card no-round-borders " + (_isActive ? "has-background-grey" : ""), onClick: this.onPageSelect },
+            preact_1.h("header", { class: "card-header" },
+                preact_1.h("div", { class: "card-header-title" },
+                    preact_1.h("div", { class: "media" },
+                        preact_1.h("div", { class: "media-left" },
+                            preact_1.h("span", null,
+                                "  ",
+                                _index,
+                                " ")),
+                        preact_1.h("div", { class: "media-content" },
+                            preact_1.h("span", null,
+                                "  ",
+                                _pageName,
+                                " ",
+                                this.props.isActive && "true"))))),
             preact_1.h("div", { class: "card-content no-borders" },
                 preact_1.h("div", { class: "media" },
-                    preact_1.h("div", { class: "media-left" },
-                        preact_1.h("span", null,
-                            "  ",
-                            _index,
-                            " ")),
                     preact_1.h("div", { class: "media-content" }, currentImage && preact_1.h(PagePreviewImage_1.PagePreviewImage, { image: currentImage, width: this.props.page.width, height: this.props.page.height }))))));
     };
     return PagePreview;
@@ -9247,17 +9880,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
 __webpack_require__(/*! ./PagesPreview.scss */ "./src/view/PagesPreview.scss");
-var psdetch_faced_1 = __webpack_require__(/*! psdetch-faced */ "../psdetch-faced/build/index.js");
+// import { session } from "psdetch-faced";
 var PagePreview_1 = __webpack_require__(/*! ./PagePreview */ "./src/view/PagePreview.tsx");
+var build_1 = __webpack_require__(/*! psdetch-faced/build */ "../psdetch-faced/build/index.js");
 var PagesPreview = /** @class */ (function (_super) {
     __extends(PagesPreview, _super);
     function PagesPreview() {
         var _this = _super.call(this) || this;
         _this.state = {
-            pages: []
+            pages: [],
+            activePage: undefined
         };
+        _this.onPageSelect = _this.onPageSelect.bind(_this);
         return _this;
     }
+    PagesPreview.prototype.onPageSelect = function (page) {
+        build_1.store.dispatch(build_1.actionChosePage(page));
+        // session.set("curPage",page);
+        this.setState({ activePage: page });
+    };
     PagesPreview.prototype.setPages = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _pages;
@@ -9267,19 +9908,22 @@ var PagesPreview = /** @class */ (function (_super) {
                     case 1:
                         _pages = _a.sent();
                         this.setState({ pages: _pages });
+                        this.setState({ activePage: _pages[0] });
                         return [2 /*return*/];
                 }
             });
         });
     };
     PagesPreview.prototype.componentDidMount = function () {
-        this.currentProject = psdetch_faced_1.session.get("curProject");
+        // this.currentProject = session.get("curProject") as IProject;
+        this.currentProject = build_1.store.getState().project.project;
         this.setPages();
     };
     PagesPreview.prototype.render = function () {
+        var _this = this;
         var pages = this.state.pages;
         return (preact_1.h("section", { class: "page-list" }, pages &&
-            pages.map(function (page, pageIndex, array) { return (preact_1.h(PagePreview_1.PagePreview, { page: page, index: pageIndex })); })));
+            pages.map(function (page, pageIndex, array) { return (preact_1.h(PagePreview_1.PagePreview, { page: page, index: pageIndex, onPageSelect: _this.onPageSelect, isActive: _this.state.activePage && _this.state.activePage === page })); })));
     };
     return PagesPreview;
 }(preact_1.Component));
@@ -9340,39 +9984,62 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
 __webpack_require__(/*! ./ToolBar.scss */ "./src/view/ToolBar.scss");
-var psdetch_faced_1 = __webpack_require__(/*! psdetch-faced */ "../psdetch-faced/build/index.js");
-var faMaper = {
-    "tool_hand": "fas fa-hand-paper",
-    "tool_inspect": "fas fa-mouse-pointer",
-    "tool_color": "fas fa-eye-dropper"
-};
+var psdetch_tool_hand_1 = __webpack_require__(/*! psdetch-tool-hand */ "../psdetch-tool-hand/index.js");
+var psdetch_tool_inspect_1 = __webpack_require__(/*! psdetch-tool-inspect */ "../psdetch-tool-inspect/build/index.js");
+var psdetch_tool_color_1 = __webpack_require__(/*! psdetch-tool-color */ "../psdetch-tool-color/build/index.js");
+var build_1 = __webpack_require__(/*! psdetch-faced/build */ "../psdetch-faced/build/index.js");
+// const faMaper: any = {
+//   "tool_hand": "fas fa-hand-paper",
+//   "tool_inspect":"fas fa-mouse-pointer",
+//   "tool_color":"fas fa-eye-dropper"
+// }
 var ToolBar = /** @class */ (function (_super) {
     __extends(ToolBar, _super);
     function ToolBar() {
         var _this = _super.call(this) || this;
-        psdetch_faced_1.session.once("renderer", function (r) {
-            _this.setState({ display: true });
-            _this.toggleTool(psdetch_faced_1.session.get('handtool'));
-        });
         _this.state = { display: false };
         return _this;
     }
     Object.defineProperty(ToolBar.prototype, "curTool", {
         get: function () {
-            return psdetch_faced_1.session.get("curTool");
+            return build_1.store.getState().choseTool.tool;
         },
         set: function (v) {
-            psdetch_faced_1.session.set("curTool", v);
+            build_1.store.dispatch(build_1.actionChoseTool(v));
         },
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(ToolBar.prototype, "renderer", {
+        get: function () {
+            return build_1.store.getState().renderer;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ToolBar.prototype.componentDidMount = function () {
+        var _this = this;
+        this.unsubscribe = build_1.store.subscribe(function () {
+            if (_this.state.display === false) {
+                if (_this.renderer.renderer) {
+                    _this.setState({ display: true });
+                    _this.handTool = new psdetch_tool_hand_1.HandTool(_this.renderer.renderer);
+                    _this.inspectTool = new psdetch_tool_inspect_1.InspectTool(_this.renderer.renderer);
+                    _this.colorTool = new psdetch_tool_color_1.ColorTool(_this.renderer.renderer);
+                    _this.toggleTool(_this.handTool);
+                    _this.setExclusiveTool(_this.inspectTool);
+                }
+            }
+        });
+    };
+    ToolBar.prototype.componentWillUnmount = function () {
+        this.unsubscribe();
+    };
     ToolBar.prototype.render = function () {
         if (this.state.display) {
             return (preact_1.h("div", { class: "toolbar" },
-                this.bindToggleTool(psdetch_faced_1.session.get('handtool')),
-                this.bindExclusiveTool(psdetch_faced_1.session.get("inspectTool")),
-                this.bindExclusiveTool(psdetch_faced_1.session.get("colorTool"))));
+                this.bindExclusiveTool(this.inspectTool),
+                this.bindExclusiveTool(this.colorTool)));
         }
         else {
             return null;
@@ -9384,25 +10051,25 @@ var ToolBar = /** @class */ (function (_super) {
             if (this.curTool) {
                 this.curTool.deactivate();
             }
-            tool.once("onActivated", function () {
+            tool.activate()
+                .then(function () {
+                _this.curTool = tool;
                 _this.forceUpdate();
             });
-            tool.activate();
-            this.curTool = tool;
         }
         else if (tool && this.curTool === tool) {
-            tool.once("onDeactivated", function () {
+            tool.deactivate()
+                .then(function () {
+                _this.curTool = undefined;
                 _this.forceUpdate();
             });
-            tool.deactivate();
-            this.curTool = undefined;
         }
     };
     ToolBar.prototype.bindExclusiveTool = function (tool) {
         var _this = this;
         if (tool) {
             return (preact_1.h("div", { onClick: function () { return _this.setExclusiveTool(tool); }, class: "toolBtn " + (tool.activated ? 'has-background-black-ter has-text-primary' : '') },
-                preact_1.h("i", { class: faMaper[tool.slug] })));
+                preact_1.h("i", { class: tool.cls })));
         }
         else {
             return null;
@@ -9412,14 +10079,14 @@ var ToolBar = /** @class */ (function (_super) {
         var _this = this;
         if (t) {
             if (t.activated) {
-                t.deactivate();
-                t.once("onDeactivated", function () {
+                t.deactivate()
+                    .then(function () {
                     _this.forceUpdate();
                 });
             }
             else {
-                t.activate();
-                t.once("onActivated", function () {
+                t.activate()
+                    .then(function () {
                     _this.forceUpdate();
                 });
             }
@@ -9429,7 +10096,7 @@ var ToolBar = /** @class */ (function (_super) {
         var _this = this;
         if (tool) {
             return (preact_1.h("div", { onClick: function () { return _this.toggleTool(tool); }, class: "toolBtn " + (tool.activated ? 'has-background-black-ter has-text-primary' : '') },
-                preact_1.h("i", { class: faMaper[tool.slug] })));
+                preact_1.h("i", { class: tool.cls })));
         }
     };
     return ToolBar;

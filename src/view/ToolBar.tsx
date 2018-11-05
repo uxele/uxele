@@ -1,39 +1,62 @@
 import { h, Component } from "preact";
 import "./ToolBar.scss";
 import { HandTool } from "psdetch-tool-hand";
-import { session, ITool } from "psdetch-faced";
+import { InspectTool } from "psdetch-tool-inspect";
+import { ColorTool } from "psdetch-tool-color";
+// import { session } from "psdetch-faced";
+import { BaseTool } from "psdetch-core/build";
+import { store, actionChoseTool } from "psdetch-faced/build";
 interface ToolBarState {
   display: boolean
 }
 
-const faMaper: any = {
-  "tool_hand": "fas fa-hand-paper",
-  "tool_inspect":"fas fa-mouse-pointer",
-  "tool_color":"fas fa-eye-dropper"
-}
+// const faMaper: any = {
+//   "tool_hand": "fas fa-hand-paper",
+//   "tool_inspect":"fas fa-mouse-pointer",
+//   "tool_color":"fas fa-eye-dropper"
+// }
 export class ToolBar extends Component<{}, ToolBarState>{
   private handTool?: HandTool;
+  private inspectTool?:InspectTool;
+  private colorTool?:ColorTool;
+  private unsubscribe?: () => void;
   get curTool() {
-    return session.get("curTool");
+    return store.getState().choseTool.tool;
   }
-  set curTool(v: ITool | undefined) {
-    session.set("curTool", v);
+  set curTool(v: BaseTool | undefined) {
+    store.dispatch(actionChoseTool(v));
+  }
+  get renderer() {
+    return store.getState().renderer;
   }
   constructor() {
     super();
-    session.once("renderer", (r) => {
-      this.setState({ display: true });
-      this.toggleTool(session.get('handtool'));
-    })
     this.state = { display: false };
+  }
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => {
+      if (this.state.display === false) {
+        if (this.renderer.renderer) {
+          this.setState({ display: true });
+          this.handTool = new HandTool(this.renderer.renderer);
+          this.inspectTool = new InspectTool(this.renderer.renderer);
+          this.colorTool = new ColorTool(this.renderer.renderer);
+          this.toggleTool(this.handTool);
+          this.setExclusiveTool(this.inspectTool);
+        }
+      }
+    })
+  }
+  componentWillUnmount() {
+    this.unsubscribe!();
   }
   render() {
     if (this.state.display) {
       return (
         <div class="toolbar">
-          {this.bindToggleTool(session.get('handtool'))}
-          {this.bindExclusiveTool(session.get("inspectTool"))}
-          {this.bindExclusiveTool(session.get("colorTool"))}
+          {/* {this.bindToggleTool(this.handTool)} */}
+          {this.bindExclusiveTool(this.inspectTool)}
+          {this.bindExclusiveTool(this.colorTool)}
         </div>
       )
     } else {
@@ -41,56 +64,63 @@ export class ToolBar extends Component<{}, ToolBarState>{
     }
 
   }
-  private setExclusiveTool(tool?: ITool) {
+  private setExclusiveTool(tool?: BaseTool) {
     if (tool && this.curTool !== tool) {
       if (this.curTool) {
         this.curTool.deactivate();
       }
-      tool.once("onActivated", () => {
-        this.forceUpdate();
-      })
-      tool.activate();
-      this.curTool = tool;
 
-    }else if (tool && this.curTool === tool){
-      tool.once("onDeactivated", () => {
-        this.forceUpdate();
-      })
-      tool.deactivate();
-      this.curTool =undefined;
+      tool.activate()
+        .then(() => {
+          this.curTool = tool;
+          this.forceUpdate();
+        })
+
+    } else if (tool && this.curTool === tool) {
+
+
+      tool.deactivate()
+        .then(() => {
+          this.curTool = undefined;
+          this.forceUpdate();
+        });
+
     }
   }
-  private bindExclusiveTool(tool?: ITool) {
+  private bindExclusiveTool(tool?: BaseTool) {
     if (tool) {
       return (
         <div onClick={() => this.setExclusiveTool(tool)} class={`toolBtn ${tool.activated ? 'has-background-black-ter has-text-primary' : ''}`}>
-          <i class={faMaper[tool.slug]}></i>
+          <i class={tool.cls}></i>
         </div>
       )
     } else {
       return null;
     }
   }
-  private toggleTool(t?: ITool) {
+  private toggleTool(t?: BaseTool) {
     if (t) {
       if (t.activated) {
         t.deactivate()
-        t.once("onDeactivated",()=>{
-          this.forceUpdate();
-        })
+          .then(() => {
+            this.forceUpdate();
+          })
+
       } else {
-        t.activate();
-        t.once("onActivated",()=>{
-          this.forceUpdate();
-        })
+        t.activate()
+          .then(() => {
+            this.forceUpdate();
+          })
+
       }
     }
+
   }
-  private bindToggleTool(tool?: ITool) {
+  private bindToggleTool(tool?: BaseTool) {
     if (tool) {
       return (
         <div onClick={() => this.toggleTool(tool)} class={`toolBtn ${tool.activated ? 'has-background-black-ter has-text-primary' : ''}`}>
-          <i class={faMaper[tool.slug]}></i>
+          <i class={tool.cls}></i>
         </div>
       )
     }
