@@ -1,0 +1,76 @@
+.toggle-bar {
+  
+  
+  height: 5%;
+  position: absolute;
+  bottom:0px;
+  width:300px;
+
+.tabs {
+  position: relative;
+
+  &:not(.--jsfied) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // shared
+
+  .--hidden {
+    display: none;
+  }
+
+  a,
+  button {
+    width: 100%;
+    height: 100%;
+    display: block;
+    font-size: 1em;
+    line-height: 1.2;
+    text-align: center;
+    color: white;
+    background-color: transparent;
+  }
+
+  // primary
+
+  .-primary {
+    display: flex;
+
+    >li {
+      flex-grow: 1;
+      background-color: green;
+
+      +li {
+        border-left: 1px solid white;
+      }
+
+      >a,
+      >button {
+        white-space: nowrap;
+        padding: 1em 0.6em;
+        box-shadow: inset 0 -0.2em 0 white;
+
+        &:hover {
+          background-color: grey;
+        }
+
+        &:active {
+          background-color: darkblue;
+        }
+      }
+    }
+
+    .-more {
+      background-color: darkblue;
+
+      >button span {
+        display: inline-block;
+        transition: transform 0.2s;
+      }
+    }
+  }
+
+
+}
+}

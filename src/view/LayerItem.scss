@@ -1,0 +1,35 @@
+.layer {
+  padding: 8px;
+  width: 220px;
+  border-bottom: 1px solid #666;
+  color: #888;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  user-select: none;
+  &.active{
+      background-color: #1D3A7D;
+  }
+  &.invisible{
+      color:#444;
+  }
+  .icon {
+      $size: 16px;
+      margin-right: 5px;
+      height: $size;
+      .material-icons {
+          font-size: $size;
+      }
+  }
+  .indent {
+      flex-shrink: 0;
+  }
+  .name {
+      flex-shrink: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+}

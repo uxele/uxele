@@ -1,9 +1,12 @@
 import { h, Component } from "preact";
 
 import "./Main.scss";
-import { IProject } from "psdetch-core";
+import { IProject } from "psdetch-core/build";
 import { Canvas } from "./Canvas";
 import {PagesPreview} from "./PagesPreview";
+import {LayerList} from "./LayerList";
+import {ToggleToolBar} from "./ToggleToolBar";
+
 interface IMainProps {
   curProject?: IProject;
 }
@@ -11,7 +14,7 @@ export class Main extends Component<IMainProps, {}>{
 
   constructor() {
     super();
-
+  
   }
   render() {
 
@@ -22,8 +25,8 @@ export class Main extends Component<IMainProps, {}>{
         <div class="mainContainer flexItem">
           <aside class="sidebar sidebarLeft">
           
-            <PagesPreview />
-            
+          <PagesPreview />
+            <ToggleToolBar/>
           </aside>
           <main class="flexItem main">
             <div class="canvasWrapper">
