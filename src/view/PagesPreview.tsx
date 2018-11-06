@@ -2,8 +2,9 @@ import { h, Component } from "preact";
 import { IPage, IProject } from "psdetch-core/build";
 
 import "./PagesPreview.scss";
-import { session } from "psdetch-faced";
+// import { session } from "psdetch-faced";
 import { PagePreview } from "./PagePreview";
+import { store, actionChosePage } from "psdetch-faced/build";
 
 
 
@@ -27,9 +28,10 @@ export class PagesPreview extends Component<{}, IPagePreviewState> {
 
   }
 
-  private onPageSelect(page: IPage) {
-    session.set("curPage", page);
-    this.setState({ activePage: page });
+  private onPageSelect(page:IPage){
+    store.dispatch(actionChosePage(page));
+    // session.set("curPage",page);
+    this.setState({activePage:page});
   }
   private async setPages() {
     const _pages = await this.currentProject!.getPages();
@@ -41,8 +43,9 @@ export class PagesPreview extends Component<{}, IPagePreviewState> {
 
   componentDidMount() {
 
-    this.currentProject = session.get("curProject") as IProject;
-    this.setPages();
+      // this.currentProject = session.get("curProject") as IProject;
+      this.currentProject=store.getState().project.project;
+      this.setPages();
   }
 
   render() {

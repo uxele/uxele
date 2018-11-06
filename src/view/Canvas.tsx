@@ -1,27 +1,36 @@
 import {h, Component} from "preact";
 import "./Canvas.scss";
-import { IPage } from "psdetch-core";
+import { IPage, BaseTool } from "psdetch-core";
 import { FabricRenderer } from "psdetch-render-fabric";
-import {ITool,session} from "psdetch-faced"
+import { store, actionRendererSet } from "psdetch-faced";
+// import {ITool,session} from "psdetch-faced"
 interface CanvasProps{
   // page?:IPage;
   // onRendererReady:(renderer:FabricRenderer)=>void;
 }
 interface CanvasState{
-  curTool:ITool
+  curTool:BaseTool
 }
 export class Canvas extends Component<CanvasProps,CanvasState>{
   private canvasWrapper?:HTMLElement;
   private renderer?:FabricRenderer;
   private canvas:HTMLCanvasElement;
+  private unsubscribe?:()=>void;
   constructor(){
     super();
     this.canvas=document.createElement("canvas");
   }
+  get toolState(){
+    return store.getState().choseTool;
+  }
+  get pageState(){
+    return store.getState().chosePage;
+  }
   onToolChange=(tool:any)=>{
-    const t=tool as ITool;
+    const t=tool as BaseTool;
     this.setState({curTool:t});
   }
+
   componentDidMount(){
     if (!this.renderer){
       
@@ -30,16 +39,17 @@ export class Canvas extends Component<CanvasProps,CanvasState>{
       this.canvasWrapper!.appendChild(this.canvas);
       this.renderer=new FabricRenderer(this.canvas,this.canvas.width,this.canvas.height);
     }
-    // this.props.onRendererReady(this.renderer);
-    session.on("curTool",this.onToolChange);
-    session.set("renderer",this.renderer);
-    session.on("curPage",(p)=>{
-      if (p){
-        this.onPage(p as IPage);
+    store.dispatch(actionRendererSet(this.renderer));
+    this.unsubscribe=store.subscribe(()=>{
+      if (this.pageState.page && this.renderer!.getPage()!==this.pageState.page){
+        this.onPage(this.pageState.page);
       }
-    });
-    if (session.get("curPage") && session.get("curPage")!==this.renderer!.getPage()){
-      this.renderer!.renderPage(session.get("curPage")!);
+      if (this.state.curTool !== this.toolState.tool){
+        this.onToolChange(this.toolState.tool);
+      }
+    })
+    if (this.pageState.page && this.renderer!.getPage()!==this.pageState.page){
+      this.renderer!.renderPage(this.pageState.page);
     }
   }
   componentDidUpdate(prevProps:CanvasProps){
@@ -49,7 +59,8 @@ export class Canvas extends Component<CanvasProps,CanvasState>{
     this.renderer!.renderPage(page);
   }
   componentWillUnmount(){
-    session.off("curTool",this.onToolChange);
+    this.unsubscribe!();
+    // session.off("curTool",this.onToolChange);
   }
   render(){
     return (

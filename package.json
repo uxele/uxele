@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "sh -c \"echo 'Web Server on: http://127.0.0.1:8080' \" & webpack --watch & http-server -s -c-1 ./static  ",
-    "dep:local": "cd node_modules && rm -Rf ./psdetch-* && ln -s ../../psdetch-* ./",
+    "dep:local": "node script/depLocal.js",
     "build": "rm -Rf ./static/build && NODE_ENV=production webpack"
   },
   "author": "",
@@ -38,6 +38,7 @@
     "tslint": "^5.11.0",
     "typescript": "^2.9.2",
     "webpack": "^4.16.5",
-    "webpack-cli": "^3.1.0"
+    "webpack-cli": "^3.1.0",
+    "webpack-visualizer-plugin": "^0.1.11"
   }
 }
