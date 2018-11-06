@@ -4,6 +4,7 @@ import "./Main.scss";
 import { IProject } from "psdetch-core";
 import { Canvas } from "./Canvas";
 import {PagesPreview} from "./PagesPreview";
+import { RightView } from "psdetch-studio/src/view/right/Right";
 interface IMainProps {
   curProject?: IProject;
 }
@@ -30,11 +31,8 @@ export class Main extends Component<IMainProps, {}>{
               <Canvas></Canvas>
             </div>
           </main>
-
-          <aside class="sidebar sidebarRight">
-            <h2>Right Sidebar</h2>
-            <p>content</p>
-          </aside>
+          <RightView/>
+          
         </div>
 
 

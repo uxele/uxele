@@ -31,17 +31,6 @@ export class App extends Component<{}, AppState> {
       loading: false
     };
   }
-  // componentDidMount(){
-  //   this.unsubscribe=store.subscribe(()=>{
-  //     this.setState({loading:this.projectState.loading});
-  //     if (this.projectState.errorReason){
-  //       falert(this.projectState.errorReason);
-  //     }
-  //   })
-  // }
-  // componentWillUnmount(){
-  //   this.unsubscribe!();
-  // }
   loadFile = (_f: File) => {
     this.setState({ loading: true });
     faced.projectOpenLocalFile(_f)
@@ -54,35 +43,6 @@ export class App extends Component<{}, AppState> {
       .then(() => {
         this.setState({ loading: false });
       })
-    // const adps = this.core.getAdapters();
-    // const file: IFileBlob = {
-    //   meta: {
-    //     name: _f.name,
-    //     mime: _f.type
-    //   },
-    //   file: _f
-    // }
-    // for (const adp of adps) {
-    //   if (adp.checkFileMeta(file.meta)) {
-    //     this.setState({loading:true});
-    //     try{
-    //       const proj = await adp.decodeProject(file);
-    //       this.setState({loading:false });
-    //       session.set("curProject",proj);
-    //       const pgs=await proj.getPages();
-
-    //       setTimeout(()=>{
-    //         // this.setState({curPage:pgs[0]});  
-    //         session.set("curPage", pgs[0]);
-    //       },500);
-    //     }catch(e){
-    //       falert(e.toString());
-    //       this.setState({loading:false});
-    //     }
-    //     return
-    //   }
-    // }
-    // falert(lang("error_openfile_no_adapter", file.meta.name));
   }
 
   render() {
