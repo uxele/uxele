@@ -1,9 +1,11 @@
-.card {
-  .card-content {
-    padding: 0.5rem !important;
+.pagePreview {
+  &.card {
+    .card-content {
+      padding: 0.5rem !important;
+    }
+    margin-bottom:10px;
   }
-  margin-bottom:10px;
-}
-.activePage{
- opacity: 0.5;
+  .activePage {
+    opacity: 0.5;
+  }
 }

@@ -7,6 +7,7 @@ import {PagesPreview} from "./PagesPreview";
 import {LayerList} from "./LayerList";
 import {ToggleToolBar} from "./ToggleToolBar";
 
+import { RightView } from "psdetch-studio/src/view/right/Right";
 interface IMainProps {
   curProject?: IProject;
 }
@@ -44,11 +45,8 @@ export class Main extends Component<IMainProps, IMainState>{
               <Canvas></Canvas>
             </div>
           </main>
-
-          <aside class="sidebar sidebarRight">
-            <h2>Right Sidebar</h2>
-            <p>content</p>
-          </aside>
+          <RightView/>
+          
         </div>
 
 
