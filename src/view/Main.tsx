@@ -10,12 +10,21 @@ import {ToggleToolBar} from "./ToggleToolBar";
 interface IMainProps {
   curProject?: IProject;
 }
-export class Main extends Component<IMainProps, {}>{
+interface IMainState {
+  isPreview: boolean;
+}
+export class Main extends Component<IMainProps, IMainState>{
 
   constructor() {
     super();
-  
+    this.state={
+      isPreview : true
+    }
   }
+  onToggleView = (isPreview:boolean) =>
+  {
+    this.setState({isPreview:isPreview});
+  } 
   render() {
 
 
@@ -25,8 +34,10 @@ export class Main extends Component<IMainProps, {}>{
         <div class="mainContainer flexItem">
           <aside class="sidebar sidebarLeft">
           
-          <PagesPreview />
-            <ToggleToolBar/>
+    {!this.state.isPreview && <LayerList /> }
+    {this.state.isPreview && <PagesPreview /> }
+
+            <ToggleToolBar onToggle={this.onToggleView}/>
           </aside>
           <main class="flexItem main">
             <div class="canvasWrapper">

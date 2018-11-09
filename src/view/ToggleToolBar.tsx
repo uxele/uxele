@@ -1,32 +1,32 @@
 import { h, Component } from "preact";
 import "./ToggleToolBar.scss";
 
-interface ToggleToolBarState {
-  active: boolean
+interface ToggleToolBarProps {
+  onToggle(isPreview:boolean):void;
 }
 
 
-export class ToggleToolBar extends Component<{}, {}> {
+export class ToggleToolBar extends Component<ToggleToolBarProps, {}> {
 
   constructor() {
     super();
  
   }
   
-
+  
   render() {
 
     return (
       <div class="toggle-bar">
         <nav class="tabs">
           <ul class="-primary">
-            <li>
+            <li onClick = {()=>this.props.onToggle(true)}>
               <a >
                 <span class="icon is-small"><i class="fas fa-film" aria-hidden="true"></i></span>
 
               </a>
             </li>
-            <li>
+            <li onClick = {()=>this.props.onToggle(false)}> 
               <a >
                 <span class="icon is-small"><i class="fas fa-image" aria-hidden="true"></i></span>
 
