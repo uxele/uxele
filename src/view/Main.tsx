@@ -7,7 +7,8 @@ import {PagesPreview} from "./PagesPreview";
 import {LayerList} from "./LayerList";
 import {ToggleToolBar} from "./ToggleToolBar";
 
-import { RightView } from "psdetch-studio/src/view/right/Right";
+
+import { RightView } from "./right/Right";
 interface IMainProps {
   curProject?: IProject;
 }

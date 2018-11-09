@@ -1,5 +1,4 @@
 import { h, render } from "preact";
-import "./view/Base.scss";
 import { App } from "./view/App";
-
+import "./scss/base.scss";
 render(<App />, document.querySelector("body")!);

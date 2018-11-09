@@ -2,8 +2,8 @@ import { h, Component } from "preact";
 import "./LayerView.scss";
 import { ILayer } from "psdetch-core/build";
 import { store } from "psdetch-faced/build";
-import { LayerBasicView } from "psdetch-studio/src/view/right/LayerBasic";
-import { LayerExportView } from "psdetch-studio/src/view/right/LayerExport";
+import { LayerBasicView } from "./LayerBasic";
+import { LayerExportView } from "./LayerExport";
 
 interface LayerViewState {
   layer?: ILayer
