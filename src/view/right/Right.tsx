@@ -2,7 +2,7 @@ import { h, Component } from "preact";
 import "./Right.scss";
 import { store } from "psdetch-faced/build";
 import { BaseTool } from "psdetch-core/build";
-import { LayerView } from "psdetch-studio/src/view/right/LayerView";
+import { LayerView } from "./LayerView";
 
 interface RightViewState{
   // curTool?:BaseTool;

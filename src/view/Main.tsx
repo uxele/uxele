@@ -4,7 +4,7 @@ import "./Main.scss";
 import { IProject } from "psdetch-core";
 import { Canvas } from "./Canvas";
 import {PagesPreview} from "./PagesPreview";
-import { RightView } from "psdetch-studio/src/view/right/Right";
+import { RightView } from "./right/Right";
 interface IMainProps {
   curProject?: IProject;
 }

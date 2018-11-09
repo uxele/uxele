@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { lang } from "../i18n/lang";
+import {lang} from "psdetch-i18n";
 import "./Modal.scss";
 interface ModalState {
   active: boolean;
