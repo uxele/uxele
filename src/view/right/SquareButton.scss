@@ -1,0 +1,28 @@
+@import "../../scss/variables.scss";
+.squareButton{
+  position: relative;
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  padding-top:25px;
+  padding-bottom:25px;
+  background: $grey-darker;
+  color:white;
+  user-select: none;
+  width:100%;
+  cursor: pointer;
+  .head{
+    position: absolute;
+    top:5px;
+    left:5px;
+    font-size: 0.85em;
+    font-weight: bold;
+  } 
+  .value{
+    font-size: 1.2em;
+  }
+  &.active{
+    background: $grey-dark;
+    color: lighten($primary,20);
+  }
+}

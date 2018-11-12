@@ -8,7 +8,10 @@
 @import "../../node_modules/bulma/sass/components/navbar.sass";
 @import "../../node_modules/bulma/sass/elements/button.sass";
 @import "../../node_modules/bulma/sass/components/modal.sass";
-@import "../../node_modules//bulmaswatch/darkly/overrides";
+@import "../../node_modules/bulma/sass/components/dropdown.sass";
+@import "../../node_modules/bulmaswatch/darkly/overrides";
+
+
 
 // Other
 body{
@@ -18,6 +21,7 @@ body{
   bottom: 0;
   right: 0;
   min-width: 1000px;
+  overflow: hidden;
 }
 @keyframes spin {
   to {

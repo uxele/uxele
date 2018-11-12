@@ -7,7 +7,7 @@ module.exports = {
   output: {
     path: __dirname + "/static",
     filename: "./build/bundle.js",
-    publicPath: "/"
+    publicPath: "./"
   },
   mode: mode,
   // Enable sourcemaps for debugging webpack's output.
@@ -28,10 +28,17 @@ module.exports = {
           "postcss-loader",
           "sass-loader"
         ]
+      },
+      {
+        test: /(\.png|\.jpg)$/,
+        loader:"file-loader",
+        options:{
+          outputPath:"assets/"
+        }
       }
     ],
   },
-  plugins:[new Visualizer({
-    filename: './statistics.html'
-  })]
+  // plugins:[new Visualizer({
+  //   filename: './statistics.html'
+  // })]
 };

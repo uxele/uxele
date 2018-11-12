@@ -1,4 +1,6 @@
 .sidebarRight {
+  overflow-y: auto;
+  overflow-x:hidden;
   .card {
     .title {
       font-size: 1em;
