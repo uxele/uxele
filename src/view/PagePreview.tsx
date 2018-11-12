@@ -39,15 +39,14 @@ export class PagePreview extends Component<IPageListItemProps, IPageListItemStat
     const { currentImage } = this.state;
     const _isActive = this.props.isActive;
     return (
-      <div class={`pagePreview card no-round-borders ${_isActive ? "has-background-grey" : ""}`} onClick={this.onPageSelect}>
+      <div class={`pagePreview card no-round-borders ${_isActive ? "has-background-black-ter has-text-primary" : ""}`} onClick={this.onPageSelect}>
         <header class="card-header">
           <div class="card-header-title">
             <div class="media">
-              <div class="media-left">
-                <span>  {_index} </span>
-              </div>
+             
               <div class="media-content">
-                <span>  {_pageName} {this.props.isActive! && "true"}</span>
+              <span>  {_index}.&nbsp;</span>
+                <span> {_pageName}</span>
               </div>
             </div>
           </div>

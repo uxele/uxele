@@ -26,13 +26,11 @@ export class LayerList extends Component<{}, ILayerListState> {
   }
   componentDidMount() {
     debugger;
-   // this.currentPage = this.pageState.page;
-    
     this.renderLayerItem();
     this.unsubscribe=store.subscribe(()=>{
-      alert(" fsf")
+      
       if (this.pageState.page && this.pageState.page !== this.currentPage){
-      alert("pagechange")
+        
       this.renderLayerItem();
       }
       
@@ -40,15 +38,10 @@ export class LayerList extends Component<{}, ILayerListState> {
  
   }
   async renderLayerItem() {
-
-    //if (session.get("curPage") && session.get("curPage") !== this.currentPage!) {
-     // if (this.pageState.page && this.pageState.page !== this.currentPage){
         
       this.currentPage = this.pageState.page;
       const _layers: ILayer[] = await this.currentPage!.getLayers();
       this.setState({ layers: _layers });
-   // }
-
   }
 
   render() {

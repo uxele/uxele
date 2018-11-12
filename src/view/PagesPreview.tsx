@@ -30,7 +30,6 @@ export class PagesPreview extends Component<{}, IPagePreviewState> {
 
   private onPageSelect(page:IPage){
     store.dispatch(actionChosePage(page));
-    // session.set("curPage",page);
     this.setState({activePage:page});
   }
   private async setPages() {

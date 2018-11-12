@@ -46,12 +46,18 @@ export class LayerItem extends Component<ILayerItemProps, ILayerItemState> {
     this.initLayer(nextProps.layer);
   }
   getIcon(layer: ILayer) {
-
-    if (isFolderLayer(layer)) {
+    switch(layer.layerType){
+      case LayerType.text:
+      return "fa-font";
+      case LayerType.folder:
       return "fa-folder";
-    } else {
-      return "fa-folder1";
+      case LayerType.pixel:
+      return "fa-file-image-o";
+      case LayerType.vector:
+      return "fa-image";
+
     }
+   
   }
 
   componentDidMount() {
@@ -114,7 +120,7 @@ export class LayerItem extends Component<ILayerItemProps, ILayerItemState> {
         <div className={"layer " + (!layer.visible ? 'invisible' : '') + (isActiveLayer ? ' active' : '')} onClick={() => { this.layerItemClick(layer) }}>
           <span class="indent" style={{ width: indent * 8 }}></span>
           <span class="icon is-small">
-            <i className={"fa " + this.getIcon(layer)} aria-hidden="true"></i>
+            <i className={"fas " + this.getIcon(layer)} aria-hidden="true"></i>
           </span>
           <span class="name">{layer.name}</span>
         </div>
