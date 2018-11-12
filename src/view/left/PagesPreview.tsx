@@ -9,6 +9,7 @@ import { store, actionChosePage } from "psdetch-faced/build";
 
 
 
+
 interface IPagePreviewState {
   pages: IPage[];
   activePage?: IPage;
@@ -21,7 +22,7 @@ export class PagesPreview extends Component<{}, IPagePreviewState> {
     super();
     this.state = {
       pages: [],
-      activePage:undefined
+      activePage: undefined
     }
     this.onPageSelect = this.onPageSelect.bind(this);
 
@@ -29,7 +30,6 @@ export class PagesPreview extends Component<{}, IPagePreviewState> {
 
   private onPageSelect(page:IPage){
     store.dispatch(actionChosePage(page));
-    // session.set("curPage",page);
     this.setState({activePage:page});
   }
   private async setPages() {
@@ -51,17 +51,18 @@ export class PagesPreview extends Component<{}, IPagePreviewState> {
     const { pages } = this.state;
     return (
 
-      <section class="page-list">
+      <div class="page-list">
         {pages &&
           pages.map((page: IPage, pageIndex: number, array: IPage[]) => (
-         
-              <PagePreview page={page} index={pageIndex} onPageSelect={this.onPageSelect} isActive={this.state.activePage! && this.state.activePage! === page} />
-              
-            
+
+            <PagePreview page={page} index={pageIndex} onPageSelect={this.onPageSelect} isActive={this.state.activePage! && this.state.activePage! === page} />
+
+
 
           ))}
 
-      </section>
+      </div>
+      
 
     );
   }

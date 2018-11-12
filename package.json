@@ -23,7 +23,7 @@
     "psdetch-tool-hand": "git+ssh://git@gitlab.com/psdetch/psdetch-tool-hand.git",
     "psdetch-tool-inspect": "git+ssh://git@gitlab.com/psdetch/psdetch-tool-inspect.git",
     "psdetch-utils": "git+ssh://git@gitlab.com/psdetch/psdetch-utils.git",
-    "psdetch-i18n": "git+ssh://git@gitlab.com/psdetch/psdetch-utils.git",
+    "psdetch-i18n": "git+ssh://git@gitlab.com/psdetch/psdetch-i18n.git",
     "sprintf-js": "^1.1.1"
   },
   "devDependencies": {

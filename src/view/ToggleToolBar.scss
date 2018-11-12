@@ -1,0 +1,71 @@
+.toggle-bar {
+  
+  
+  height: 5%;
+  position: absolute;
+  bottom:0px;
+  width:300px;
+
+.tabs {
+  position: relative;
+
+  &:not(.--jsfied) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // shared
+
+  .--hidden {
+    display: none;
+  }
+
+  a,
+  button {
+    width: 100%;
+    height: 100%;
+    display: block;
+    font-size: 1em;
+    line-height: 1.2;
+    text-align: center;
+    color: white;
+    background-color: transparent;
+  }
+
+  // primary
+
+  .-primary {
+    display: flex;
+    flex: 1 1 auto;
+    li{
+
+      &.has-text-primary {
+        
+        border-top: 1px solid #aaa;
+        
+        
+      }
+    }
+    >li {
+      flex-grow: 1;
+      >a,
+      >button {
+        white-space: nowrap;
+        padding: 0.6em 0.6em;
+       
+       
+        &:hover {
+          background-color: #aaa;
+        }
+        
+
+       
+      }
+    }
+
+   
+  }
+
+
+}
+}
