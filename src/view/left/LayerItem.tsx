@@ -117,7 +117,7 @@ export class LayerItem extends Component<ILayerItemProps, ILayerItemState> {
     const isActiveLayer = this.state.active;
     return (
       <div>
-        <div className={"layer " + (!layer.visible ? 'invisible' : '') + (isActiveLayer ? ' active' : '')} onClick={() => { this.layerItemClick(layer) }}>
+        <div className={"layerItem " + (!layer.visible ? 'invisible' : '') + (isActiveLayer ? ' active' : '')} onClick={() => { this.layerItemClick(layer) }}>
           <span class="indent" style={{ width: indent * 8 }}></span>
           <span class="icon is-small">
             <i className={"fas " + this.getIcon(layer)} aria-hidden="true"></i>

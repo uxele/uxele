@@ -3,8 +3,8 @@ import { h, Component } from "preact";
 import "./Main.scss";
 import { IProject } from "psdetch-core/build";
 import { Canvas } from "./Canvas";
-import { PagesPreview } from "./PagesPreview";
-import { LayerList } from "./LayerList";
+import { PagesPreview } from "./left/PagesPreview";
+import { LayerList } from "./left/LayerList";
 import { ToggleToolBar } from "./ToggleToolBar";
 
 

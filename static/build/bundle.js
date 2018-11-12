@@ -162,44 +162,6 @@ exports.push([module.i, ".fileDropper {\n  text-align: center;\n  display: flex;
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/LayerItem.scss":
-/*!**************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/LayerItem.scss ***!
-  \**************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".layer {\n  padding: 8px;\n  width: 100%;\n  border-bottom: 1px solid #666;\n  color: #888;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  font-size: 0.9em;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none; }\n  .layer.active {\n    background-color: #1D3A7D; }\n  .layer.invisible {\n    color: #444; }\n  .layer .icon {\n    margin-right: 5px;\n    height: 16px; }\n    .layer .icon .material-icons {\n      font-size: 16px; }\n  .layer .indent {\n    flex-shrink: 0; }\n  .layer .name {\n    flex-shrink: 1;\n    min-width: 0;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/LayerList.scss":
-/*!**************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/LayerList.scss ***!
-  \**************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".layer-list {\n  max-height: 94%;\n  overflow-y: auto;\n  margin-bottom: 6px; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/Main.scss":
 /*!*********************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/Main.scss ***!
@@ -257,63 +219,6 @@ exports.push([module.i, "nav.navbar {\n  display: flex;\n  min-height: 4rem;\n  
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/PagePreview.scss":
-/*!****************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/PagePreview.scss ***!
-  \****************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".pagePreview.card {\n  margin-bottom: 10px; }\n  .pagePreview.card .card-content {\n    padding: 0.5rem !important; }\n\n.pagePreview .activePage {\n  opacity: 0.5; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/PagePreviewImage.scss":
-/*!*********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/PagePreviewImage.scss ***!
-  \*********************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/PagesPreview.scss":
-/*!*****************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/PagesPreview.scss ***!
-  \*****************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".page-list {\n  max-height: 94%;\n  overflow-y: auto;\n  margin-bottom: 6px; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/ToggleToolBar.scss":
 /*!******************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/ToggleToolBar.scss ***!
@@ -346,6 +251,101 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 // module
 exports.push([module.i, ".toolbar {\n  display: flex;\n  flex: 1 1 auto;\n  padding-top: 0.5rem;\n  padding-bottom: 0.5rem; }\n  .toolbar .toolBtn {\n    padding-left: 1rem;\n    padding-right: 1rem;\n    font-size: 1.5rem;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    cursor: pointer; }\n    .toolbar .toolBtn.has-text-primary {\n      box-shadow: inset 1px 1px 2px 0 #222; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/LayerItem.scss":
+/*!*******************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/LayerItem.scss ***!
+  \*******************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".layerItem {\n  padding: 8px;\n  width: 100%;\n  border-bottom: 1px solid #666;\n  color: #888;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  font-size: 0.9em;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none; }\n  .layerItem.active {\n    background-color: #1D3A7D; }\n  .layerItem.invisible {\n    color: #444; }\n  .layerItem .icon {\n    margin-right: 5px;\n    height: 16px; }\n    .layerItem .icon .material-icons {\n      font-size: 16px; }\n  .layerItem .indent {\n    flex-shrink: 0; }\n  .layerItem .name {\n    flex-shrink: 1;\n    min-width: 0;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/LayerList.scss":
+/*!*******************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/LayerList.scss ***!
+  \*******************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".layerList {\n  max-height: 94%;\n  overflow-y: auto;\n  margin-bottom: 6px; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreview.scss":
+/*!*********************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreview.scss ***!
+  \*********************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".pagePreview.card {\n  margin-bottom: 10px; }\n  .pagePreview.card .card-content {\n    padding: 0.5rem !important; }\n\n.pagePreview .activePage {\n  opacity: 0.5; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreviewImage.scss":
+/*!**************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreviewImage.scss ***!
+  \**************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagesPreview.scss":
+/*!**********************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagesPreview.scss ***!
+  \**********************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".page-list {\n  max-height: 94%;\n  overflow-y: auto;\n  margin-bottom: 6px; }\n", ""]);
 
 // exports
 
@@ -9240,353 +9240,6 @@ exports.FileDropper = FileDropper;
 
 /***/ }),
 
-/***/ "./src/view/LayerItem.scss":
-/*!*********************************!*\
-  !*** ./src/view/LayerItem.scss ***!
-  \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/postcss-loader/lib!../../node_modules/sass-loader/lib/loader.js!./LayerItem.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/LayerItem.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./src/view/LayerItem.tsx":
-/*!********************************!*\
-  !*** ./src/view/LayerItem.tsx ***!
-  \********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-var build_1 = __webpack_require__(/*! psdetch-core/build */ "./node_modules/psdetch-core/build/index.js");
-__webpack_require__(/*! ./LayerItem.scss */ "./src/view/LayerItem.scss");
-var layer_1 = __webpack_require__(/*! psdetch-core/build/layer */ "./node_modules/psdetch-core/build/layer.js");
-var build_2 = __webpack_require__(/*! psdetch-faced/build */ "./node_modules/psdetch-faced/build/index.js");
-var LayerItem = /** @class */ (function (_super) {
-    __extends(LayerItem, _super);
-    function LayerItem(props) {
-        var _this = _super.call(this, props) || this;
-        _this.state = {
-            loading: true,
-            showChild: true,
-            active: false
-        };
-        _this.initLayer(props.layer);
-        return _this;
-    }
-    LayerItem.prototype.initLayer = function (layer) {
-        return __awaiter(this, void 0, void 0, function () {
-            var children;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!layer_1.isFolderLayer(layer)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, layer.children()];
-                    case 1:
-                        children = _a.sent();
-                        this.setState({ showChild: children.length > 0 });
-                        this.setState({ children: children });
-                        _a.label = 2;
-                    case 2: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    LayerItem.prototype.componentWillReceiveProps = function (nextProps) {
-        this.initLayer(nextProps.layer);
-    };
-    LayerItem.prototype.getIcon = function (layer) {
-        switch (layer.layerType) {
-            case build_1.LayerType.text:
-                return "fa-font";
-            case build_1.LayerType.folder:
-                return "fa-folder";
-            case build_1.LayerType.pixel:
-                return "fa-file-image-o";
-            case build_1.LayerType.vector:
-                return "fa-image";
-        }
-    };
-    LayerItem.prototype.componentDidMount = function () {
-        // const currentLayer = this.props.layer;
-        // this.isLayerInThis(currentLayer)
-        //   .then((isNested) => {
-        var _this = this;
-        //     this.showChild = true;
-        //     this.setState({ loading: false });
-        //   }).catch(() => this.setState({ loading: false }));
-        this.unsubscribe = build_2.store.subscribe(function () {
-            _this.setState({ active: build_2.store.getState().choseLayer && _this.props.layer === build_2.store.getState().choseLayer.layer });
-        });
-    };
-    LayerItem.prototype.componentWillUnmount = function () {
-        this.unsubscribe();
-    };
-    // async isLayerInThis(currentLayer: ILayer): Promise<boolean> {
-    //   return new Promise<boolean>((resolve, reject) => {
-    //     if ( isFolderLayer(currentLayer)) {
-    //       currentLayer.children().then((children: ILayer[]) => {
-    //         this.children = children;
-    //         for (let i = 0; i < this.children!.length; i++) {
-    //           if ( isFolderLayer(this.children![i])) {
-    //             resolve(true);
-    //           }
-    //         }
-    //       }, reject => false)
-    //     } else {
-    //       resolve(false);
-    //     }
-    //   });
-    // }
-    LayerItem.prototype.layerItemClick = function (layer) {
-        if (layer.layerType === build_1.LayerType.folder) {
-            this.setState({ showChild: !this.state.showChild });
-        }
-        else {
-            build_2.store.dispatch(build_2.actionChoseLayer(layer));
-        }
-    };
-    LayerItem.prototype.renderChildren = function () {
-        var indent = this.props.indent ? this.props.indent : 0;
-        return this.state.children.map(function (child) { return preact_1.h(LayerItem, { layer: child, indent: indent + 1 }); });
-    };
-    LayerItem.prototype.renderLayerItem = function () {
-        var _this = this;
-        var layer = this.props.layer;
-        var indent = this.props.indent ? this.props.indent : 0;
-        var isActiveLayer = this.state.active;
-        return (preact_1.h("div", null,
-            preact_1.h("div", { className: "layer " + (!layer.visible ? 'invisible' : '') + (isActiveLayer ? ' active' : ''), onClick: function () { _this.layerItemClick(layer); } },
-                preact_1.h("span", { class: "indent", style: { width: indent * 8 } }),
-                preact_1.h("span", { class: "icon is-small" },
-                    preact_1.h("i", { className: "fas " + this.getIcon(layer), "aria-hidden": "true" })),
-                preact_1.h("span", { class: "name" }, layer.name)),
-            this.state.children && this.state.showChild ? this.renderChildren() : null));
-        // }
-        // return null;
-    };
-    LayerItem.prototype.render = function () {
-        var rtn = this.renderLayerItem();
-        return rtn;
-    };
-    return LayerItem;
-}(preact_1.Component));
-exports.LayerItem = LayerItem;
-
-
-/***/ }),
-
-/***/ "./src/view/LayerList.scss":
-/*!*********************************!*\
-  !*** ./src/view/LayerList.scss ***!
-  \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/postcss-loader/lib!../../node_modules/sass-loader/lib/loader.js!./LayerList.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/LayerList.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./src/view/LayerList.tsx":
-/*!********************************!*\
-  !*** ./src/view/LayerList.tsx ***!
-  \********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-var LayerItem_1 = __webpack_require__(/*! ./LayerItem */ "./src/view/LayerItem.tsx");
-var build_1 = __webpack_require__(/*! psdetch-faced/build */ "./node_modules/psdetch-faced/build/index.js");
-__webpack_require__(/*! ./LayerList.scss */ "./src/view/LayerList.scss");
-var LayerList = /** @class */ (function (_super) {
-    __extends(LayerList, _super);
-    function LayerList() {
-        return _super.call(this) || this;
-    }
-    Object.defineProperty(LayerList.prototype, "pageState", {
-        get: function () {
-            debugger;
-            return build_1.store.getState().chosePage;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    LayerList.prototype.componentWillUnmount = function () {
-        this.unsubscribe();
-    };
-    LayerList.prototype.componentDidMount = function () {
-        var _this = this;
-        debugger;
-        this.renderLayerItem();
-        this.unsubscribe = build_1.store.subscribe(function () {
-            if (_this.pageState.page && _this.pageState.page !== _this.currentPage) {
-                _this.renderLayerItem();
-            }
-        });
-    };
-    LayerList.prototype.renderLayerItem = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _layers;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.currentPage = this.pageState.page;
-                        return [4 /*yield*/, this.currentPage.getLayers()];
-                    case 1:
-                        _layers = _a.sent();
-                        this.setState({ layers: _layers });
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    LayerList.prototype.render = function () {
-        var layers = this.state.layers;
-        return (preact_1.h("div", { class: "layer-list" }, layers &&
-            layers.map(function (layer, layerIndex, array) { return (preact_1.h(LayerItem_1.LayerItem, { layer: layer })); })));
-    };
-    return LayerList;
-}(preact_1.Component));
-exports.LayerList = LayerList;
-
-
-/***/ }),
-
 /***/ "./src/view/LogoText.tsx":
 /*!*******************************!*\
   !*** ./src/view/LogoText.tsx ***!
@@ -9680,8 +9333,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
 __webpack_require__(/*! ./Main.scss */ "./src/view/Main.scss");
 var Canvas_1 = __webpack_require__(/*! ./Canvas */ "./src/view/Canvas.tsx");
-var PagesPreview_1 = __webpack_require__(/*! ./PagesPreview */ "./src/view/PagesPreview.tsx");
-var LayerList_1 = __webpack_require__(/*! ./LayerList */ "./src/view/LayerList.tsx");
+var PagesPreview_1 = __webpack_require__(/*! ./left/PagesPreview */ "./src/view/left/PagesPreview.tsx");
+var LayerList_1 = __webpack_require__(/*! ./left/LayerList */ "./src/view/left/LayerList.tsx");
 var ToggleToolBar_1 = __webpack_require__(/*! ./ToggleToolBar */ "./src/view/ToggleToolBar.tsx");
 var Right_1 = __webpack_require__(/*! ./right/Right */ "./src/view/right/Right.tsx");
 var Main = /** @class */ (function (_super) {
@@ -9975,361 +9628,6 @@ exports.Nav = Nav;
 
 /***/ }),
 
-/***/ "./src/view/PagePreview.scss":
-/*!***********************************!*\
-  !*** ./src/view/PagePreview.scss ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/postcss-loader/lib!../../node_modules/sass-loader/lib/loader.js!./PagePreview.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/PagePreview.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./src/view/PagePreview.tsx":
-/*!**********************************!*\
-  !*** ./src/view/PagePreview.tsx ***!
-  \**********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-var PagePreviewImage_1 = __webpack_require__(/*! ./PagePreviewImage */ "./src/view/PagePreviewImage.tsx");
-__webpack_require__(/*! ./PagePreview.scss */ "./src/view/PagePreview.scss");
-var PagePreview = /** @class */ (function (_super) {
-    __extends(PagePreview, _super);
-    function PagePreview() {
-        var _this = _super.call(this) || this;
-        _this.onPageSelect = _this.onPageSelect.bind(_this);
-        return _this;
-    }
-    PagePreview.prototype.onPageSelect = function (event) {
-        this.props.onPageSelect(this.props.page);
-    };
-    PagePreview.prototype.componentWillMount = function () {
-        this.renderPageItem();
-    };
-    PagePreview.prototype.renderPageItem = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _pagePreview;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.props.page.getPreview(1)];
-                    case 1:
-                        _pagePreview = _a.sent();
-                        this.setState({ currentImage: _pagePreview });
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    PagePreview.prototype.render = function () {
-        var _index = this.props.index + 1;
-        var _pageName = this.props.page.name;
-        var currentImage = this.state.currentImage;
-        var _isActive = this.props.isActive;
-        return (preact_1.h("div", { class: "pagePreview card no-round-borders " + (_isActive ? "has-background-black-ter has-text-primary" : ""), onClick: this.onPageSelect },
-            preact_1.h("header", { class: "card-header" },
-                preact_1.h("div", { class: "card-header-title" },
-                    preact_1.h("div", { class: "media" },
-                        preact_1.h("div", { class: "media-content" },
-                            preact_1.h("span", null,
-                                "  ",
-                                _index,
-                                ".\u00A0"),
-                            preact_1.h("span", null,
-                                " ",
-                                _pageName))))),
-            preact_1.h("div", { class: "card-content no-borders" },
-                preact_1.h("div", { class: "media" },
-                    preact_1.h("div", { class: "media-content" }, currentImage && preact_1.h(PagePreviewImage_1.PagePreviewImage, { image: currentImage, width: this.props.page.width, height: this.props.page.height }))))));
-    };
-    return PagePreview;
-}(preact_1.Component));
-exports.PagePreview = PagePreview;
-
-
-/***/ }),
-
-/***/ "./src/view/PagePreviewImage.scss":
-/*!****************************************!*\
-  !*** ./src/view/PagePreviewImage.scss ***!
-  \****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/postcss-loader/lib!../../node_modules/sass-loader/lib/loader.js!./PagePreviewImage.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/PagePreviewImage.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./src/view/PagePreviewImage.tsx":
-/*!***************************************!*\
-  !*** ./src/view/PagePreviewImage.tsx ***!
-  \***************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-__webpack_require__(/*! ./PagePreviewImage.scss */ "./src/view/PagePreviewImage.scss");
-var PagePreviewImage = /** @class */ (function (_super) {
-    __extends(PagePreviewImage, _super);
-    function PagePreviewImage() {
-        return _super.call(this) || this;
-    }
-    PagePreviewImage.prototype.componentDidMount = function () {
-        var _imagePreview = new Image();
-        _imagePreview = this.props.image;
-        this.previewContainer.appendChild(_imagePreview);
-    };
-    PagePreviewImage.prototype.render = function () {
-        var _this = this;
-        return (preact_1.h("figure", { class: "image" },
-            preact_1.h("div", { ref: function (e) { return _this.previewContainer = e; } })));
-    };
-    return PagePreviewImage;
-}(preact_1.Component));
-exports.PagePreviewImage = PagePreviewImage;
-
-
-/***/ }),
-
-/***/ "./src/view/PagesPreview.scss":
-/*!************************************!*\
-  !*** ./src/view/PagesPreview.scss ***!
-  \************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../node_modules/css-loader!../../node_modules/postcss-loader/lib!../../node_modules/sass-loader/lib/loader.js!./PagesPreview.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/PagesPreview.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./src/view/PagesPreview.tsx":
-/*!***********************************!*\
-  !*** ./src/view/PagesPreview.tsx ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-__webpack_require__(/*! ./PagesPreview.scss */ "./src/view/PagesPreview.scss");
-// import { session } from "psdetch-faced";
-var PagePreview_1 = __webpack_require__(/*! ./PagePreview */ "./src/view/PagePreview.tsx");
-var build_1 = __webpack_require__(/*! psdetch-faced/build */ "./node_modules/psdetch-faced/build/index.js");
-var PagesPreview = /** @class */ (function (_super) {
-    __extends(PagesPreview, _super);
-    function PagesPreview() {
-        var _this = _super.call(this) || this;
-        _this.state = {
-            pages: [],
-            activePage: undefined
-        };
-        _this.onPageSelect = _this.onPageSelect.bind(_this);
-        return _this;
-    }
-    PagesPreview.prototype.onPageSelect = function (page) {
-        build_1.store.dispatch(build_1.actionChosePage(page));
-        this.setState({ activePage: page });
-    };
-    PagesPreview.prototype.setPages = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _pages;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.currentProject.getPages()];
-                    case 1:
-                        _pages = _a.sent();
-                        this.setState({ pages: _pages });
-                        this.setState({ activePage: _pages[0] });
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    PagesPreview.prototype.componentDidMount = function () {
-        // this.currentProject = session.get("curProject") as IProject;
-        this.currentProject = build_1.store.getState().project.project;
-        this.setPages();
-    };
-    PagesPreview.prototype.render = function () {
-        var _this = this;
-        var pages = this.state.pages;
-        return (preact_1.h("div", { class: "page-list" }, pages &&
-            pages.map(function (page, pageIndex, array) { return (preact_1.h(PagePreview_1.PagePreview, { page: page, index: pageIndex, onPageSelect: _this.onPageSelect, isActive: _this.state.activePage && _this.state.activePage === page })); })));
-    };
-    return PagesPreview;
-}(preact_1.Component));
-exports.PagesPreview = PagesPreview;
-
-
-/***/ }),
-
 /***/ "./src/view/ToggleToolBar.scss":
 /*!*************************************!*\
   !*** ./src/view/ToggleToolBar.scss ***!
@@ -10581,6 +9879,708 @@ var ToolBar = /** @class */ (function (_super) {
     return ToolBar;
 }(preact_1.Component));
 exports.ToolBar = ToolBar;
+
+
+/***/ }),
+
+/***/ "./src/view/left/LayerItem.scss":
+/*!**************************************!*\
+  !*** ./src/view/left/LayerItem.scss ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./LayerItem.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/LayerItem.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/view/left/LayerItem.tsx":
+/*!*************************************!*\
+  !*** ./src/view/left/LayerItem.tsx ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
+var build_1 = __webpack_require__(/*! psdetch-core/build */ "./node_modules/psdetch-core/build/index.js");
+__webpack_require__(/*! ./LayerItem.scss */ "./src/view/left/LayerItem.scss");
+var layer_1 = __webpack_require__(/*! psdetch-core/build/layer */ "./node_modules/psdetch-core/build/layer.js");
+var build_2 = __webpack_require__(/*! psdetch-faced/build */ "./node_modules/psdetch-faced/build/index.js");
+var LayerItem = /** @class */ (function (_super) {
+    __extends(LayerItem, _super);
+    function LayerItem(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            loading: true,
+            showChild: true,
+            active: false
+        };
+        _this.initLayer(props.layer);
+        return _this;
+    }
+    LayerItem.prototype.initLayer = function (layer) {
+        return __awaiter(this, void 0, void 0, function () {
+            var children;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!layer_1.isFolderLayer(layer)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, layer.children()];
+                    case 1:
+                        children = _a.sent();
+                        this.setState({ showChild: children.length > 0 });
+                        this.setState({ children: children });
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    LayerItem.prototype.componentWillReceiveProps = function (nextProps) {
+        this.initLayer(nextProps.layer);
+    };
+    LayerItem.prototype.getIcon = function (layer) {
+        switch (layer.layerType) {
+            case build_1.LayerType.text:
+                return "fa-font";
+            case build_1.LayerType.folder:
+                return "fa-folder";
+            case build_1.LayerType.pixel:
+                return "fa-file-image-o";
+            case build_1.LayerType.vector:
+                return "fa-image";
+        }
+    };
+    LayerItem.prototype.componentDidMount = function () {
+        // const currentLayer = this.props.layer;
+        // this.isLayerInThis(currentLayer)
+        //   .then((isNested) => {
+        var _this = this;
+        //     this.showChild = true;
+        //     this.setState({ loading: false });
+        //   }).catch(() => this.setState({ loading: false }));
+        this.unsubscribe = build_2.store.subscribe(function () {
+            _this.setState({ active: build_2.store.getState().choseLayer && _this.props.layer === build_2.store.getState().choseLayer.layer });
+        });
+    };
+    LayerItem.prototype.componentWillUnmount = function () {
+        this.unsubscribe();
+    };
+    // async isLayerInThis(currentLayer: ILayer): Promise<boolean> {
+    //   return new Promise<boolean>((resolve, reject) => {
+    //     if ( isFolderLayer(currentLayer)) {
+    //       currentLayer.children().then((children: ILayer[]) => {
+    //         this.children = children;
+    //         for (let i = 0; i < this.children!.length; i++) {
+    //           if ( isFolderLayer(this.children![i])) {
+    //             resolve(true);
+    //           }
+    //         }
+    //       }, reject => false)
+    //     } else {
+    //       resolve(false);
+    //     }
+    //   });
+    // }
+    LayerItem.prototype.layerItemClick = function (layer) {
+        if (layer.layerType === build_1.LayerType.folder) {
+            this.setState({ showChild: !this.state.showChild });
+        }
+        else {
+            build_2.store.dispatch(build_2.actionChoseLayer(layer));
+        }
+    };
+    LayerItem.prototype.renderChildren = function () {
+        var indent = this.props.indent ? this.props.indent : 0;
+        return this.state.children.map(function (child) { return preact_1.h(LayerItem, { layer: child, indent: indent + 1 }); });
+    };
+    LayerItem.prototype.renderLayerItem = function () {
+        var _this = this;
+        var layer = this.props.layer;
+        var indent = this.props.indent ? this.props.indent : 0;
+        var isActiveLayer = this.state.active;
+        return (preact_1.h("div", null,
+            preact_1.h("div", { className: "layerItem " + (!layer.visible ? 'invisible' : '') + (isActiveLayer ? ' active' : ''), onClick: function () { _this.layerItemClick(layer); } },
+                preact_1.h("span", { class: "indent", style: { width: indent * 8 } }),
+                preact_1.h("span", { class: "icon is-small" },
+                    preact_1.h("i", { className: "fas " + this.getIcon(layer), "aria-hidden": "true" })),
+                preact_1.h("span", { class: "name" }, layer.name)),
+            this.state.children && this.state.showChild ? this.renderChildren() : null));
+        // }
+        // return null;
+    };
+    LayerItem.prototype.render = function () {
+        var rtn = this.renderLayerItem();
+        return rtn;
+    };
+    return LayerItem;
+}(preact_1.Component));
+exports.LayerItem = LayerItem;
+
+
+/***/ }),
+
+/***/ "./src/view/left/LayerList.scss":
+/*!**************************************!*\
+  !*** ./src/view/left/LayerList.scss ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./LayerList.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/LayerList.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/view/left/LayerList.tsx":
+/*!*************************************!*\
+  !*** ./src/view/left/LayerList.tsx ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
+var LayerItem_1 = __webpack_require__(/*! ./LayerItem */ "./src/view/left/LayerItem.tsx");
+var build_1 = __webpack_require__(/*! psdetch-faced/build */ "./node_modules/psdetch-faced/build/index.js");
+__webpack_require__(/*! ./LayerList.scss */ "./src/view/left/LayerList.scss");
+var LayerList = /** @class */ (function (_super) {
+    __extends(LayerList, _super);
+    function LayerList() {
+        return _super.call(this) || this;
+    }
+    Object.defineProperty(LayerList.prototype, "pageState", {
+        get: function () {
+            debugger;
+            return build_1.store.getState().chosePage;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    LayerList.prototype.componentWillUnmount = function () {
+        this.unsubscribe();
+    };
+    LayerList.prototype.componentDidMount = function () {
+        var _this = this;
+        debugger;
+        this.renderLayerItem();
+        this.unsubscribe = build_1.store.subscribe(function () {
+            if (_this.pageState.page && _this.pageState.page !== _this.currentPage) {
+                _this.renderLayerItem();
+            }
+        });
+    };
+    LayerList.prototype.renderLayerItem = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _layers;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.currentPage = this.pageState.page;
+                        return [4 /*yield*/, this.currentPage.getLayers()];
+                    case 1:
+                        _layers = _a.sent();
+                        this.setState({ layers: _layers });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    LayerList.prototype.render = function () {
+        var layers = this.state.layers;
+        return (preact_1.h("div", { class: "layerList" }, layers &&
+            layers.map(function (layer, layerIndex, array) { return (preact_1.h(LayerItem_1.LayerItem, { layer: layer })); })));
+    };
+    return LayerList;
+}(preact_1.Component));
+exports.LayerList = LayerList;
+
+
+/***/ }),
+
+/***/ "./src/view/left/PagePreview.scss":
+/*!****************************************!*\
+  !*** ./src/view/left/PagePreview.scss ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./PagePreview.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreview.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/view/left/PagePreview.tsx":
+/*!***************************************!*\
+  !*** ./src/view/left/PagePreview.tsx ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
+var PagePreviewImage_1 = __webpack_require__(/*! ./PagePreviewImage */ "./src/view/left/PagePreviewImage.tsx");
+__webpack_require__(/*! ./PagePreview.scss */ "./src/view/left/PagePreview.scss");
+var PagePreview = /** @class */ (function (_super) {
+    __extends(PagePreview, _super);
+    function PagePreview() {
+        var _this = _super.call(this) || this;
+        _this.onPageSelect = _this.onPageSelect.bind(_this);
+        return _this;
+    }
+    PagePreview.prototype.onPageSelect = function (event) {
+        this.props.onPageSelect(this.props.page);
+    };
+    PagePreview.prototype.componentWillMount = function () {
+        this.renderPageItem();
+    };
+    PagePreview.prototype.renderPageItem = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _pagePreview;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.props.page.getPreview(1)];
+                    case 1:
+                        _pagePreview = _a.sent();
+                        this.setState({ currentImage: _pagePreview });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    PagePreview.prototype.render = function () {
+        var _index = this.props.index + 1;
+        var _pageName = this.props.page.name;
+        var currentImage = this.state.currentImage;
+        var _isActive = this.props.isActive;
+        return (preact_1.h("div", { class: "pagePreview card no-round-borders " + (_isActive ? "has-background-black-ter has-text-primary" : ""), onClick: this.onPageSelect },
+            preact_1.h("header", { class: "card-header" },
+                preact_1.h("div", { class: "card-header-title" },
+                    preact_1.h("div", { class: "media" },
+                        preact_1.h("div", { class: "media-content" },
+                            preact_1.h("span", null,
+                                "  ",
+                                _index,
+                                ".\u00A0"),
+                            preact_1.h("span", null,
+                                " ",
+                                _pageName))))),
+            preact_1.h("div", { class: "card-content no-borders" },
+                preact_1.h("div", { class: "media" },
+                    preact_1.h("div", { class: "media-content" }, currentImage && preact_1.h(PagePreviewImage_1.PagePreviewImage, { image: currentImage, width: this.props.page.width, height: this.props.page.height }))))));
+    };
+    return PagePreview;
+}(preact_1.Component));
+exports.PagePreview = PagePreview;
+
+
+/***/ }),
+
+/***/ "./src/view/left/PagePreviewImage.scss":
+/*!*********************************************!*\
+  !*** ./src/view/left/PagePreviewImage.scss ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./PagePreviewImage.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreviewImage.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/view/left/PagePreviewImage.tsx":
+/*!********************************************!*\
+  !*** ./src/view/left/PagePreviewImage.tsx ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
+__webpack_require__(/*! ./PagePreviewImage.scss */ "./src/view/left/PagePreviewImage.scss");
+var PagePreviewImage = /** @class */ (function (_super) {
+    __extends(PagePreviewImage, _super);
+    function PagePreviewImage() {
+        return _super.call(this) || this;
+    }
+    PagePreviewImage.prototype.componentDidMount = function () {
+        var _imagePreview = new Image();
+        _imagePreview = this.props.image;
+        this.previewContainer.appendChild(_imagePreview);
+    };
+    PagePreviewImage.prototype.render = function () {
+        var _this = this;
+        return (preact_1.h("figure", { class: "image" },
+            preact_1.h("div", { ref: function (e) { return _this.previewContainer = e; } })));
+    };
+    return PagePreviewImage;
+}(preact_1.Component));
+exports.PagePreviewImage = PagePreviewImage;
+
+
+/***/ }),
+
+/***/ "./src/view/left/PagesPreview.scss":
+/*!*****************************************!*\
+  !*** ./src/view/left/PagesPreview.scss ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./PagesPreview.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagesPreview.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/view/left/PagesPreview.tsx":
+/*!****************************************!*\
+  !*** ./src/view/left/PagesPreview.tsx ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
+__webpack_require__(/*! ./PagesPreview.scss */ "./src/view/left/PagesPreview.scss");
+// import { session } from "psdetch-faced";
+var PagePreview_1 = __webpack_require__(/*! ./PagePreview */ "./src/view/left/PagePreview.tsx");
+var build_1 = __webpack_require__(/*! psdetch-faced/build */ "./node_modules/psdetch-faced/build/index.js");
+var PagesPreview = /** @class */ (function (_super) {
+    __extends(PagesPreview, _super);
+    function PagesPreview() {
+        var _this = _super.call(this) || this;
+        _this.state = {
+            pages: [],
+            activePage: undefined
+        };
+        _this.onPageSelect = _this.onPageSelect.bind(_this);
+        return _this;
+    }
+    PagesPreview.prototype.onPageSelect = function (page) {
+        build_1.store.dispatch(build_1.actionChosePage(page));
+        this.setState({ activePage: page });
+    };
+    PagesPreview.prototype.setPages = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _pages;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.currentProject.getPages()];
+                    case 1:
+                        _pages = _a.sent();
+                        this.setState({ pages: _pages });
+                        this.setState({ activePage: _pages[0] });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    PagesPreview.prototype.componentDidMount = function () {
+        // this.currentProject = session.get("curProject") as IProject;
+        this.currentProject = build_1.store.getState().project.project;
+        this.setPages();
+    };
+    PagesPreview.prototype.render = function () {
+        var _this = this;
+        var pages = this.state.pages;
+        return (preact_1.h("div", { class: "page-list" }, pages &&
+            pages.map(function (page, pageIndex, array) { return (preact_1.h(PagePreview_1.PagePreview, { page: page, index: pageIndex, onPageSelect: _this.onPageSelect, isActive: _this.state.activePage && _this.state.activePage === page })); })));
+    };
+    return PagesPreview;
+}(preact_1.Component));
+exports.PagesPreview = PagesPreview;
 
 
 /***/ }),

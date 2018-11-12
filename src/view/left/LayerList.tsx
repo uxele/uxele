@@ -1,5 +1,6 @@
+
 import { h, Component } from "preact";
-import { IPage, ILayer } from "psdetch-core";
+import { IPage, ILayer } from "psdetch-core/build";
 
 import { LayerItem } from "./LayerItem"
 import { store } from "psdetch-faced/build";
@@ -48,7 +49,7 @@ export class LayerList extends Component<{}, ILayerListState> {
     const { layers } = this.state;
     return (
 
-      <div class="layer-list">
+      <div class="layerList">
         {layers &&
           layers.map((layer: ILayer, layerIndex: number, array: ILayer[]) => (
               
