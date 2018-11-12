@@ -3,7 +3,6 @@ import { FileDropper } from "./FileDropper";
 import { Nav } from "./Nav";
 import "./App.scss";
 // import { initCore, Session } from "../model/Session";
-import { IPage } from "psdetch-core";
 import { Modal, falert } from "./Modal";
 // import { session } from "psdetch-faced";
 import { Main } from "./Main";
@@ -18,7 +17,7 @@ interface AppState {
 
 export class App extends Component<{}, AppState> {
   private unsubscribe?: () => void;
-  get curPage(): IPage | undefined {
+  get curPage() {
     return store.getState().chosePage.page;
   }
   constructor() {

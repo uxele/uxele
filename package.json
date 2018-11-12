@@ -15,7 +15,7 @@
     "bulmaswatch": "^0.7.2",
     "preact": "^8.3.0",
     "uxele-core": "git+ssh://git@github.com/uxele/uxele-core.git",
-    "uxele-faced": "git+ssh://git@github.com/uxele/uxele-faced.git",
+    "uxele-facade": "git+ssh://git@github.com/uxele/uxele-facade.git",
     "uxele-fileadapter-image": "git+ssh://git@github.com/uxele/uxele-fileadapter-image.git",
     "uxele-fileadapter-psd": "git+ssh://git@github.com/uxele/uxele-fileadapter-psd.git",
     "uxele-render-fabric": "git+ssh://git@github.com/uxele/uxele-render-fabric.git",
@@ -23,11 +23,9 @@
     "uxele-tool-hand": "git+ssh://git@github.com/uxele/uxele-tool-hand.git",
     "uxele-tool-inspect": "git+ssh://git@github.com/uxele/uxele-tool-inspect.git",
     "uxele-utils": "git+ssh://git@github.com/uxele/uxele-utils.git",
-    "uxele-i18n": "git+ssh://git@github.com/uxele/uxele-i18n.git",
-    "sprintf-js": "^1.1.1"
+    "uxele-i18n": "git+ssh://git@github.com/uxele/uxele-i18n.git"
   },
   "devDependencies": {
-    "@types/sprintf-js": "^1.1.0",
     "autoprefixer": "^9.1.0",
     "copy-webpack-plugin": "^4.5.2",
     "css-loader": "^1.0.0",
