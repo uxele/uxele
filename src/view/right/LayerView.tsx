@@ -1,24 +1,23 @@
 import { h, Component } from "preact";
 import "./LayerView.scss";
-import { ILayer } from "psdetch-core/build";
-import { store } from "psdetch-faced/build";
+import { facade,Core } from "uxele-facade";
 import { LayerBasicView } from "./LayerBasic";
 import { LayerExportView } from "./LayerExport";
 
 interface LayerViewState {
-  layer?: ILayer
+  layer?: Core.ILayer
 }
 export class LayerView extends Component<any, LayerViewState>{
   private unsubscribe?: Function;
   get curLayerState() {
-    return store.getState().choseLayer;
+    return facade.store.getState().choseLayer;
   }
   componentWillUnmount() {
     this.unsubscribe!();
 
   }
   componentDidMount() {
-    this.unsubscribe = store.subscribe(() => {
+    this.unsubscribe = facade.store.subscribe(() => {
       if (this.state.layer !== this.curLayerState.layer) {
         this.setState({ layer: this.curLayerState.layer });
       }

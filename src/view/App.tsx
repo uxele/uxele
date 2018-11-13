@@ -6,7 +6,7 @@ import "./App.scss";
 import { Modal, falert } from "./Modal";
 // import { session } from "psdetch-faced";
 import { Main } from "./Main";
-import { store, faced, actionChosePage } from "psdetch-faced";
+import { facade} from "uxele-facade";
 
 interface AppState {
 
@@ -18,7 +18,7 @@ interface AppState {
 export class App extends Component<{}, AppState> {
   private unsubscribe?: () => void;
   get curPage() {
-    return store.getState().chosePage.page;
+    return facade.store.getState().chosePage.page;
   }
   constructor() {
     super();
@@ -28,10 +28,10 @@ export class App extends Component<{}, AppState> {
   }
   loadFile = (_f: File) => {
     this.setState({ loading: true });
-    faced.projectOpenLocalFile(_f)
+    facade.projectOpenLocalFile(_f)
       .then(async (proj) => {
         const pgs = await proj.getPages();
-        store.dispatch(actionChosePage(pgs[0]));
+        facade.store.dispatch(facade.actionChosePage(pgs[0]));
       }, (err: string) => {
         falert(err);
       })

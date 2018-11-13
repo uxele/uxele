@@ -1,7 +1,6 @@
 import { h, Component } from "preact";
 import "./Right.scss";
-import { store } from "psdetch-faced/build";
-import { BaseTool } from "psdetch-core/build";
+import {facade} from "uxele-facade";
 import { LayerView } from "./LayerView";
 
 interface RightViewState{
@@ -10,7 +9,7 @@ interface RightViewState{
 export class RightView extends Component<{}, RightViewState>{
   // private unsubscribe?: Function;
   get curToolState(){
-    return store.getState().choseTool;
+    return facade.store.getState().choseTool;
   }
   componentDidMount() {
     // this.unsubscribe = store.subscribe(() => {

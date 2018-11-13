@@ -4,7 +4,7 @@ var deps=pkg.dependencies;
 var psdetchPkgs=[];
 var exec=require("child_process").execSync;
 for (var key in deps){
-  if (key.indexOf("psdetch-")===0){
+  if (key.indexOf("uxele-")===0){
     psdetchPkgs.push(key);
   }
 }

@@ -1,35 +1,34 @@
 import { h, Component } from "preact";
-import { IPage, IProject } from "psdetch-core/build";
 
 import "./PagesPreview.scss";
 // import { session } from "psdetch-faced";
 import { PagePreview } from "./PagePreview";
-import { store, actionChosePage } from "psdetch-faced/build";
+import { facade,Core } from "uxele-facade";
+
 
 
 
 
 interface IPagePreviewState {
-  pages: IPage[];
-  activePage?: IPage;
+  pages: Core.IPage[];
+  activePage?: Core.IPage;
 }
 
 
 export class PagesPreview extends Component<{}, IPagePreviewState> {
-  private currentProject?: IProject;
+  private currentProject?: Core.IProject;
   constructor() {
     super();
     this.state = {
       pages: [],
-      activePage:undefined
+      activePage: undefined
     }
     this.onPageSelect = this.onPageSelect.bind(this);
 
   }
 
-  private onPageSelect(page:IPage){
-    store.dispatch(actionChosePage(page));
-    // session.set("curPage",page);
+  private onPageSelect(page:Core.IPage){
+    facade.store.dispatch(facade.actionChosePage(page));
     this.setState({activePage:page});
   }
   private async setPages() {
@@ -43,7 +42,7 @@ export class PagesPreview extends Component<{}, IPagePreviewState> {
   componentDidMount() {
 
       // this.currentProject = session.get("curProject") as IProject;
-      this.currentProject=store.getState().project.project;
+      this.currentProject=facade.store.getState().project.project;
       this.setPages();
   }
 
@@ -51,17 +50,14 @@ export class PagesPreview extends Component<{}, IPagePreviewState> {
     const { pages } = this.state;
     return (
 
-      <section class="page-list">
+      <div class="page-list">
         {pages &&
-          pages.map((page: IPage, pageIndex: number, array: IPage[]) => (
-         
-              <PagePreview page={page} index={pageIndex} onPageSelect={this.onPageSelect} isActive={this.state.activePage! && this.state.activePage! === page} />
-              
-            
-
+          pages.map((page: Core.IPage, pageIndex: number, array: Core.IPage[]) => (
+            <PagePreview page={page} index={pageIndex} onPageSelect={this.onPageSelect} isActive={this.state.activePage! && this.state.activePage! === page} />
           ))}
 
-      </section>
+      </div>
+      
 
     );
   }

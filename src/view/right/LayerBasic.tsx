@@ -1,9 +1,9 @@
 import { h, Component } from "preact";
-import { ILayer } from "psdetch-core/build";
+import { Core} from "uxele-facade";
 import "./LayerBasic.scss";
 
 interface LayerBasicViewProps {
-  layer: ILayer
+  layer: Core.ILayer
 }
 interface LayerBasicViewState {
   showCss: boolean

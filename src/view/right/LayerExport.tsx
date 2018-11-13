@@ -1,22 +1,21 @@
 import { h, Component } from "preact";
 import "./LayerExport.scss";
-import { ILayer } from "psdetch-core/build";
-import { canExportText, canExportSvg, canExportImage, getExportType, IExportImageParams, exportImageUrl } from "psdetch-faced/build/faced";
+import { facade,Core } from "uxele-facade";
 import { SquareButton } from "./SquareButton";
 type ExportType = "image" | "svg" | "text";
 interface LayerExportViewProps {
-  layer: ILayer;
+  layer: Core.ILayer;
 }
 interface LayerExportViewState {
   exportType: ExportType;
-  exportImgParams: IExportImageParams;
+  exportImgParams:facade.IExportImageParams;
 }
 export class LayerExportView extends Component<LayerExportViewProps, LayerExportViewState>{
   previewUrl: string = "";
   constructor(props: LayerExportViewProps) {
     super(props);
     this.state = {
-      exportType: getExportType(props.layer),
+      exportType: facade.getExportType(props.layer),
       exportImgParams: {
         trim: true,
         scale: 1,
@@ -34,7 +33,7 @@ export class LayerExportView extends Component<LayerExportViewProps, LayerExport
   }
   async updatePreview() {
     if (this.state.exportType === "image") {
-      const url = await exportImageUrl(this.props.layer, this.state.exportImgParams);
+      const url = await facade.exportImageUrl(this.props.layer, this.state.exportImgParams);
       if (url !== this.previewUrl) {
         this.previewUrl = url;
         this.forceUpdate();
@@ -43,7 +42,7 @@ export class LayerExportView extends Component<LayerExportViewProps, LayerExport
   }
   initLayer(props: LayerExportViewProps, cb?: Function) {
     const layer = props.layer;
-    const exportType = getExportType(layer);
+    const exportType = facade.getExportType(layer);
     this.setState({ exportType: exportType }, ()=>{
       if (cb) cb();
     });
@@ -74,9 +73,9 @@ export class LayerExportView extends Component<LayerExportViewProps, LayerExport
         <div class="title has-background-grey-dark has-text-white-ter">EXPORT</div>
         <div class="cardBody">
           <div class="formats">
-            {canExportImage(this.props.layer) ? <span onClick={() => this.setState({ exportType: "image" })} class={this.state.exportType === "image" ? "active" : ""} >Image</span> : null}
-            {canExportSvg(this.props.layer) ? <span onClick={() => this.setState({ exportType: "svg" })} class={this.state.exportType === "svg" ? "active" : ""}>SVG</span> : null}
-            {canExportText(this.props.layer) ? <span onClick={() => this.setState({ exportType: "text" })} class={this.state.exportType === "text" ? "active" : ""}>Text</span> : null}
+            {facade.canExportImage(this.props.layer) ? <span onClick={() => this.setState({ exportType: "image" })} class={this.state.exportType === "image" ? "active" : ""} >Image</span> : null}
+            {facade.canExportSvg(this.props.layer) ? <span onClick={() => this.setState({ exportType: "svg" })} class={this.state.exportType === "svg" ? "active" : ""}>SVG</span> : null}
+            {facade.canExportText(this.props.layer) ? <span onClick={() => this.setState({ exportType: "text" })} class={this.state.exportType === "text" ? "active" : ""}>Text</span> : null}
           </div>
           {this.state.exportType === "image" ?
             this.renderImageParam()

@@ -14,16 +14,7 @@
     "bulma": "^0.7.2",
     "bulmaswatch": "^0.7.2",
     "preact": "^8.3.0",
-    "uxele-core": "git+ssh://git@github.com/uxele/uxele-core.git",
-    "uxele-facade": "git+ssh://git@github.com/uxele/uxele-facade.git",
-    "uxele-fileadapter-image": "git+ssh://git@github.com/uxele/uxele-fileadapter-image.git",
-    "uxele-fileadapter-psd": "git+ssh://git@github.com/uxele/uxele-fileadapter-psd.git",
-    "uxele-render-fabric": "git+ssh://git@github.com/uxele/uxele-render-fabric.git",
-    "uxele-tool-color": "git+ssh://git@github.com/uxele/uxele-tool-color.git",
-    "uxele-tool-hand": "git+ssh://git@github.com/uxele/uxele-tool-hand.git",
-    "uxele-tool-inspect": "git+ssh://git@github.com/uxele/uxele-tool-inspect.git",
-    "uxele-utils": "git+ssh://git@github.com/uxele/uxele-utils.git",
-    "uxele-i18n": "git+ssh://git@github.com/uxele/uxele-i18n.git"
+    "uxele-facade": "git+https://github.com/uxele/uxele-facade.git"
   },
   "devDependencies": {
     "autoprefixer": "^9.1.0",

@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import {lang} from "psdetch-i18n";
+import {lang} from "uxele-facade";
 import "./Modal.scss";
 interface ModalState {
   active: boolean;

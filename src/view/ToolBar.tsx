@@ -1,11 +1,8 @@
 import { h, Component } from "preact";
 import "./ToolBar.scss";
-import { HandTool } from "psdetch-tool-hand";
-import { InspectTool } from "psdetch-tool-inspect";
-import { ColorTool } from "psdetch-tool-color";
 // import { session } from "psdetch-faced";
-import { BaseTool } from "psdetch-core/build";
-import { store, actionChoseTool } from "psdetch-faced/build";
+import { facade,tools } from "uxele-facade";
+import { HandTool, InspectTool } from "uxele-facade/build/tools";
 interface ToolBarState {
   display: boolean
 }
@@ -16,33 +13,27 @@ interface ToolBarState {
 //   "tool_color":"fas fa-eye-dropper"
 // }
 export class ToolBar extends Component<{}, ToolBarState>{
-  private handTool?: HandTool;
-  private inspectTool?:InspectTool;
-  private colorTool?:ColorTool;
   private unsubscribe?: () => void;
   get curTool() {
-    return store.getState().choseTool.tool;
+    return facade.store.getState().choseTool.tool;
   }
-  set curTool(v: BaseTool | undefined) {
-    store.dispatch(actionChoseTool(v));
+  set curTool(v: tools.BaseTool | undefined) {
+    facade.store.dispatch(facade.actionChoseTool(v));
   }
   get renderer() {
-    return store.getState().renderer;
+    return facade.store.getState().renderer;
   }
   constructor() {
     super();
     this.state = { display: false };
   }
   componentDidMount() {
-    this.unsubscribe = store.subscribe(() => {
+    this.unsubscribe = facade.store.subscribe(() => {
       if (this.state.display === false) {
         if (this.renderer.renderer) {
           this.setState({ display: true });
-          this.handTool = new HandTool(this.renderer.renderer);
-          this.inspectTool = new InspectTool(this.renderer.renderer);
-          this.colorTool = new ColorTool(this.renderer.renderer);
-          this.toggleTool(this.handTool);
-          this.setExclusiveTool(this.inspectTool);
+          this.toggleTool(tools.getToolInst(HandTool));
+          this.setExclusiveTool(tools.getToolInst(InspectTool));
         }
       }
     })
@@ -54,9 +45,7 @@ export class ToolBar extends Component<{}, ToolBarState>{
     if (this.state.display) {
       return (
         <div class="toolbar">
-          {/* {this.bindToggleTool(this.handTool)} */}
-          {this.bindExclusiveTool(this.inspectTool)}
-          {this.bindExclusiveTool(this.colorTool)}
+            {tools.getTools().filter((t)=>!(t instanceof tools.HandTool)).map((t)=>this.bindExclusiveTool(t))}
         </div>
       )
     } else {
@@ -64,7 +53,7 @@ export class ToolBar extends Component<{}, ToolBarState>{
     }
 
   }
-  private setExclusiveTool(tool?: BaseTool) {
+  private setExclusiveTool(tool?: tools.BaseTool) {
     if (tool && this.curTool !== tool) {
       if (this.curTool) {
         this.curTool.deactivate();
@@ -87,7 +76,7 @@ export class ToolBar extends Component<{}, ToolBarState>{
 
     }
   }
-  private bindExclusiveTool(tool?: BaseTool) {
+  private bindExclusiveTool(tool?: tools.BaseTool) {
     if (tool) {
       return (
         <div onClick={() => this.setExclusiveTool(tool)} class={`toolBtn ${tool.activated ? 'has-background-black-ter has-text-primary' : ''}`}>
@@ -98,7 +87,7 @@ export class ToolBar extends Component<{}, ToolBarState>{
       return null;
     }
   }
-  private toggleTool(t?: BaseTool) {
+  private toggleTool(t?: tools.BaseTool) {
     if (t) {
       if (t.activated) {
         t.deactivate()
@@ -116,7 +105,7 @@ export class ToolBar extends Component<{}, ToolBarState>{
     }
 
   }
-  private bindToggleTool(tool?: BaseTool) {
+  private bindToggleTool(tool?: tools.BaseTool) {
     if (tool) {
       return (
         <div onClick={() => this.toggleTool(tool)} class={`toolBtn ${tool.activated ? 'has-background-black-ter has-text-primary' : ''}`}>
