@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 import "./LayerItem.scss";
 import { facade,Core } from "uxele-facade";
-import { isFolderLayer } from "uxele-facade/build/facade";
+import { util } from "uxele-facade";
 
 
 
@@ -33,7 +33,7 @@ export class LayerItem extends Component<ILayerItemProps, ILayerItemState> {
     this.initLayer(props.layer);
   }
   async initLayer(layer: Core.ILayer) {
-    if (isFolderLayer(layer)) {
+    if (util.layer.isFolderLayer(layer)) {
       const children = await layer.children();
       this.setState({ showChild: children.length > 0 })
       this.setState({ children });
