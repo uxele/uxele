@@ -4,7 +4,7 @@ import "./Main.scss";
 import { Canvas } from "./Canvas";
 import { PagesPreview } from "./left/PagesPreview";
 import { LayerList } from "./left/LayerList";
-import { ToggleToolBar } from "./ToggleToolBar";
+import { ToggleToolBar } from "./left/ToggleToolBar";
 
 
 import { RightView } from "./right/Right";
