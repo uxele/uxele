@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import "./LayerExport.scss";
-import { facade,Core } from "uxele-facade";
+import { facade, Core } from "uxele-facade";
 import { SquareButton } from "./SquareButton";
 type ExportType = "image" | "svg" | "text";
 interface LayerExportViewProps {
@@ -8,7 +8,7 @@ interface LayerExportViewProps {
 }
 interface LayerExportViewState {
   exportType: ExportType;
-  exportImgParams:facade.IExportImageParams;
+  exportImgParams: facade.IExportImageParams;
 }
 export class LayerExportView extends Component<LayerExportViewProps, LayerExportViewState>{
   previewUrl: string = "";
@@ -28,6 +28,15 @@ export class LayerExportView extends Component<LayerExportViewProps, LayerExport
   get imgParamsFormat() {
     return this.state.exportImgParams.format.replace("image/", "").toUpperCase();
   }
+  get exportImageFileName(): string {
+    return facade.getExportImageFileName(this.props.layer, this.state.exportImgParams);
+  }
+  get exportSvgFileName(): string {
+    return facade.getExportSvgFileName(this.props.layer);
+  }
+  get exportFileName(): string {
+    return this.state.exportType === "image" ? this.exportImageFileName : this.exportSvgFileName;
+  }
   componentDidMount() {
     this.updatePreview();
   }
@@ -43,7 +52,7 @@ export class LayerExportView extends Component<LayerExportViewProps, LayerExport
   initLayer(props: LayerExportViewProps, cb?: Function) {
     const layer = props.layer;
     const exportType = facade.getExportType(layer);
-    this.setState({ exportType: exportType }, ()=>{
+    this.setState({ exportType: exportType }, () => {
       if (cb) cb();
     });
 
@@ -75,13 +84,39 @@ export class LayerExportView extends Component<LayerExportViewProps, LayerExport
           <div class="formats">
             {facade.canExportImage(this.props.layer) ? <span onClick={() => this.setState({ exportType: "image" })} class={this.state.exportType === "image" ? "active" : ""} >Image</span> : null}
             {facade.canExportSvg(this.props.layer) ? <span onClick={() => this.setState({ exportType: "svg" })} class={this.state.exportType === "svg" ? "active" : ""}>SVG</span> : null}
-            {facade.canExportText(this.props.layer) ? <span onClick={() => this.setState({ exportType: "text" })} class={this.state.exportType === "text" ? "active" : ""}>Text</span> : null}
+            {/* {facade.canExportText(this.props.layer) ? <span onClick={() => this.setState({ exportType: "text" })} class={this.state.exportType === "text" ? "active" : ""}>Text</span> : null} */}
           </div>
           {this.state.exportType === "image" ?
             this.renderImageParam()
             : null}
+          {["image", "svg"].indexOf(this.state.exportType) > -1 ?
+            this.renderFileExporters()
+            : null}
         </div>
 
+      </div>
+    )
+  }
+  async exportFile(exporter: Core.IExporter) {
+    if (this.state.exportType === "image") {
+      await facade.exportImageWithExporter(this.props.layer, exporter, this.state.exportImgParams);
+
+    } else if (this.state.exportType === "svg") {
+      const layer: Core.IVectorLayer = this.props.layer as Core.IVectorLayer;
+      await facade.exportSvgWithExporter(layer, exporter);
+    }
+    // TODO add notification
+
+  }
+  renderFileExporters() {
+    return (
+      <div class="fileExport">
+        <div class="fileName">Name: {this.exportFileName}</div>
+        <div class="exporters">
+          {facade.exporters.map((exporter) => {
+            return <button onClick={() => { this.exportFile(exporter) }} class="button is-primary is-small"><i class={exporter.iconCls}></i>{exporter.name}</button>
+          })}
+        </div>
       </div>
     )
   }
@@ -115,13 +150,7 @@ export class LayerExportView extends Component<LayerExportViewProps, LayerExport
             <SquareButton head="Scale" value={`${this.state.exportImgParams.scale}X`} ></SquareButton>
             <div class="dropdown-menu">
               <div class="dropdown-content">
-                <a href="javascript:;" onClick={() => { this.setImgScale(0.25) }} class="dropdown-item">0.25X</a>
-                <a href="javascript:;" onClick={() => { this.setImgScale(0.5) }} class="dropdown-item">0.5X</a>
-                <a href="javascript:;" onClick={() => { this.setImgScale(0.75) }} class="dropdown-item">0.75X</a>
-                <a href="javascript:;" onClick={() => { this.setImgScale(1) }} class="dropdown-item">1X</a>
-                <a href="javascript:;" onClick={() => { this.setImgScale(2) }} class="dropdown-item">2X</a>
-                <a href="javascript:;" onClick={() => { this.setImgScale(3) }} class="dropdown-item">3X</a>
-                <a href="javascript:;" onClick={() => { this.setImgScale(4) }} class="dropdown-item">4X</a>
+                {[0.25, 5, 0.75, 1, 2, 3, 4].map((scale) => <a href="javascript:;" onClick={() => { this.setImgScale(scale) }} class="dropdown-item">{scale}X</a>)}
                 <hr class="dropdown-divider" />
                 <a onClick={() => { const scale = parseFloat(window.prompt("Please enter scale number: ", this.state.exportImgParams.scale.toString())!); this.setImgScale(scale) }} href="javascript:;" class="dropdown-item">
                   Other Scale

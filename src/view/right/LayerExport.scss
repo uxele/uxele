@@ -17,38 +17,57 @@
     .imgParam {
       .preview {
         position: relative;
-        height:200px;
+        height: 200px;
         background: url("../../img/ts_bg.png");
         >img {
           max-width: 90%;
           max-height: 90%;
           position: absolute;
-          left:50%;
-          top:50%;
-          transform: translate(-50%,-50%);
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
         }
       }
-      .options{
+      .options {
         display: flex;
         flex-wrap: wrap;
-        >*{
-          width:50%;
-          border-bottom:1px solid $grey-dark;
+        >* {
+          width: 50%;
+          border-bottom: 1px solid $grey-dark;
         }
         >*:nth-child(even) {
           border-left: 1px solid $grey-dark;
         }
-        .dropdown-content{
-          background: darken($grey-darker,30);
+        .dropdown-content {
+          background: darken($grey-darker, 30);
         }
       }
     }
-    .row{
+    .row {
       display: flex;
       align-items: center;
-      >div{
-        padding:8px;
+      >div {
+        padding: 8px;
         flex: 1 0 auto;
+      }
+    }
+    .fileExport {
+      padding: 10px;
+      .fileName {
+        font-weight: bold;
+        font-size: 0.85em;
+        color: darken($text, 15);
+      }
+      .exporters {
+        display: flex;
+        justify-content: space-around;
+        margin-top:10px;
+        margin-bottom:10px;
+        >button{
+          >i{
+            margin-right:5px;
+          }
+        }
       }
     }
   }

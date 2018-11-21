@@ -1,6 +1,7 @@
 import { h, Component } from "preact";
-import { Core} from "uxele-facade";
+import { Core,util} from "uxele-facade";
 import "./LayerBasic.scss";
+import { ClickCopyDiv } from "./ClickCopyDiv";
 
 interface LayerBasicViewProps {
   layer: Core.ILayer
@@ -18,14 +19,24 @@ export class LayerBasicView extends Component<LayerBasicViewProps, LayerBasicVie
   renderTable(){
     const layer = this.props.layer;
     return (<table>
-      <tr><td>Name</td><td>{layer.name}</td></tr>
-      <tr><td>Type</td><td>{layer.layerType}</td></tr>
-      <tr><td>Left</td><td>{layer.rect.left}</td></tr>
-      <tr><td>Top</td><td>{layer.rect.top}</td></tr>
-      <tr><td>Width</td><td>{layer.rect.width}</td></tr>
-      <tr><td>Height</td><td>{layer.rect.height}</td></tr>
+      <tr><td>Name</td><td><ClickCopyDiv value={layer.name}></ClickCopyDiv></td></tr>
+      <tr><td>Type</td><td><ClickCopyDiv value={layer.layerType}></ClickCopyDiv></td></tr>
+      <tr><td>Left</td><td><ClickCopyDiv value={layer.rect.left.toString()}></ClickCopyDiv></td></tr>
+      <tr><td>Top</td><td><ClickCopyDiv value={layer.rect.top.toString()}></ClickCopyDiv></td></tr>
+      <tr><td>Width</td><td><ClickCopyDiv value={layer.rect.width.toString()}></ClickCopyDiv></td></tr>
+      <tr><td>Height</td><td><ClickCopyDiv value={layer.rect.height.toString()}></ClickCopyDiv></td></tr>
+      {this.renderTextProps()}
     </table>);
   } 
+  renderTextProps(){
+    const layer = this.props.layer;
+    if (util.layer.isTextLayer(layer)){
+      return (
+        <tr><td>Text</td><td><ClickCopyDiv value={layer.getText()}></ClickCopyDiv></td></tr>
+      )
+    }
+    return null;
+  }
   renderCss(){
     const layer = this.props.layer;
     const css=`left: ${layer.rect.left}px;

@@ -1,0 +1,18 @@
+@import "../../scss/variables.scss";
+.clickCopyDiv {
+  position: relative;
+  &:hover {
+    .label {
+      color: lighten($primary,20);
+    }
+  }
+  .copied {
+    position: absolute;
+    padding: 3px;
+    background: black;
+    border: 1px solid #999;
+    left: 30px;
+    top: -10px;
+    color: $text;
+  }
+}

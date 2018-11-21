@@ -17,8 +17,8 @@ interface AppState {
 
 export class App extends Component<{}, AppState> {
   private unsubscribe?: () => void;
-  get curPage() {
-    return facade.store.getState().chosePage.page;
+  get curProject(){
+    return facade.store.getState().project.project;
   }
   constructor() {
     super();
@@ -30,8 +30,8 @@ export class App extends Component<{}, AppState> {
     this.setState({ loading: true });
     facade.projectOpenLocalFile(_f)
       .then(async (proj) => {
-        const pgs = await proj.getPages();
-        facade.store.dispatch(facade.actionChosePage(pgs[0]));
+        // const pgs = await proj.getPages();
+        // facade.store.dispatch(facade.actionChosePage(pgs[0]));
       }, (err: string) => {
         falert(err);
       })
@@ -44,9 +44,9 @@ export class App extends Component<{}, AppState> {
     return (
       <div class="app">
         <Nav></Nav>
-        {!this.state.loading && !this.curPage && <FileDropper onFile={this.loadFile}></FileDropper>}
+        {!this.state.loading && !this.curProject && <FileDropper onFile={this.loadFile}></FileDropper>}
         {this.state.loading && <div class="loading is-size-4 has-text-grey"><i class="fas fa-spinner is-size-2 has-text-primary animated infinite spin"></i> Parsing... Please be patient.</div>}
-        {this.curPage &&
+        {this.curProject &&
           <Main></Main>
         }
         <Modal></Modal>

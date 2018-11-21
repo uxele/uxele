@@ -79,7 +79,7 @@ export class ToolBar extends Component<{}, ToolBarState>{
   private bindExclusiveTool(tool?: tools.BaseTool) {
     if (tool) {
       return (
-        <div onClick={() => this.setExclusiveTool(tool)} class={`toolBtn ${tool.activated ? 'has-background-black-ter has-text-primary' : ''}`}>
+        <div onClick={() => this.setExclusiveTool(tool)} class={`toolBtn ${tool.activated ? 'active' : ''}`}>
           <i class={tool.cls}></i>
         </div>
       )
@@ -108,7 +108,7 @@ export class ToolBar extends Component<{}, ToolBarState>{
   private bindToggleTool(tool?: tools.BaseTool) {
     if (tool) {
       return (
-        <div onClick={() => this.toggleTool(tool)} class={`toolBtn ${tool.activated ? 'has-background-black-ter has-text-primary' : ''}`}>
+        <div onClick={() => this.toggleTool(tool)} class={`toolBtn ${tool.activated ? 'active' : ''}`}>
           <i class={tool.cls}></i>
         </div>
       )
