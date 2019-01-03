@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 import { Core,util} from "uxele-facade";
 import "./LayerBasic.scss";
-import { ClickCopyDiv } from "./ClickCopyDiv";
+import { ClickCopyDiv } from "../ClickCopyDiv";
 
 interface LayerBasicViewProps {
   layer: Core.ILayer

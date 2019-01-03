@@ -105,59 +105,46 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var types = __importStar(__webpack_require__(/*! ./types */ "../uxele-core/build/types.js"));
 var BasicEvents_1 = __webpack_require__(/*! ./BasicEvents */ "../uxele-core/build/BasicEvents.js");
 var BaseRenderer = /** @class */ (function (_super) {
     __extends(BaseRenderer, _super);
-    function BaseRenderer(ele, renderWidth, renderHeight) {
+    function BaseRenderer(parent) {
         var _this = _super.call(this) || this;
-        _this.ele = ele;
-        _this.renderWidth = renderWidth;
-        _this.renderHeight = renderHeight;
+        _this.parent = parent;
+        // protected abstract setCanvasSize(width: number, height: number): void
         _this.zoomLevel = 1;
+        setTimeout(function () {
+            _this._delegateEvents();
+        });
         return _this;
     }
-    BaseRenderer.prototype.resizeRender = function (width, height) {
-        this.setCanvasSize(width, height);
-        this.renderWidth = width;
-        this.renderHeight = height;
-    };
+    Object.defineProperty(BaseRenderer.prototype, "renderWidth", {
+        get: function () {
+            return this.parent.clientWidth;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseRenderer.prototype, "renderHeight", {
+        get: function () {
+            return this.parent.clientHeight;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(BaseRenderer.prototype, "minX", {
+        /**
+         * The minimum left where user can scroll canvas
+         */
         get: function () {
             return -this.renderWidth / 2;
         },
@@ -165,6 +152,9 @@ var BaseRenderer = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(BaseRenderer.prototype, "minY", {
+        /**
+         * The minimum top where user can scroll canvas
+         */
         get: function () {
             return -this.renderHeight / 2;
         },
@@ -172,38 +162,36 @@ var BaseRenderer = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(BaseRenderer.prototype, "maxX", {
+        /**
+         * The max left where user can scroll canvas
+         */
         get: function () {
-            return this.getPage().width * this.zoom() - this.renderWidth / 2;
+            return this.imgWidth - this.renderWidth / 2;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(BaseRenderer.prototype, "maxY", {
         get: function () {
-            return this.getPage().height * this.zoom() - this.renderHeight / 2;
+            return this.imgHeight - this.renderHeight / 2;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(BaseRenderer.prototype, "imgWidth", {
-        get: function () {
-            return this.getPage().width * this.zoom();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "imgHeight", {
-        get: function () {
-            return this.getPage().height * this.zoom();
-        },
-        enumerable: true,
-        configurable: true
-    });
+    BaseRenderer.prototype._delegateEvents = function () {
+        var _this = this;
+        types.rendererEvents.forEach(function (evt) {
+            _this.delegateEvents(evt, function (e) {
+                _this.emit(evt, e);
+            });
+        });
+    };
     BaseRenderer.prototype.mouseEventToCoords = function (evt) {
         var e = evt.e;
+        var container = this.parent.getBoundingClientRect();
         return {
-            x: e.offsetX,
-            y: e.offsetY
+            x: e.clientX - container.left,
+            y: e.clientY - container.top
         };
     };
     BaseRenderer.prototype.rendererPointToRealPoint = function (rendererPoint, clamp) {
@@ -227,58 +215,19 @@ var BaseRenderer = /** @class */ (function (_super) {
             y: Math.round(realPoint.y * this.zoom() - this.panY()),
         };
     };
-    BaseRenderer.prototype.getPage = function () {
-        return this.curPage;
-        // if (this.curPage) {
-        // } else {
-        //   throw new Error("No page is rendered.");
-        // }
-    };
-    // zoom(level?: number): number {
-    //   if (level !== undefined) {
-    //     const curX = this.panX();
-    //     const curY = this.panY();
-    //     const curZoom = this.zoomLevel;
-    //     this.zoomLevel = level;
-    //     const targetX = curX + this.getPage()!.width * (level - curZoom) / 2;
-    //     const targetY = curY + this.getPage()!.height * (level - curZoom) / 2;
-    //     this.zoomWithoutPan(level)
-    //       .then(() => {
-    //         this.panX(targetX);
-    //         this.panY(targetY);
-    //       })
-    //     return level;
-    //   } else {
-    //     return this.zoomLevel;
-    //   }
-    // }
-    BaseRenderer.prototype.zoom = function (level) {
-        var _this = this;
-        if (level !== undefined) {
-            this.getPage().getPreview(level)
-                .then(function (img) {
-                _this.setBackground(img);
-            });
-            this.zoomLevel = level;
-            return level;
+    BaseRenderer.prototype.panX = function (pixel) {
+        if (pixel !== undefined) {
+            var clampPixel = Math.min(Math.max(pixel, this.minX), this.maxX);
+            this._panX(clampPixel);
         }
-        return this.zoomLevel;
+        return this._panX();
     };
-    BaseRenderer.prototype.renderPage = function (page) {
-        return __awaiter(this, void 0, void 0, function () {
-            var img;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.curPage = page;
-                        return [4 /*yield*/, page.getPreview(this.zoom())];
-                    case 1:
-                        img = _a.sent();
-                        this.setBackground(img);
-                        return [2 /*return*/];
-                }
-            });
-        });
+    BaseRenderer.prototype.panY = function (pixel) {
+        if (pixel !== undefined) {
+            var clampPixel = Math.min(Math.max(pixel, this.minY), this.maxY);
+            this._panY(clampPixel);
+        }
+        return this._panY();
     };
     BaseRenderer.prototype.realRectToRendererRect = function (realRect) {
         return realRect.pan(-this.panX() / this.zoom(), -this.panY() / this.zoom()).zoom(this.zoom());
@@ -504,6 +453,16 @@ var Rect = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Rect.prototype, "leftTop", {
+        get: function () {
+            return {
+                x: this.left,
+                y: this.top
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
     Rect.prototype.contains = function (rect) {
         return this.left <= rect.left && this.top <= rect.top && this.right >= rect.right && this.bottom >= rect.bottom;
     };
@@ -591,6 +550,11 @@ var Rect = /** @class */ (function () {
     };
     Rect.prototype.isOverlapTo = function (t) {
         return this.left < t.right && t.left < this.right && this.top < t.bottom && t.top < this.bottom;
+    };
+    Rect.prototype.panTo = function (newLeftTop) {
+        var offsetX = newLeftTop.x - this.left;
+        var offsetY = newLeftTop.y - this.top;
+        return this.pan(offsetX, offsetY);
     };
     Rect.prototype.distance = function (rect) {
         var rect1 = this;
@@ -684,6 +648,40 @@ function getDistance(rect1, rect2, mode) {
 
 /***/ }),
 
+/***/ "../uxele-core/build/Renderer.js":
+/*!********************************!*\
+  !*** .-core/build/Renderer.js ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function isDrawImage(opt) {
+    return !!opt.img;
+}
+exports.isDrawImage = isDrawImage;
+function isDrawLine(opt) {
+    return opt.x1 !== undefined;
+}
+exports.isDrawLine = isDrawLine;
+function isDrawText(opt) {
+    return opt.txt !== undefined;
+}
+exports.isDrawText = isDrawText;
+function isDrawCircle(opt) {
+    return opt.radius !== undefined;
+}
+exports.isDrawCircle = isDrawCircle;
+function isDrawRect(opt) {
+    return opt.width !== undefined;
+}
+exports.isDrawRect = isDrawRect;
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-core/src/Renderer.js.map
+
+/***/ }),
+
 /***/ "../uxele-core/build/index.js":
 /*!*****************************!*\
   !*** .-core/build/index.js ***!
@@ -702,6 +700,7 @@ __export(__webpack_require__(/*! ./Rect */ "../uxele-core/build/Rect.js"));
 __export(__webpack_require__(/*! ./Progress */ "../uxele-core/build/Progress.js"));
 __export(__webpack_require__(/*! ./BaseRenderer */ "../uxele-core/build/BaseRenderer.js"));
 __export(__webpack_require__(/*! ./BasicEvents */ "../uxele-core/build/BasicEvents.js"));
+__export(__webpack_require__(/*! ./Renderer */ "../uxele-core/build/Renderer.js"));
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-core/src/index.js.map
 
 /***/ }),
@@ -716,6 +715,7 @@ __export(__webpack_require__(/*! ./BasicEvents */ "../uxele-core/build/BasicEven
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.rendererEvents = ["mousedown", "mouseup", "mousemove", "click", "mouseleave"];
 var LayerType;
 (function (LayerType) {
     LayerType["folder"] = "folder";
@@ -740,7 +740,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var uxele_i18n_1 = __webpack_require__(/*! uxele-i18n */ "../uxele-exporter-local/node_modules/uxele-i18n/build/index.js");
+var uxele_i18n_1 = __webpack_require__(/*! uxele-i18n */ "../uxele-i18n/build/index.js");
 var file_saver_1 = __importDefault(__webpack_require__(/*! file-saver */ "../uxele-exporter-local/node_modules/file-saver/dist/FileSaver.min.js"));
 var LocalExporter = /** @class */ (function () {
     function LocalExporter() {
@@ -790,321 +790,6 @@ __export(__webpack_require__(/*! ./LocalExporter */ "../uxele-exporter-local/bui
 
 //# sourceMappingURL=FileSaver.min.js.map
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../uxele/node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
-
-/***/ }),
-
-/***/ "../uxele-exporter-local/node_modules/uxele-i18n/build/index.js":
-/*!***************************************************************!*\
-  !*** .-exporter-local/node_modules/uxele-i18n/build/index.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./lang */ "../uxele-exporter-local/node_modules/uxele-i18n/build/lang.js"));
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-i18n/src/index.js.map
-
-/***/ }),
-
-/***/ "../uxele-exporter-local/node_modules/uxele-i18n/build/lang.js":
-/*!**************************************************************!*\
-  !*** .-exporter-local/node_modules/uxele-i18n/build/lang.js ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var sprintf_js_1 = __webpack_require__(/*! sprintf-js */ "../uxele-exporter-local/node_modules/uxele-i18n/node_modules/sprintf-js/src/sprintf.js");
-var en_1 = __webpack_require__(/*! ./langs/en */ "../uxele-exporter-local/node_modules/uxele-i18n/build/langs/en.js");
-var langs = [en_1.en];
-var curLang = en_1.en;
-function lang(key) {
-    var args = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        args[_i - 1] = arguments[_i];
-    }
-    return sprintf_js_1.sprintf.apply(void 0, [curLang.dict[key]].concat(args));
-}
-exports.lang = lang;
-function setCurLang(_lang) {
-    curLang = _lang;
-}
-exports.setCurLang = setCurLang;
-function getLangs() {
-    return langs;
-}
-exports.getLangs = getLangs;
-function getCurLang() {
-    return curLang;
-}
-exports.getCurLang = getCurLang;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-i18n/src/lang.js.map
-
-/***/ }),
-
-/***/ "../uxele-exporter-local/node_modules/uxele-i18n/build/langs/en.js":
-/*!******************************************************************!*\
-  !*** .-exporter-local/node_modules/uxele-i18n/build/langs/en.js ***!
-  \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.en = {
-    "name": "English",
-    "slug": "en",
-    "dict": {
-        error_openfile_no_adapter: "Cannot find decoder for file: %s",
-        error_canvas_convert_file_fail: "Cannot export canvas to blob with format %s. Detailed error: %s",
-        error_layerExport_exportImage_unsupported_layerType: "Cannot export layer: %s as an Image, unsupported layer type: %s",
-        error_renderer_nopage: "No page is renderred while try to run action: %s",
-        tool_hand_name: "Hand",
-        download: "Download",
-        ok: "OK",
-        no: "NO",
-        yes: "YES"
-    }
-};
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-i18n/src/langs/en.js.map
-
-/***/ }),
-
-/***/ "../uxele-exporter-local/node_modules/uxele-i18n/node_modules/sprintf-js/src/sprintf.js":
-/*!***************************************************************************************!*\
-  !*** .-exporter-local/node_modules/uxele-i18n/node_modules/sprintf-js/src/sprintf.js ***!
-  \***************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
-
-!function() {
-    'use strict'
-
-    var re = {
-        not_string: /[^s]/,
-        not_bool: /[^t]/,
-        not_type: /[^T]/,
-        not_primitive: /[^v]/,
-        number: /[diefg]/,
-        numeric_arg: /[bcdiefguxX]/,
-        json: /[j]/,
-        not_json: /[^j]/,
-        text: /^[^\x25]+/,
-        modulo: /^\x25{2}/,
-        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,
-        key: /^([a-z_][a-z_\d]*)/i,
-        key_access: /^\.([a-z_][a-z_\d]*)/i,
-        index_access: /^\[(\d+)\]/,
-        sign: /^[\+\-]/
-    }
-
-    function sprintf(key) {
-        // `arguments` is not an array, but should be fine for this call
-        return sprintf_format(sprintf_parse(key), arguments)
-    }
-
-    function vsprintf(fmt, argv) {
-        return sprintf.apply(null, [fmt].concat(argv || []))
-    }
-
-    function sprintf_format(parse_tree, argv) {
-        var cursor = 1, tree_length = parse_tree.length, arg, output = '', i, k, match, pad, pad_character, pad_length, is_positive, sign
-        for (i = 0; i < tree_length; i++) {
-            if (typeof parse_tree[i] === 'string') {
-                output += parse_tree[i]
-            }
-            else if (Array.isArray(parse_tree[i])) {
-                match = parse_tree[i] // convenience purposes only
-                if (match[2]) { // keyword argument
-                    arg = argv[cursor]
-                    for (k = 0; k < match[2].length; k++) {
-                        if (!arg.hasOwnProperty(match[2][k])) {
-                            throw new Error(sprintf('[sprintf] property "%s" does not exist', match[2][k]))
-                        }
-                        arg = arg[match[2][k]]
-                    }
-                }
-                else if (match[1]) { // positional argument (explicit)
-                    arg = argv[match[1]]
-                }
-                else { // positional argument (implicit)
-                    arg = argv[cursor++]
-                }
-
-                if (re.not_type.test(match[8]) && re.not_primitive.test(match[8]) && arg instanceof Function) {
-                    arg = arg()
-                }
-
-                if (re.numeric_arg.test(match[8]) && (typeof arg !== 'number' && isNaN(arg))) {
-                    throw new TypeError(sprintf('[sprintf] expecting number but found %T', arg))
-                }
-
-                if (re.number.test(match[8])) {
-                    is_positive = arg >= 0
-                }
-
-                switch (match[8]) {
-                    case 'b':
-                        arg = parseInt(arg, 10).toString(2)
-                        break
-                    case 'c':
-                        arg = String.fromCharCode(parseInt(arg, 10))
-                        break
-                    case 'd':
-                    case 'i':
-                        arg = parseInt(arg, 10)
-                        break
-                    case 'j':
-                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
-                        break
-                    case 'e':
-                        arg = match[7] ? parseFloat(arg).toExponential(match[7]) : parseFloat(arg).toExponential()
-                        break
-                    case 'f':
-                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
-                        break
-                    case 'g':
-                        arg = match[7] ? String(Number(arg.toPrecision(match[7]))) : parseFloat(arg)
-                        break
-                    case 'o':
-                        arg = (parseInt(arg, 10) >>> 0).toString(8)
-                        break
-                    case 's':
-                        arg = String(arg)
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 't':
-                        arg = String(!!arg)
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'T':
-                        arg = Object.prototype.toString.call(arg).slice(8, -1).toLowerCase()
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'u':
-                        arg = parseInt(arg, 10) >>> 0
-                        break
-                    case 'v':
-                        arg = arg.valueOf()
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'x':
-                        arg = (parseInt(arg, 10) >>> 0).toString(16)
-                        break
-                    case 'X':
-                        arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase()
-                        break
-                }
-                if (re.json.test(match[8])) {
-                    output += arg
-                }
-                else {
-                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
-                        sign = is_positive ? '+' : '-'
-                        arg = arg.toString().replace(re.sign, '')
-                    }
-                    else {
-                        sign = ''
-                    }
-                    pad_character = match[4] ? match[4] === '0' ? '0' : match[4].charAt(1) : ' '
-                    pad_length = match[6] - (sign + arg).length
-                    pad = match[6] ? (pad_length > 0 ? pad_character.repeat(pad_length) : '') : ''
-                    output += match[5] ? sign + arg + pad : (pad_character === '0' ? sign + pad + arg : pad + sign + arg)
-                }
-            }
-        }
-        return output
-    }
-
-    var sprintf_cache = Object.create(null)
-
-    function sprintf_parse(fmt) {
-        if (sprintf_cache[fmt]) {
-            return sprintf_cache[fmt]
-        }
-
-        var _fmt = fmt, match, parse_tree = [], arg_names = 0
-        while (_fmt) {
-            if ((match = re.text.exec(_fmt)) !== null) {
-                parse_tree.push(match[0])
-            }
-            else if ((match = re.modulo.exec(_fmt)) !== null) {
-                parse_tree.push('%')
-            }
-            else if ((match = re.placeholder.exec(_fmt)) !== null) {
-                if (match[2]) {
-                    arg_names |= 1
-                    var field_list = [], replacement_field = match[2], field_match = []
-                    if ((field_match = re.key.exec(replacement_field)) !== null) {
-                        field_list.push(field_match[1])
-                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
-                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
-                                field_list.push(field_match[1])
-                            }
-                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
-                                field_list.push(field_match[1])
-                            }
-                            else {
-                                throw new SyntaxError('[sprintf] failed to parse named argument key')
-                            }
-                        }
-                    }
-                    else {
-                        throw new SyntaxError('[sprintf] failed to parse named argument key')
-                    }
-                    match[2] = field_list
-                }
-                else {
-                    arg_names |= 2
-                }
-                if (arg_names === 3) {
-                    throw new Error('[sprintf] mixing positional and named placeholders is not (yet) supported')
-                }
-                parse_tree.push(match)
-            }
-            else {
-                throw new SyntaxError('[sprintf] unexpected placeholder')
-            }
-            _fmt = _fmt.substring(match[0].length)
-        }
-        return sprintf_cache[fmt] = parse_tree
-    }
-
-    /**
-     * export to either browser or node.js
-     */
-    /* eslint-disable quote-props */
-    if (true) {
-        exports['sprintf'] = sprintf
-        exports['vsprintf'] = vsprintf
-    }
-    if (typeof window !== 'undefined') {
-        window['sprintf'] = sprintf
-        window['vsprintf'] = vsprintf
-
-        if (true) {
-            !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
-                return {
-                    'sprintf': sprintf,
-                    'vsprintf': vsprintf
-                }
-            }).call(exports, __webpack_require__, exports, module),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
-        }
-    }
-    /* eslint-enable quote-props */
-}()
-
 
 /***/ }),
 
@@ -1170,16 +855,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var uxele_render_fabric_1 = __webpack_require__(/*! uxele-render-fabric */ "../uxele-render-fabric/build/index.js");
+var uxele_render_svg_1 = __webpack_require__(/*! uxele-render-svg */ "../uxele-render-svg/index.js");
 var states_1 = __webpack_require__(/*! ./states */ "../uxele-facade/build/facade/states/index.js");
 var CanvasState_1 = __webpack_require__(/*! ./states/CanvasState */ "../uxele-facade/build/facade/states/CanvasState.js");
 var canvasControl_1 = __webpack_require__(/*! ./canvasControl */ "../uxele-facade/build/facade/canvasControl.js");
 var unsubscribe;
 var curRender;
-var curParent;
-function bindCanvas(canvas, parent) {
+function bindCanvas(parent) {
     return __awaiter(this, void 0, void 0, function () {
-        var curPage, firstPage;
+        var curPage, pages;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -1191,10 +875,7 @@ function bindCanvas(canvas, parent) {
                     if (unsubscribe) {
                         unsubscribe();
                     }
-                    canvas.width = parent.clientWidth;
-                    canvas.height = parent.clientHeight;
-                    curRender = new uxele_render_fabric_1.FabricRenderer(canvas, canvas.width, canvas.height);
-                    curParent = parent;
+                    curRender = new uxele_render_svg_1.SvgRenderer(parent);
                     //sub to mouse coords
                     subscribeMouseCoords(curRender);
                     states_1.store.dispatch(states_1.actionRendererSet(curRender));
@@ -1205,20 +886,21 @@ function bindCanvas(canvas, parent) {
                             curPage = states_1.store.getState().chosePage.page;
                             if (curPage) {
                                 // render page
-                                curRender.renderPage(curPage)
-                                    .then(function () {
-                                    // zoom canvas to fit page size;
-                                    canvasControl_1.fitToPage();
-                                });
+                                // curRender.renderPage(curPage)
+                                //   .then(() => {
+                                //     // zoom canvas to fit page size;
+                                //     fitToPage();
+                                //   });
                             }
                         }
                     });
                     return [4 /*yield*/, states_1.store.getState().project.project.getPages()];
                 case 1:
-                    firstPage = (_a.sent())[0];
-                    if (firstPage) {
-                        states_1.store.dispatch(states_1.actionChosePage(firstPage));
-                    }
+                    pages = _a.sent();
+                    return [4 /*yield*/, curRender.renderPages(pages)];
+                case 2:
+                    _a.sent();
+                    canvasControl_1.fitToPage();
                     return [2 /*return*/, curRender];
             }
         });
@@ -1235,7 +917,7 @@ window.addEventListener("resize", function () {
         resizeTimer = window.setTimeout(function () {
             resizeTimer = null;
             if (curRender) {
-                curRender.resizeRender(curParent.clientWidth, curParent.clientHeight);
+                curRender.resizeRender();
             }
         }, 100);
     }
@@ -1326,22 +1008,20 @@ function getZoom() {
 }
 exports.getZoom = getZoom;
 function fitToPage() {
-    var page = _1.store.getState().chosePage.page;
-    if (page) {
-        var render = _1.store.getState().renderer.renderer;
-        var zoom = getPrevScale(Math.round(1 / Math.max(page.width / render.renderWidth, page.height / render.renderHeight, 1) * 100) / 100);
-        centerTo({
-            x: page.width / 2,
-            y: page.height / 2
-        });
-        // const width = page.width * zoom;
-        // const height = page.height * zoom;
-        // const panX = -(render.renderWidth - width) / 2;
-        // const panY = -(render.renderHeight - height) / 2;
-        // render.panX(panX);
-        // render.panY(panY);
-        setZoom(zoom);
-    }
+    var render = _1.store.getState().renderer.renderer;
+    var idealZoom = Math.round(1 / Math.max(render.imgWidth / render.renderWidth, render.imgHeight / render.renderHeight, 1) * 100) / 100;
+    var zoom = zoomScales.indexOf(idealZoom) !== -1 ? idealZoom : getPrevScale(idealZoom);
+    centerTo({
+        x: render.imgWidth / 2,
+        y: render.imgHeight / 2
+    });
+    // const width = page.width * zoom;
+    // const height = page.height * zoom;
+    // const panX = -(render.renderWidth - width) / 2;
+    // const panY = -(render.renderHeight - height) / 2;
+    // render.panX(panX);
+    // render.panY(panY);
+    setZoom(zoom);
 }
 exports.fitToPage = fitToPage;
 function getNextScale(level) {
@@ -1351,6 +1031,28 @@ function getPrevScale(level) {
     return zoomScales.concat().reverse().find(function (scale) { return scale < level; }) || zoomScales[0];
 }
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/facade/canvasControl.js.map
+
+/***/ }),
+
+/***/ "../uxele-facade/build/facade/colorPicker.js":
+/*!********************************************!*\
+  !*** .-facade/build/facade/colorPicker.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var build_1 = __webpack_require__(/*! uxele-utils/build */ "../uxele-utils/build/index.js");
+var toastr_1 = __webpack_require__(/*! ./toastr */ "../uxele-facade/build/facade/toastr.js");
+function copyColor(colorRGB) {
+    var hex = build_1.color.rgbStrToHex(colorRGB).toUpperCase();
+    build_1.copyToClipboard(hex);
+    toastr_1.toastr.info("Copied " + hex);
+}
+exports.copyColor = copyColor;
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/facade/colorPicker.js.map
 
 /***/ }),
 
@@ -1369,6 +1071,30 @@ exports.exporters = [
     new uxele_exporter_local_1.LocalExporter()
 ];
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/facade/exporters.js.map
+
+/***/ }),
+
+/***/ "../uxele-facade/build/facade/general.js":
+/*!****************************************!*\
+  !*** .-facade/build/facade/general.js ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var GeneralView_1 = __webpack_require__(/*! ./states/GeneralView */ "../uxele-facade/build/facade/states/GeneralView.js");
+var states_1 = __webpack_require__(/*! ./states */ "../uxele-facade/build/facade/states/index.js");
+var tools_1 = __webpack_require__(/*! ../tools */ "../uxele-facade/build/tools/index.js");
+function switchPillars(pillar) {
+    if (states_1.store.getState().genearlView.pillar !== pillar) {
+        states_1.store.dispatch(GeneralView_1.actionChoosePillar(pillar));
+        tools_1.setActiveTool();
+    }
+}
+exports.switchPillars = switchPillars;
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/facade/general.js.map
 
 /***/ }),
 
@@ -1392,6 +1118,8 @@ __export(__webpack_require__(/*! ./states */ "../uxele-facade/build/facade/state
 __export(__webpack_require__(/*! ./bindCanvas */ "../uxele-facade/build/facade/bindCanvas.js"));
 __export(__webpack_require__(/*! ./canvasControl */ "../uxele-facade/build/facade/canvasControl.js"));
 __export(__webpack_require__(/*! ./exporters */ "../uxele-facade/build/facade/exporters.js"));
+__export(__webpack_require__(/*! ./colorPicker */ "../uxele-facade/build/facade/colorPicker.js"));
+__export(__webpack_require__(/*! ./general */ "../uxele-facade/build/facade/general.js"));
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/facade/index.js.map
 
 /***/ }),
@@ -1843,11 +1571,71 @@ exports.colorToolReducer = function (state, action) {
         case "toolsColorToolHover":
             return __assign({}, state, { hoverColor: action.color });
         case "toolsColorToolPick":
-            return __assign({}, state, { lastPicked: action.color, pickedColors: state.pickedColors.concat([action.color]) });
+            if (state.pickedColors.indexOf(action.color) === -1) {
+                return __assign({}, state, { lastPicked: action.color, pickedColors: state.pickedColors.concat([action.color]) });
+            }
+            else {
+                return __assign({}, state, { lastPicked: action.color });
+            }
     }
     return state;
 };
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/facade/states/ColorToolState.js.map
+
+/***/ }),
+
+/***/ "../uxele-facade/build/facade/states/GeneralView.js":
+/*!***************************************************!*\
+  !*** .-facade/build/facade/states/GeneralView.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generalViewReducer = function (state, action) {
+    if (!state) {
+        return { pillar: "inspect" };
+    }
+    switch (action.type) {
+        case "choosePillar":
+            return __assign({}, state, { pillar: action.pillar });
+        case "pageLayerList":
+            var current = __assign({}, state);
+            if (current.pageLayerList === action.pageLayerList) {
+                current.pageLayerList = undefined;
+                return current;
+            }
+            else {
+                return __assign({}, state, { pageLayerList: action.pageLayerList });
+            }
+    }
+    return state;
+};
+function actionChoosePillar(pillar) {
+    return {
+        type: "choosePillar",
+        pillar: pillar
+    };
+}
+exports.actionChoosePillar = actionChoosePillar;
+function actionTogglePageLayerList(item) {
+    return {
+        type: "pageLayerList",
+        pageLayerList: item
+    };
+}
+exports.actionTogglePageLayerList = actionTogglePageLayerList;
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/facade/states/GeneralView.js.map
 
 /***/ }),
 
@@ -2012,6 +1800,7 @@ var ProjectState_1 = __webpack_require__(/*! ./ProjectState */ "../uxele-facade/
 var ChoseToolState_1 = __webpack_require__(/*! ./ChoseToolState */ "../uxele-facade/build/facade/states/ChoseToolState.js");
 var RendererState_1 = __webpack_require__(/*! ./RendererState */ "../uxele-facade/build/facade/states/RendererState.js");
 var CanvasState_1 = __webpack_require__(/*! ./CanvasState */ "../uxele-facade/build/facade/states/CanvasState.js");
+var GeneralView_1 = __webpack_require__(/*! ./GeneralView */ "../uxele-facade/build/facade/states/GeneralView.js");
 var rootReducer = redux_1.combineReducers({
     handTool: HandToolState_1.handToolReducer,
     choseLayer: ChoseLayerState_1.choseLayerReducer,
@@ -2020,10 +1809,50 @@ var rootReducer = redux_1.combineReducers({
     colorTool: ColorToolState_1.colorToolReducer,
     choseTool: ChoseToolState_1.chooseToolReducer,
     renderer: RendererState_1.rendererReducer,
-    canvasStatus: CanvasState_1.canvasStatusReducer
+    canvasStatus: CanvasState_1.canvasStatusReducer,
+    genearlView: GeneralView_1.generalViewReducer
 });
 exports.store = redux_1.createStore(rootReducer);
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/facade/states/store.js.map
+
+/***/ }),
+
+/***/ "../uxele-facade/build/facade/toastr.js":
+/*!***************************************!*\
+  !*** .-facade/build/facade/toastr.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Toast = __webpack_require__(/*! ../vendor/toastr.js */ "../uxele-facade/build/vendor/toastr.js").Toast;
+var Toastr = /** @class */ (function () {
+    function Toastr() {
+    }
+    Toastr.prototype.info = function (str) {
+        Toast(str, {
+            style: {
+                main: {
+                    bottom: "auto",
+                    top: "10%",
+                    left: "auto",
+                    width: "auto",
+                    right: "8%",
+                    background: "rgba(255,255,255,0.85",
+                    color: "black"
+                }
+            },
+            settings: {
+                duration: 800
+            }
+        });
+    };
+    return Toastr;
+}());
+exports.toastr = new Toastr();
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/facade/toastr.js.map
 
 /***/ }),
 
@@ -2177,7 +2006,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var uxele_core_1 = __webpack_require__(/*! uxele-core */ "../uxele-core/build/index.js");
+// import { session } from "../../uxele-faced/build";
 var uxele_utils_1 = __webpack_require__(/*! uxele-utils */ "../uxele-utils/build/index.js");
+var uxele_utils_2 = __webpack_require__(/*! uxele-utils */ "../uxele-utils/build/index.js");
 var facade_1 = __webpack_require__(/*! ../../facade */ "../uxele-facade/build/facade/index.js");
 var BaseTool_1 = __webpack_require__(/*! ../BaseTool */ "../uxele-facade/build/tools/BaseTool.js");
 var ColorTool = /** @class */ (function (_super) {
@@ -2187,13 +2019,11 @@ var ColorTool = /** @class */ (function (_super) {
         _this.name = "tool_color_name";
         _this.slug = "tool_color";
         _this.cls = "fas fa-eye-dropper";
-        _this.colorGroup = new window.fabric.Group(undefined, {
-            selectable: false,
-            shadow: "0px 0px 20px rgba(0,0,0,0.4)"
-        });
+        _this.inited = false;
         _this.onMouseDown = function (e) {
             if (_this.hoverColor) {
                 facade_1.store.dispatch(facade_1.actionColorToolPick(_this.hoverColor));
+                facade_1.copyColor(_this.hoverColor);
             }
         };
         // private zoomImg(img: ImageData, zoom: number) {
@@ -2226,18 +2056,22 @@ var ColorTool = /** @class */ (function (_super) {
         //   return new ImageData(newData, nwidth, nheight);
         // }
         _this.onMouseMove = function (e) { return __awaiter(_this, void 0, void 0, function () {
-            var curPage, times, img, canvas, magImg, coords, ctx, imageData;
+            var realCoords, curPage, img, canvas, magImg, coords, ctx, imageData;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        curPage = facade_1.store.getState().chosePage.page;
-                        if (!(curPage && e)) return [3 /*break*/, 3];
+                        if (!e) return [3 /*break*/, 4];
+                        realCoords = this.renderer.rendererPointToRealPoint(this.renderer.mouseEventToCoords(e), false);
+                        curPage = this.renderer.pageByRealCoords(realCoords);
+                        if (!curPage) return [3 /*break*/, 3];
+                        if (this.curPageContext && this.curPageContext.page !== curPage) {
+                            this.curPageContext = undefined;
+                        }
                         if (!!this.curPageContext) return [3 /*break*/, 2];
-                        times = 5;
-                        return [4 /*yield*/, curPage.getPreview(1)];
+                        return [4 /*yield*/, curPage.getPreview()];
                     case 1:
                         img = _a.sent();
-                        canvas = uxele_utils_1.imgToCanvas(img);
+                        canvas = uxele_utils_2.imgToCanvas(img);
                         magImg = img;
                         this.curPageContext = {
                             page: curPage,
@@ -2246,77 +2080,112 @@ var ColorTool = /** @class */ (function (_super) {
                         };
                         _a.label = 2;
                     case 2:
-                        coords = this.renderer.rendererPointToRealPoint(this.renderer.mouseEventToCoords(e));
+                        coords = this.renderer.realPointToPagePoint(realCoords, curPage);
                         ctx = this.curPageContext.pageCanvas.getContext("2d");
                         imageData = ctx.getImageData(coords.x, coords.y, 1, 1);
-                        this.drawColor(imageData.data[0], imageData.data[1], imageData.data[2], coords);
+                        this.drawColor(imageData.data[0], imageData.data[1], imageData.data[2], coords, curPage);
                         this.hoverColor = "rgb(" + imageData.data[0] + ", " + imageData.data[1] + "," + imageData.data[2] + ")";
                         facade_1.store.dispatch(facade_1.actionColorToolHover(this.hoverColor));
-                        _a.label = 3;
-                    case 3: return [2 /*return*/];
+                        return [3 /*break*/, 4];
+                    case 3:
+                        this.hoverColor = undefined;
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         }); };
         return _this;
     }
-    ColorTool.prototype.drawColor = function (r, g, b, coords) {
+    ColorTool.prototype.drawColor = function (r, g, b, coords, page) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, radius, padding, outerPadding, zoomTime, fullImg, img, rect, circleBg, circleBgOut;
-            return __generator(this, function (_b) {
-                (_a = this.colorGroup).remove.apply(_a, this.colorGroup.getObjects());
-                radius = 80;
-                padding = 5;
-                outerPadding = 15;
-                zoomTime = 5;
-                fullImg = this.curPageContext.magImg;
-                img = new window.fabric.Image(fullImg, {
-                    originX: "left",
-                    originY: "top",
-                    left: -coords.x * zoomTime,
-                    top: -coords.y * zoomTime,
-                    scaleX: zoomTime,
-                    scaleY: zoomTime,
-                    clipTo: function (ctx) {
-                        // ctx.arc((coords.x-fullImg.naturalWidth/2), (coords.y-fullImg.naturalHeight/2), radius, 0, Math.PI * 2, true);
-                        ctx.arc((coords.x - fullImg.naturalWidth / 2), (coords.y - fullImg.naturalHeight / 2), radius / zoomTime, 0, Math.PI * 2, true);
-                    }
-                });
-                rect = new window.fabric.Rect({
-                    originX: "center",
-                    originY: "center",
-                    strokeWidth: 1,
-                    stroke: "black",
-                    fill: "transparent",
-                    width: 10,
-                    height: 10,
-                    left: 0,
-                    top: 0,
-                });
-                circleBg = new window.fabric.Circle({
-                    originX: "center",
-                    originY: "center",
-                    left: 0,
-                    top: 0,
-                    radius: radius + padding,
-                    fill: "#d1d1d1"
-                });
-                circleBgOut = new window.fabric.Circle({
-                    originX: "left",
-                    originY: "top",
-                    left: coords.x * this.renderer.zoom(),
-                    top: coords.y * this.renderer.zoom(),
-                    radius: radius + padding + outerPadding,
-                    fill: "rgb(" + r + "," + g + "," + b + ")",
-                    clipTo: function (ctx) {
-                        ctx.arc(0, 0, radius + padding + outerPadding, 1 / 2 * Math.PI, -1 / 2 * Math.PI, true);
-                    }
-                });
-                this.colorGroup.addWithUpdate(circleBgOut);
-                this.colorGroup.add(circleBg);
-                this.colorGroup.add(img);
-                this.colorGroup.add(rect);
-                this.renderer.draw(this.colorGroup);
-                return [2 /*return*/];
+            var magRadius, colorBandSize, roundEdgeSize, shift, magShift, roundEdgeShift, colorBandRadius, roundEdgeRadius, padding, outerPadding, zoomTime, fullImg, cropped, realCoords, coordLeft, coordTop, clip;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        magRadius = 120;
+                        colorBandSize = 20;
+                        roundEdgeSize = 3;
+                        shift = 0;
+                        magShift = shift + colorBandSize + roundEdgeSize;
+                        roundEdgeShift = shift + colorBandSize;
+                        colorBandRadius = magRadius + roundEdgeSize + colorBandSize;
+                        roundEdgeRadius = magRadius + roundEdgeSize;
+                        padding = 5;
+                        outerPadding = 15;
+                        zoomTime = 8;
+                        fullImg = this.curPageContext.magImg;
+                        return [4 /*yield*/, uxele_utils_2.canvasToImg(uxele_utils_1.scaleCanvas(uxele_utils_1.cropCanvas(this.curPageContext.pageCanvas, new uxele_core_1.Rect(Math.ceil(coords.x - magRadius / zoomTime), Math.ceil(coords.y - magRadius / zoomTime), Math.ceil(coords.x + magRadius / zoomTime), Math.ceil(coords.y + magRadius / zoomTime))), zoomTime, false))];
+                    case 1:
+                        cropped = _a.sent();
+                        realCoords = this.renderer.pagePointToRealPoint(coords, page);
+                        coordLeft = realCoords.x * this.renderer.zoom();
+                        coordTop = realCoords.y * this.renderer.zoom();
+                        clip = {
+                            circle: {
+                                radius: magRadius,
+                                left: coordLeft + magShift,
+                                top: coordTop + magShift,
+                            }
+                        };
+                        if (!this.inited) {
+                            this.colorBand = this.renderer.draw({
+                                radius: colorBandRadius,
+                                left: coordLeft + shift,
+                                top: coordTop + shift,
+                                fillColor: "rgb(" + r + "," + g + "," + b + ")"
+                            }, this.colorGroup);
+                            this.roundEdge = this.renderer.draw({
+                                radius: roundEdgeRadius,
+                                left: coordLeft + roundEdgeShift,
+                                top: coordTop + roundEdgeShift,
+                                fillColor: "#d1d1d1"
+                            }, this.colorGroup);
+                            this.magImg = this.renderer.draw({
+                                img: cropped,
+                                left: coordLeft + magShift,
+                                top: coordTop + magShift,
+                                clip: clip
+                            }, this.colorGroup);
+                            this.magCursor = this.renderer.draw({
+                                left: coordLeft + magShift + magRadius - zoomTime,
+                                top: coordTop + magShift + magRadius - zoomTime,
+                                width: zoomTime * 2,
+                                height: zoomTime * 2,
+                                strokeWidth: 1,
+                                fillColor: "transparent"
+                            }, this.colorGroup);
+                            this.inited = true;
+                        }
+                        else {
+                            this.renderer.updateDraw(this.colorBand, {
+                                radius: colorBandRadius,
+                                left: coordLeft + shift,
+                                top: coordTop + shift,
+                                fillColor: "rgb(" + r + "," + g + "," + b + ")"
+                            });
+                            this.renderer.updateDraw(this.roundEdge, {
+                                radius: roundEdgeRadius,
+                                left: coordLeft + roundEdgeShift,
+                                top: coordTop + roundEdgeShift,
+                                fillColor: "#d1d1d1"
+                            });
+                            this.renderer.updateDraw(this.magImg, {
+                                img: cropped,
+                                left: coordLeft + magShift,
+                                top: coordTop + magShift,
+                                clip: clip
+                            });
+                            this.renderer.updateDraw(this.magCursor, {
+                                left: coordLeft + magShift + magRadius - zoomTime,
+                                top: coordTop + magShift + magRadius - zoomTime,
+                                width: zoomTime * 2,
+                                height: zoomTime * 2,
+                                strokeWidth: 1,
+                                fillColor: "transparent"
+                            });
+                        }
+                        return [2 /*return*/];
+                }
             });
         });
     };
@@ -2330,6 +2199,7 @@ var ColorTool = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 renderer = this.renderer;
                 // renderer.on("mousedown", this.onMouseDown);
+                this.colorGroup = renderer.getDrawableGroup();
                 renderer.on("mousemove", this.onMouseMove);
                 renderer.on("click", this.onMouseDown);
                 return [2 /*return*/];
@@ -2343,7 +2213,7 @@ var ColorTool = /** @class */ (function (_super) {
                 renderer = this.renderer;
                 renderer.off("click", this.onMouseDown);
                 renderer.off("mousemove", this.onMouseMove);
-                renderer.clearDrawing(this.colorGroup);
+                renderer.removeDrawableGroup(this.colorGroup);
                 this.curPageContext = undefined;
                 return [2 /*return*/];
             });
@@ -2449,6 +2319,8 @@ var HandTool = /** @class */ (function (_super) {
                     y: evt.clientY
                 };
                 facade_1.store.dispatch(facade_1.actionHandToolPanStart());
+                evt.stopPropagation();
+                evt.preventDefault();
                 // this.emit("onPanStart");
             }
         };
@@ -2462,12 +2334,19 @@ var HandTool = /** @class */ (function (_super) {
                     renderer.panY(renderer.panY() - curPoint.y + _this.lastPoint.y);
                 }
                 _this.lastPoint = curPoint;
+                evt.stopPropagation();
+                evt.preventDefault();
             }
         };
         _this.onMouseUpAndLeave = function (e) {
             _this.mouseDown = false;
             _this.lastPoint = undefined;
             facade_1.store.dispatch(facade_1.actionHandToolPanEnd());
+            if (e) {
+                var evt = e.e;
+                evt.stopPropagation();
+                evt.preventDefault();
+            }
         };
         return _this;
     }
@@ -2479,7 +2358,7 @@ var HandTool = /** @class */ (function (_super) {
                 renderer.on("mousedown", this.onMouseDown);
                 renderer.on("mousemove", this.onMouseMove);
                 renderer.on("mouseup", this.onMouseUpAndLeave);
-                renderer.on("mouseup", this.onMouseUpAndLeave);
+                renderer.on("mouseleave", this.onMouseUpAndLeave);
                 return [2 /*return*/];
             });
         });
@@ -2492,7 +2371,7 @@ var HandTool = /** @class */ (function (_super) {
                 renderer.off("mousedown", this.onMouseDown);
                 renderer.off("mousemove", this.onMouseMove);
                 renderer.off("mouseup", this.onMouseUpAndLeave);
-                renderer.off("mouseup", this.onMouseUpAndLeave);
+                renderer.off("mouseleave", this.onMouseUpAndLeave);
                 return [2 /*return*/];
             });
         });
@@ -2531,6 +2410,41 @@ __export(__webpack_require__(/*! ./HandTool */ "../uxele-facade/build/tools/hand
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -2543,10 +2457,9 @@ __export(__webpack_require__(/*! ./color */ "../uxele-facade/build/tools/color/i
 __export(__webpack_require__(/*! ./hand */ "../uxele-facade/build/tools/hand/index.js"));
 __export(__webpack_require__(/*! ./inspect */ "../uxele-facade/build/tools/inspect/index.js"));
 __export(__webpack_require__(/*! ./BaseTool */ "../uxele-facade/build/tools/BaseTool.js"));
-function getTools() { return tools; }
-exports.getTools = getTools;
+// export function getTools() { return allTools; }
 function getToolInst(constructor) {
-    return tools.find(function (v) {
+    return allTools().find(function (v) {
         if (v instanceof constructor) {
             return true;
         }
@@ -2556,22 +2469,88 @@ function getToolInst(constructor) {
     });
 }
 exports.getToolInst = getToolInst;
-var tools = [
-    new hand_1.HandTool(),
-    new inspect_1.InspectTool(),
-    new color_1.ColorTool()
-];
+function allTools() {
+    var rtn = [];
+    Object.keys(exports.tools).forEach(function (key) {
+        rtn = rtn.concat(exports.tools[key]);
+    });
+    return rtn;
+}
+exports.tools = {
+    "inspect": [
+        new inspect_1.InspectTool(),
+        new color_1.ColorTool()
+    ],
+    "general": [
+        new hand_1.HandTool()
+    ],
+    "prototype": []
+};
 function init() {
     var curRenderer;
     facade_1.store.subscribe(function () {
         if (facade_1.store.getState().renderer.renderer !== curRenderer) {
             curRenderer = facade_1.store.getState().renderer.renderer;
-            tools.forEach(function (tool) {
+            allTools().forEach(function (tool) {
                 tool.setRenderer(curRenderer);
             });
+            exports.tools.general[0].activate();
         }
     });
 }
+function setActiveTool(tool) {
+    return __awaiter(this, void 0, void 0, function () {
+        var currentTool;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    currentTool = facade_1.store.getState().choseTool.tool;
+                    if (!(currentTool !== tool)) return [3 /*break*/, 5];
+                    if (!currentTool) return [3 /*break*/, 2];
+                    return [4 /*yield*/, currentTool.deactivate()];
+                case 1:
+                    _a.sent();
+                    _a.label = 2;
+                case 2:
+                    if (!tool) return [3 /*break*/, 4];
+                    return [4 /*yield*/, tool.activate()];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4:
+                    facade_1.store.dispatch(facade_1.actionChoseTool(tool));
+                    return [3 /*break*/, 6];
+                case 5:
+                    if (currentTool) {
+                        setActiveTool();
+                    }
+                    _a.label = 6;
+                case 6: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.setActiveTool = setActiveTool;
+function toggleTool(tool) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!!tool.activated) return [3 /*break*/, 2];
+                    return [4 /*yield*/, tool.activate()];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 4];
+                case 2: return [4 /*yield*/, tool.deactivate()];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.toggleTool = toggleTool;
 init();
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/tools/index.js.map
 
@@ -2652,66 +2631,66 @@ var InspectTool = /** @class */ (function (_super) {
         _this.name = "tool_inspect_name";
         _this.slug = "tool_inspect";
         _this.cls = "fas fa-mouse-pointer";
-        _this.measureLinesGroup = new window.fabric.Group(undefined, {
-            originX: "left",
-            originY: "top",
-            selectable: false,
-            objectCaching: false
-        });
-        _this.hoverLabelGroup = new LayerLabelGroup({
-            // left:0,
-            // top:0,
-            strokeWidth: 1,
-            textBackgroundColor: hoverColor,
-            fontSize: 14,
-            fill: "white",
-        }, {
-            stroke: hoverColor,
-            fill: hoverColor.replace("1)", "0.2)")
-        });
-        _this.firstChoseGroup = new LayerLabelGroup({
-            // left:0,
-            // top:0,
-            strokeWidth: 1,
-            textBackgroundColor: choseColor,
-            fontSize: 14,
-            fill: "white",
-        }, {
-            stroke: choseColor,
-            fill: choseColor.replace("1)", "0.2)")
-        });
+        // private measureLinesGroup: fabric.Group = new window.fabric.Group(undefined, {
+        //   originX: "left",
+        //   originY: "top",
+        //   selectable: false,
+        //   objectCaching: false
+        // })
+        // private hoverLabelGroup: LayerLabelGroup = new LayerLabelGroup({
+        //   // left:0,
+        //   // top:0,
+        //   strokeWidth: 1,
+        //   textBackgroundColor: hoverColor,
+        //   fontSize: 14,
+        //   fill: "white",
+        // }, {
+        //     stroke: hoverColor,
+        //     fill: hoverColor.replace("1)", "0.2)")
+        //   })
+        // private firstChoseGroup: LayerLabelGroup = new LayerLabelGroup({
+        //   // left:0,
+        //   // top:0,
+        //   strokeWidth: 1,
+        //   textBackgroundColor: choseColor,
+        //   fontSize: 14,
+        //   fill: "white",
+        // }, {
+        //     stroke: choseColor,
+        //     fill: choseColor.replace("1)", "0.2)")
+        //   })
         _this.onMouseDown = function (e) {
-            if (_this.hoverLayer) {
-                if (_this.hoverLayer !== _this.firstChoseLayer) {
-                    _this.firstChoseLayer = _this.hoverLayer;
-                    _this.drawFirstChoseLayer();
-                    facade_1.store.dispatch(facade_1.actionChoseLayer(_this.hoverLayer));
-                    // session.set("choseLayer", this.firstChoseLayer);
-                    _this.prepareDrawMeasure();
-                }
+            if (_this.hoverLayer !== _this.firstChoseLayer) {
+                _this.firstChoseLayer = _this.hoverLayer;
+                _this.drawFirstChoseLayer();
+                facade_1.store.dispatch(facade_1.actionChoseLayer(_this.hoverLayer));
+                // session.set("choseLayer", this.firstChoseLayer);
             }
         };
         _this.onMouseMove = function (e) { return __awaiter(_this, void 0, void 0, function () {
-            var curPage, coords, l, _a, _b;
+            var realCoords, curPage, pageCoords, l, _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        curPage = facade_1.store.getState().chosePage.page;
-                        if (!(curPage && e)) return [3 /*break*/, 4];
-                        coords = this.renderer.rendererPointToRealPoint(this.renderer.mouseEventToCoords(e), false);
-                        if (!(coords.x < 0 || coords.y < 0)) return [3 /*break*/, 1];
+                        if (!e) return [3 /*break*/, 4];
+                        realCoords = this.renderer.rendererPointToRealPoint(this.renderer.mouseEventToCoords(e), false);
+                        curPage = this.renderer.pageByRealCoords(realCoords);
+                        if (!!curPage) return [3 /*break*/, 1];
+                        this.renderer.clearDrawing(this.hoverLayerGroup);
+                        this.renderer.clearDrawing(this.measureLinesGroup);
                         this.hoverLayer = undefined;
-                        this.drawHoverLayer();
-                        this.prepareDrawMeasure();
                         return [3 /*break*/, 4];
                     case 1:
+                        pageCoords = this.renderer.realPointToPagePoint(realCoords, curPage);
                         _a = layer_1.bestLayerByCoords;
-                        _b = [coords];
+                        _b = [pageCoords];
                         return [4 /*yield*/, curPage.getLayers()];
                     case 2: return [4 /*yield*/, _a.apply(void 0, _b.concat([_c.sent()]))];
                     case 3:
                         l = _c.sent();
                         if (this.hoverLayer !== l) {
+                            this.renderer.clearDrawing(this.hoverLayerGroup);
+                            this.renderer.clearDrawing(this.measureLinesGroup);
                             this.hoverLayer = l;
                             this.drawHoverLayer();
                             this.prepareDrawMeasure();
@@ -2731,22 +2710,16 @@ var InspectTool = /** @class */ (function (_super) {
         configurable: true
     });
     InspectTool.prototype.prepareDrawMeasure = function () {
-        var _a;
-        this.renderer.clearDrawing(this.measureLinesGroup);
-        if (this.firstChoseLayer && this.firstChoseLayer !== this.hoverLayer) {
-            (_a = this.measureLinesGroup).remove.apply(_a, this.measureLinesGroup.getObjects());
-            if (this.hoverLayer) {
-                this.drawMeasurement(this.firstChoseLayer, this.hoverLayer);
-                this.renderer.draw(this.measureLinesGroup);
-            }
-            else {
-                this.renderer.clearDrawing(this.measureLinesGroup);
-            }
+        if (this.firstChoseLayer && this.hoverLayer &&
+            this.firstChoseLayer !== this.hoverLayer &&
+            this.firstChoseLayer.page === this.hoverLayer.page) {
+            // this.measureLinesGroup.remove(...this.measureLinesGroup.getObjects());
+            this.drawMeasurement(this.firstChoseLayer, this.hoverLayer);
         }
     };
     InspectTool.prototype.drawMeasurement = function (l1, l2) {
-        var rect1 = l1.rect.zoom(this.renderer.zoom());
-        var rect2 = l2.rect.zoom(this.renderer.zoom());
+        var rect1 = l1.rect.panTo(this.renderer.pagePointToRealPoint(l1.rect.leftTop, l1.page)).zoom(this.renderer.zoom());
+        var rect2 = l2.rect.panTo(this.renderer.pagePointToRealPoint(l2.rect.leftTop, l1.page)).zoom(this.renderer.zoom());
         // const coord1 = this.fileRectToCanvasRect(rect1);
         // const coord2 = this.fileRectToCanvasRect(rect2);
         var measure = rect1.distance(rect2);
@@ -2774,35 +2747,44 @@ var InspectTool = /** @class */ (function (_super) {
             }
         }
     };
-    InspectTool.prototype.drawLineOnFabric = function (points, options) {
+    InspectTool.prototype.drawMeasureLineOnRenderer = function (point1, point2, options) {
         // const def = {
         //   strokeWidth: 1 / this.session.drawer.zoom
         // } as fabric.IObjectOptions;
         // const cfg = assign({}, def, opt);
-        var line = new window.fabric.Line(points, options);
-        this.measureLinesGroup.addWithUpdate(line);
+        this.renderer.draw(__assign({}, options, { x1: point1.x, y1: point1.y, x2: point2.x, y2: point2.y }), this.measureLinesGroup);
     };
-    InspectTool.prototype.drawLabelOnFabric = function (txt, opt) {
-        var def = __assign({ textBackgroundColor: "black", shadow: "2px 2px 10px rgba(0,0,0,0.2)", fill: "white", fontSize: 14, strokeWidth: 1, fontFamily: '"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","Helvetica","Arial",sans-serif' }, opt);
-        var t = new window.fabric.Text("  " + txt + "  ", def);
-        this.measureLinesGroup.addWithUpdate(t);
+    InspectTool.prototype.drawMeasureLabelOnRenderer = function (opt) {
+        // const def: fabric.ITextOptions = {
+        //   textBackgroundColor: "black",
+        //   shadow: "2px 2px 10px rgba(0,0,0,0.2)",
+        //   fill: "white",
+        //   fontSize: 14,
+        //   strokeWidth: 1,
+        //   fontFamily: '"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","Helvetica","Arial",sans-serif',
+        //   ...opt
+        // };
+        // const t = new window.fabric.Text(`  ${txt}  `, def);
+        opt = __assign({}, opt, { textBackgroundFill: "black", fillColor: "white", fontSize: 14, fontWeight: "bold" });
+        this.renderer.draw(opt, this.measureLinesGroup);
+        // this.measureLinesGroup.addWithUpdate(t);
     };
     InspectTool.prototype.drawVLineMeasurements = function (x1, t1, b1, x2, t2, b2, swap, text) {
         var color = "orange";
         var defDashLine = {
-            stroke: color,
-            strokeDashArray: [5, 5],
+            strokeColor: color,
+            strokeDashArray: "5 5",
             strokeWidth: 1
         };
         var defLine = {
-            stroke: color,
+            strokeColor: color,
             strokeWidth: 1
         };
         var t = Math.min(t1, b1, t2, b2);
         var b = Math.max(t1, b1, t2, b2);
         if (x1 === x2) {
             // this.
-            this.drawLineOnFabric([x1, t, x1, b], defDashLine);
+            this.drawMeasureLineOnRenderer({ x: x1, y: t }, { x: x1, y: b }, defDashLine);
             return;
         }
         if (swap) {
@@ -2823,10 +2805,10 @@ var InspectTool = /** @class */ (function (_super) {
         // b1 = ses.adjustYToCanvas(b1);
         // b2 = ses.adjustYToCanvas(b2);
         if (t1 > b2) {
-            this.drawLineOnFabric([x1, t1, x1, t2], defDashLine);
+            this.drawMeasureLineOnRenderer({ x: x1, y: t1 }, { x: x1, y: t2 }, defDashLine);
         }
         if (b1 < t2) {
-            this.drawLineOnFabric([x1, b1, x1, b2], defDashLine);
+            this.drawMeasureLineOnRenderer({ x: x1, y: b1 }, { x: x1, y: b2 }, defDashLine);
         }
         var rg = getIntersect(t1, b1, t2, b2);
         var ay = 0;
@@ -2836,28 +2818,29 @@ var InspectTool = /** @class */ (function (_super) {
         else {
             ay = Math.round((t2 + b2) / 2);
         }
-        this.drawLineOnFabric([x1, ay, x2, ay], defLine);
-        this.drawLabelOnFabric(text, {
-            originX: "center",
-            originY: "center",
+        this.drawMeasureLineOnRenderer({ x: x1, y: ay }, { x: x2, y: ay }, defLine);
+        this.drawMeasureLabelOnRenderer({
             left: (x1 + x2) / 2,
-            top: ay
+            top: ay,
+            txt: text
         });
         // draw.drawLable(this.canvas, tx, ty, text, size, "white", "rgba(0,0,0,0.8)");
     };
     InspectTool.prototype.drawHLineMeasurements = function (y1, l1, r1, y2, l2, r2, swap, text) {
         var color = "orange";
         var defDashLine = {
-            stroke: color,
-            strokeDashArray: [5, 5],
+            strokeColor: color,
+            strokeDashArray: "5 5",
+            strokeWidth: 1
         };
         var defLine = {
-            stroke: color,
+            strokeColor: color,
+            strokeWidth: 1
         };
         var l = Math.min(l1, r1, l2, r2);
         var r = Math.max(l1, r1, l2, r2);
         if (y1 === y2) {
-            this.drawLineOnFabric([y1, l, y1, r], defDashLine);
+            this.drawMeasureLineOnRenderer({ x: y1, y: l }, { x: y1, y: r }, defDashLine);
             return;
         }
         if (swap) {
@@ -2878,10 +2861,10 @@ var InspectTool = /** @class */ (function (_super) {
         // r1 = ses.adjustXToCanvas(r1);
         // r2 = ses.adjustXToCanvas(r2);
         if (l1 > r2) {
-            this.drawLineOnFabric([l1, y1, l2, y1], defDashLine);
+            this.drawMeasureLineOnRenderer({ x: l1, y: y1 }, { x: l2, y: y1 }, defDashLine);
         }
         if (r1 < l2) {
-            this.drawLineOnFabric([r1, y1, r2, y1], defDashLine);
+            this.drawMeasureLineOnRenderer({ x: r1, y: y1 }, { x: r2, y: y1 }, defDashLine);
         }
         var rg = getIntersect(l1, r1, l2, r2);
         var ax = 0;
@@ -2891,28 +2874,64 @@ var InspectTool = /** @class */ (function (_super) {
         else {
             ax = Math.round((l2 + r2) / 2);
         }
-        this.drawLineOnFabric([ax, y1, ax, y2], defLine);
-        this.drawLabelOnFabric(text, {
-            originX: "center",
-            originY: "center",
+        this.drawMeasureLineOnRenderer({ x: ax, y: y1 }, { x: ax, y: y2 }, defLine);
+        this.drawMeasureLabelOnRenderer({
             left: ax,
-            top: (y1 + y2) / 2
+            top: (y1 + y2) / 2,
+            txt: text
         });
     };
     InspectTool.prototype.drawLayer = function (layerGroup, l) {
         if (l) {
-            layerGroup.setLayer(l, this.renderer.zoom());
-            this.renderer.draw(layerGroup.getGroup());
+            // layerGroup.setLayer(l, this.renderer.zoom());
+            // this.renderer.draw(layerGroup.getGroup());
+            var layer = l.layer, rect = l.rect, txt = l.txt;
+            var page = l.layer.page;
+            var zoom = this.renderer.zoom();
+            var realCoords = this.renderer.pagePointToRealPoint({ x: layer.rect.left, y: layer.rect.top }, page);
+            var labelTxt = "  " + layer.rect.width + " x " + layer.rect.height + "    ";
+            var rectOption = __assign({}, rect, { left: realCoords.x * zoom, top: realCoords.y * zoom, width: layer.rect.width * zoom, height: layer.rect.height * zoom });
+            var txtOption = __assign({}, l.txt, { fontWeight: "bold", left: realCoords.x * zoom, top: realCoords.y * zoom, textBackgroundFill: rect.strokeColor, txt: labelTxt });
+            this.renderer.draw(rectOption, layerGroup);
+            this.renderer.draw(txtOption, layerGroup);
         }
         else {
-            this.renderer.clearDrawing(layerGroup.getGroup());
+            this.renderer.clearDrawing(layerGroup);
         }
     };
     InspectTool.prototype.drawFirstChoseLayer = function () {
-        this.drawLayer(this.firstChoseGroup, this.firstChoseLayer);
+        this.drawLayer(this.choseLayerGroup);
+        if (this.firstChoseLayer) {
+            this.drawLayer(this.choseLayerGroup, {
+                layer: this.firstChoseLayer,
+                rect: {
+                    fillColor: choseColor.replace("1)", "0.2)"),
+                    strokeColor: choseColor,
+                },
+                txt: {
+                    // textBackgroundColor: hoverColor,
+                    fontSize: 14,
+                    fillColor: "white"
+                }
+            });
+        }
     };
     InspectTool.prototype.drawHoverLayer = function () {
-        this.drawLayer(this.hoverLabelGroup, this.hoverLayer);
+        this.drawLayer(this.hoverLayerGroup);
+        if (this.hoverLayer) {
+            this.drawLayer(this.hoverLayerGroup, {
+                layer: this.hoverLayer,
+                rect: {
+                    fillColor: hoverColor.replace("1)", "0.2)"),
+                    strokeColor: hoverColor
+                },
+                txt: {
+                    // textBackgroundColor: hoverColor,
+                    fontSize: 14,
+                    fillColor: "white"
+                }
+            });
+        }
     };
     // onMouseUpAndLeave = (e: IRendererEvent | undefined) => {
     //   this.mouseDown = false;
@@ -2927,6 +2946,9 @@ var InspectTool = /** @class */ (function (_super) {
                 // renderer.on("mousedown", this.onMouseDown);
                 renderer.on("mousemove", this.onMouseMove);
                 renderer.on("click", this.onMouseDown);
+                this.hoverLayerGroup = renderer.getDrawableGroup();
+                this.choseLayerGroup = renderer.getDrawableGroup();
+                this.measureLinesGroup = renderer.getDrawableGroup();
                 this.unsubscribe = facade_1.store.subscribe(function () {
                     if (_this.storeChoseLayer !== _this.firstChoseLayer) {
                         _this.firstChoseLayer = _this.storeChoseLayer.layer;
@@ -2945,9 +2967,12 @@ var InspectTool = /** @class */ (function (_super) {
                 renderer = this.renderer;
                 renderer.off("click", this.onMouseDown);
                 renderer.off("mousemove", this.onMouseMove);
-                renderer.clearDrawing(this.hoverLabelGroup.getGroup());
-                renderer.clearDrawing(this.firstChoseGroup.getGroup());
-                renderer.clearDrawing(this.measureLinesGroup);
+                renderer.removeDrawableGroup(this.hoverLayerGroup);
+                renderer.removeDrawableGroup(this.choseLayerGroup);
+                renderer.removeDrawableGroup(this.measureLinesGroup);
+                this.hoverLayerGroup = undefined;
+                this.choseLayerGroup = undefined;
+                this.measureLinesGroup = undefined;
                 facade_1.store.dispatch(facade_1.actionChoseLayer());
                 if (this.unsubscribe) {
                     this.unsubscribe();
@@ -2959,70 +2984,6 @@ var InspectTool = /** @class */ (function (_super) {
     return InspectTool;
 }(BaseTool_1.BaseTool));
 exports.InspectTool = InspectTool;
-var LayerLabelGroup = /** @class */ (function () {
-    function LayerLabelGroup(labelStyle, rectStyle) {
-        this.labelStyle = labelStyle;
-        this.rectStyle = rectStyle;
-        this.rect = new window.fabric.Rect();
-        this.label = new window.fabric.Text("", __assign({ fontFamily: '"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","Helvetica","Arial",sans-serif', objectCaching: false }, labelStyle));
-        this.label.fontFamily = '"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","Helvetica","Arial",sans-serif';
-        // this.label.originX = "left";
-        // this.label.originY = "top";
-        // this.label.setPositionByOrigin(new window.fabric.Point(0,0),"left","top");
-        this.rect = new window.fabric.Rect(__assign({ objectCaching: false }, rectStyle));
-        // this.rect.originX = "left";
-        // this.rect.originY = "top";
-        this.item = new window.fabric.Group([this.rect, this.label], {
-            selectable: false,
-        });
-        // this.item.originX="left";
-        // this.item.originY="top";
-    }
-    LayerLabelGroup.prototype.getGroup = function () {
-        return this.item;
-    };
-    LayerLabelGroup.prototype.genLabel = function (targetLayer, zoom) {
-        if (this.label) {
-            this.item.remove(this.label);
-        }
-        this.label = new window.fabric.Text("", __assign({ text: "  " + targetLayer.rect.width + " x " + targetLayer.rect.height + "    ", left: targetLayer.rect.left * zoom, top: targetLayer.rect.top * zoom, fontFamily: '"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","Helvetica","Arial",sans-serif' }, this.labelStyle));
-        this.item.addWithUpdate(this.label);
-    };
-    LayerLabelGroup.prototype.genRect = function (targetLayer, zoom) {
-        if (this.rect) {
-            this.item.remove(this.rect);
-        }
-        this.rect = new window.fabric.Rect(__assign({ left: targetLayer.rect.left * zoom, top: targetLayer.rect.top * zoom, width: targetLayer.rect.width * zoom, height: targetLayer.rect.height * zoom, objectCaching: false }, this.rectStyle));
-        this.item.addWithUpdate(this.rect);
-    };
-    LayerLabelGroup.prototype.setLayer = function (targetLayer, zoom) {
-        this.genRect(targetLayer, zoom);
-        this.genLabel(targetLayer, zoom);
-        // this.label.text = `  ${targetLayer.rect.width} x ${targetLayer.rect.height}    `;
-        // this.item.width = Math.round(Math.max(targetLayer.rect.width,this.label.width || 0));
-        // this.item.height =Math.round(Math.max(targetLayer.rect.height,this.label.height || 0));
-        // this.rect.left=Math.round(-this.item.width/2);
-        // this.rect.top=Math.round(-this.item.height/2);
-        // this.rect.width=Math.round(targetLayer.rect.width);
-        // this.rect.height=Math.round(targetLayer.rect.height);
-        // // this.rect.setCoords();
-        // this.label.left=this.rect.left;
-        // this.label.top=this.rect.top;
-        // // this.label.setCoords();
-        // this.item.left = targetLayer.rect.left;
-        // this.item.top = targetLayer.rect.top;
-        // console.log("a ", "with",targ);
-        // (this.item as any).addWithUpdate();
-        // console.log("b ", "group", this.item.left,this.item.top,"rect",this.rect.left,this.rect.top,"label",this.label.left,this.label.top);
-        // console.log(this.rect.left,this.rect.top,this.label.left,this.label.top);
-        // this.item.addWithUpdate(this.label);
-        // this.item.setCoords();
-        // this.item.setObjectsCoords();
-        // this.label.setCoords();
-        // this.rect.setCoords();
-    };
-    return LayerLabelGroup;
-}());
 function getIntersect(s1, e1, s2, e2) {
     var maxS = Math.max(s1, s2);
     var minE = Math.min(e1, e2);
@@ -3055,6 +3016,294 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__(/*! ./InspectTool */ "../uxele-facade/build/tools/inspect/InspectTool.js"));
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-facade/src/tools/inspect/index.js.map
+
+/***/ }),
+
+/***/ "../uxele-facade/build/vendor/toastr.js":
+/*!***************************************!*\
+  !*** .-facade/build/vendor/toastr.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***********************************************
+
+  "toast.js"
+
+  Created by Michael Cheng on 05/31/2015 22:34
+            http://michaelcheng.us/
+            michael@michaelcheng.us
+            --All Rights Reserved--
+
+***********************************************/
+
+
+
+var iqwerty = iqwerty || {};
+
+iqwerty.toast = (function() {
+
+	/**
+	 * The Toast animation speed; how long the Toast takes to move to and from the screen
+	 * @type {Number}
+	 */
+	const TOAST_ANIMATION_SPEED = 400;
+
+	const Transitions = {
+		SHOW: {
+			'-webkit-transition': 'opacity ' + TOAST_ANIMATION_SPEED + 'ms, -webkit-transform ' + TOAST_ANIMATION_SPEED + 'ms',
+			'transition': 'opacity ' + TOAST_ANIMATION_SPEED + 'ms, transform ' + TOAST_ANIMATION_SPEED + 'ms',
+			'opacity': '1',
+			'-webkit-transform': 'translateY(-100%) translateZ(0)',
+			'transform': 'translateY(-100%) translateZ(0)'
+		},
+
+		HIDE: {
+			'opacity': '0',
+			'-webkit-transform': 'translateY(150%) translateZ(0)',
+			'transform': 'translateY(150%) translateZ(0)'
+		}
+	};
+
+	/**
+	 * The main Toast object
+	 * @param {String} text    The text to put inside the Toast
+	 * @param {Object} options Optional; the Toast options. See Toast.prototype.DEFAULT_SETTINGS for more information
+	 * @param {Object} transitions Optional; the Transitions object. This should not be used unless you know what you're doing
+	 */
+	function Toast(text, options, transitions) {
+		if(getToastStage() !== null) {
+			// If there is already a Toast being shown, put this Toast in the queue to show later
+			Toast.prototype.toastQueue.push({
+				text: text,
+				options: options,
+				transitions: transitions
+			});
+		} else {
+			Toast.prototype.Transitions = transitions || Transitions;
+			var _options = options || {};
+			_options = Toast.prototype.mergeOptions(Toast.prototype.DEFAULT_SETTINGS, _options);
+
+			Toast.prototype.show(text, _options);
+			
+			_options = null;
+		}
+	}
+
+
+	/**
+	 * The toastStage. This is the HTML element in which the toast resides
+	 * Getter and setter methods are available privately
+	 * @type {Element}
+	 */
+	var _toastStage = null;
+	function getToastStage() {
+		return _toastStage;
+	}
+	function setToastStage(toastStage) {
+		_toastStage = toastStage;
+	}
+
+
+
+
+	// define some Toast constants
+
+	/**
+	 * The default Toast settings
+	 * @type {Object}
+	 */
+	Toast.prototype.DEFAULT_SETTINGS = {
+		style: {
+			main: {
+				'background': 'rgba(0, 0, 0, .85)',
+				'box-shadow': '0 0 10px rgba(0, 0, 0, .8)',
+
+				'border-radius': '3px',
+
+				'z-index': '99999',
+
+				'color': 'rgba(255, 255, 255, .9)',
+				
+				'padding': '10px 15px',
+				'max-width': '60%',
+				'width': '100%',
+				'word-break': 'keep-all',
+				'margin': '0 auto',
+				'text-align': 'center',
+
+				'position': 'fixed',
+				'left': '0',
+				'right': '0',
+				'bottom': '0',
+
+				'-webkit-transform': 'translateY(150%) translateZ(0)',
+				'transform': 'translateY(150%) translateZ(0)',
+				'-webkit-filter': 'blur(0)',
+				'opacity': '0'
+			}
+		},
+
+		settings: {
+			duration: 1500
+		}
+	};
+
+	Toast.prototype.Transitions = {};
+
+
+	/**
+	 * The queue of Toasts waiting to be shown
+	 * @type {Array}
+	 */
+	Toast.prototype.toastQueue = [];
+
+
+	/**
+	 * The Timeout object for animations.
+	 * This should be shared among the Toasts, because timeouts may be cancelled e.g. on explicit call of hide()
+	 * @type {Object}
+	 */
+	Toast.prototype.timeout = null;
+
+
+	/**
+	 * Merge the DEFAULT_SETTINGS with the user defined options if specified
+	 * @param  {Object} options The user defined options
+	 */
+	Toast.prototype.mergeOptions = function(initialOptions, customOptions) {
+		var merged = customOptions;
+		for(var prop in initialOptions) {
+			if(merged.hasOwnProperty(prop)) {
+				if(initialOptions[prop] !== null && initialOptions[prop].constructor === Object) {
+					merged[prop] = Toast.prototype.mergeOptions(initialOptions[prop], merged[prop]);
+				}
+			} else {
+				merged[prop] = initialOptions[prop];
+			}
+		}
+		return merged;
+	};
+
+
+	/**
+	 * Generate the Toast with the specified text.
+	 * @param  {String|Object} text    The text to show inside the Toast, can be an HTML element or plain text
+	 * @param  {Object} style   The style to set for the Toast
+	 */
+	Toast.prototype.generate = function(text, style) {
+		var toastStage = document.createElement('div');
+
+
+		/**
+		 * If the text is a String, create a textNode for appending
+		 */
+		if(typeof text === 'string') {
+			text = document.createTextNode(text);
+		}
+		toastStage.appendChild(text);
+
+
+		setToastStage(toastStage);
+		toastStage = null;
+
+		Toast.prototype.stylize(getToastStage(), style);
+	};
+
+	/**
+	 * Stylize the Toast.
+	 * @param  {Element} element The HTML element to stylize
+	 * @param  {Object}  styles  An object containing the style to apply
+	 * @return                   Returns nothing
+	 */
+	Toast.prototype.stylize = function(element, styles) {
+		Object.keys(styles).forEach(function(style) {
+			element.style[style] = styles[style];
+		});
+	};
+
+
+	/**
+	 * Show the Toast
+	 * @param  {String} text    The text to show inside the Toast
+	 * @param  {Object} options The object containing the options for the Toast
+	 */
+	Toast.prototype.show = function(text, options) {
+		this.generate(text, options.style.main);
+		
+		var toastStage = getToastStage();
+		document.body.insertBefore(toastStage, document.body.firstChild);
+
+
+
+		// This is a hack to get animations started. Apparently without explicitly redrawing, it'll just attach the class and no animations would be done
+		toastStage.offsetHeight;
+
+
+		Toast.prototype.stylize(toastStage, Toast.prototype.Transitions.SHOW);
+
+
+		toastStage = null;
+
+
+		// Hide the Toast after the specified time
+		clearTimeout(Toast.prototype.timeout);
+		Toast.prototype.timeout = setTimeout(Toast.prototype.hide, options.settings.duration);
+	};
+
+
+	/**
+	 * Hide the Toast that's currently shown
+	 */
+	Toast.prototype.hide = function() {
+		var toastStage = getToastStage();
+		Toast.prototype.stylize(toastStage, Toast.prototype.Transitions.HIDE);
+
+		// Destroy the Toast element after animations end
+		clearTimeout(Toast.prototype.timeout);
+		toastStage.addEventListener('transitionend', Toast.prototype.animationListener);
+		toastStage = null;
+	};
+
+	Toast.prototype.animationListener = function() {
+		getToastStage().removeEventListener('transitionend', Toast.prototype.animationListener);
+		Toast.prototype.destroy.call(this);
+	};
+
+
+	/**
+	 * Clean up after the Toast slides away. Namely, removing the Toast from the DOM. After the Toast is cleaned up, display the next Toast in the queue if any exists
+	 */
+	Toast.prototype.destroy = function() {
+		var toastStage = getToastStage();
+		document.body.removeChild(toastStage);
+
+		toastStage = null;
+		setToastStage(null);
+
+
+		if(Toast.prototype.toastQueue.length > 0) {
+			// Show the rest of the Toasts in the queue if they exist
+			
+			var toast = Toast.prototype.toastQueue.shift();
+			Toast(toast.text, toast.options, toast.transitions);
+
+			// clean up
+			toast = null;
+		}
+	};
+
+	return {
+		Toast: Toast
+	};
+})();
+
+if(true) {
+	/* global module */
+	module.exports = iqwerty.toast;
+}
 
 /***/ }),
 
@@ -3830,7 +4079,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var path = __importStar(__webpack_require__(/*! path */ "./node_modules/path-browserify/index.js"));
-var canvas_1 = __webpack_require__(/*! uxele-utils/build/canvas */ "../uxele-fileadapter-image/node_modules/uxele-utils/build/canvas.js");
 var ImageAdapter = /** @class */ (function () {
     function ImageAdapter() {
         this.acceptExtensions = [".jpeg", ".png", ".jpg"];
@@ -3848,12 +4096,13 @@ var ImageAdapter = /** @class */ (function () {
     ImageAdapter.prototype.getPage = function (imageName, imageElement) {
         var _this = this;
         return {
+            id: imageName,
             name: imageName,
             width: imageElement.width,
             height: imageElement.height,
-            getPreview: function (zoom) { return __awaiter(_this, void 0, void 0, function () {
+            getPreview: function () { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
-                    return [2 /*return*/, canvas_1.zoomImg(imageElement, zoom)];
+                    return [2 /*return*/, imageElement];
                 });
             }); },
             getLayers: function () {
@@ -3926,508 +4175,6 @@ __export(__webpack_require__(/*! ./ImageAdapter */ "../uxele-fileadapter-image/b
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports=__webpack_require__(/*! ./build */ "../uxele-fileadapter-image/build/index.js");
-
-/***/ }),
-
-/***/ "../uxele-fileadapter-image/node_modules/sprintf-js/src/sprintf.js":
-/*!******************************************************************!*\
-  !*** .-fileadapter-image/node_modules/sprintf-js/src/sprintf.js ***!
-  \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
-
-!function() {
-    'use strict'
-
-    var re = {
-        not_string: /[^s]/,
-        not_bool: /[^t]/,
-        not_type: /[^T]/,
-        not_primitive: /[^v]/,
-        number: /[diefg]/,
-        numeric_arg: /[bcdiefguxX]/,
-        json: /[j]/,
-        not_json: /[^j]/,
-        text: /^[^\x25]+/,
-        modulo: /^\x25{2}/,
-        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,
-        key: /^([a-z_][a-z_\d]*)/i,
-        key_access: /^\.([a-z_][a-z_\d]*)/i,
-        index_access: /^\[(\d+)\]/,
-        sign: /^[\+\-]/
-    }
-
-    function sprintf(key) {
-        // `arguments` is not an array, but should be fine for this call
-        return sprintf_format(sprintf_parse(key), arguments)
-    }
-
-    function vsprintf(fmt, argv) {
-        return sprintf.apply(null, [fmt].concat(argv || []))
-    }
-
-    function sprintf_format(parse_tree, argv) {
-        var cursor = 1, tree_length = parse_tree.length, arg, output = '', i, k, match, pad, pad_character, pad_length, is_positive, sign
-        for (i = 0; i < tree_length; i++) {
-            if (typeof parse_tree[i] === 'string') {
-                output += parse_tree[i]
-            }
-            else if (Array.isArray(parse_tree[i])) {
-                match = parse_tree[i] // convenience purposes only
-                if (match[2]) { // keyword argument
-                    arg = argv[cursor]
-                    for (k = 0; k < match[2].length; k++) {
-                        if (!arg.hasOwnProperty(match[2][k])) {
-                            throw new Error(sprintf('[sprintf] property "%s" does not exist', match[2][k]))
-                        }
-                        arg = arg[match[2][k]]
-                    }
-                }
-                else if (match[1]) { // positional argument (explicit)
-                    arg = argv[match[1]]
-                }
-                else { // positional argument (implicit)
-                    arg = argv[cursor++]
-                }
-
-                if (re.not_type.test(match[8]) && re.not_primitive.test(match[8]) && arg instanceof Function) {
-                    arg = arg()
-                }
-
-                if (re.numeric_arg.test(match[8]) && (typeof arg !== 'number' && isNaN(arg))) {
-                    throw new TypeError(sprintf('[sprintf] expecting number but found %T', arg))
-                }
-
-                if (re.number.test(match[8])) {
-                    is_positive = arg >= 0
-                }
-
-                switch (match[8]) {
-                    case 'b':
-                        arg = parseInt(arg, 10).toString(2)
-                        break
-                    case 'c':
-                        arg = String.fromCharCode(parseInt(arg, 10))
-                        break
-                    case 'd':
-                    case 'i':
-                        arg = parseInt(arg, 10)
-                        break
-                    case 'j':
-                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
-                        break
-                    case 'e':
-                        arg = match[7] ? parseFloat(arg).toExponential(match[7]) : parseFloat(arg).toExponential()
-                        break
-                    case 'f':
-                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
-                        break
-                    case 'g':
-                        arg = match[7] ? String(Number(arg.toPrecision(match[7]))) : parseFloat(arg)
-                        break
-                    case 'o':
-                        arg = (parseInt(arg, 10) >>> 0).toString(8)
-                        break
-                    case 's':
-                        arg = String(arg)
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 't':
-                        arg = String(!!arg)
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'T':
-                        arg = Object.prototype.toString.call(arg).slice(8, -1).toLowerCase()
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'u':
-                        arg = parseInt(arg, 10) >>> 0
-                        break
-                    case 'v':
-                        arg = arg.valueOf()
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'x':
-                        arg = (parseInt(arg, 10) >>> 0).toString(16)
-                        break
-                    case 'X':
-                        arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase()
-                        break
-                }
-                if (re.json.test(match[8])) {
-                    output += arg
-                }
-                else {
-                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
-                        sign = is_positive ? '+' : '-'
-                        arg = arg.toString().replace(re.sign, '')
-                    }
-                    else {
-                        sign = ''
-                    }
-                    pad_character = match[4] ? match[4] === '0' ? '0' : match[4].charAt(1) : ' '
-                    pad_length = match[6] - (sign + arg).length
-                    pad = match[6] ? (pad_length > 0 ? pad_character.repeat(pad_length) : '') : ''
-                    output += match[5] ? sign + arg + pad : (pad_character === '0' ? sign + pad + arg : pad + sign + arg)
-                }
-            }
-        }
-        return output
-    }
-
-    var sprintf_cache = Object.create(null)
-
-    function sprintf_parse(fmt) {
-        if (sprintf_cache[fmt]) {
-            return sprintf_cache[fmt]
-        }
-
-        var _fmt = fmt, match, parse_tree = [], arg_names = 0
-        while (_fmt) {
-            if ((match = re.text.exec(_fmt)) !== null) {
-                parse_tree.push(match[0])
-            }
-            else if ((match = re.modulo.exec(_fmt)) !== null) {
-                parse_tree.push('%')
-            }
-            else if ((match = re.placeholder.exec(_fmt)) !== null) {
-                if (match[2]) {
-                    arg_names |= 1
-                    var field_list = [], replacement_field = match[2], field_match = []
-                    if ((field_match = re.key.exec(replacement_field)) !== null) {
-                        field_list.push(field_match[1])
-                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
-                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
-                                field_list.push(field_match[1])
-                            }
-                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
-                                field_list.push(field_match[1])
-                            }
-                            else {
-                                throw new SyntaxError('[sprintf] failed to parse named argument key')
-                            }
-                        }
-                    }
-                    else {
-                        throw new SyntaxError('[sprintf] failed to parse named argument key')
-                    }
-                    match[2] = field_list
-                }
-                else {
-                    arg_names |= 2
-                }
-                if (arg_names === 3) {
-                    throw new Error('[sprintf] mixing positional and named placeholders is not (yet) supported')
-                }
-                parse_tree.push(match)
-            }
-            else {
-                throw new SyntaxError('[sprintf] unexpected placeholder')
-            }
-            _fmt = _fmt.substring(match[0].length)
-        }
-        return sprintf_cache[fmt] = parse_tree
-    }
-
-    /**
-     * export to either browser or node.js
-     */
-    /* eslint-disable quote-props */
-    if (true) {
-        exports['sprintf'] = sprintf
-        exports['vsprintf'] = vsprintf
-    }
-    if (typeof window !== 'undefined') {
-        window['sprintf'] = sprintf
-        window['vsprintf'] = vsprintf
-
-        if (true) {
-            !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
-                return {
-                    'sprintf': sprintf,
-                    'vsprintf': vsprintf
-                }
-            }).call(exports, __webpack_require__, exports, module),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
-        }
-    }
-    /* eslint-enable quote-props */
-}()
-
-
-/***/ }),
-
-/***/ "../uxele-fileadapter-image/node_modules/uxele-i18n/build/index.js":
-/*!******************************************************************!*\
-  !*** .-fileadapter-image/node_modules/uxele-i18n/build/index.js ***!
-  \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./lang */ "../uxele-fileadapter-image/node_modules/uxele-i18n/build/lang.js"));
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-i18n/src/index.js.map
-
-/***/ }),
-
-/***/ "../uxele-fileadapter-image/node_modules/uxele-i18n/build/lang.js":
-/*!*****************************************************************!*\
-  !*** .-fileadapter-image/node_modules/uxele-i18n/build/lang.js ***!
-  \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var sprintf_js_1 = __webpack_require__(/*! sprintf-js */ "../uxele-fileadapter-image/node_modules/sprintf-js/src/sprintf.js");
-var en_1 = __webpack_require__(/*! ./langs/en */ "../uxele-fileadapter-image/node_modules/uxele-i18n/build/langs/en.js");
-var langs = [en_1.en];
-var curLang = en_1.en;
-function lang(key) {
-    var args = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        args[_i - 1] = arguments[_i];
-    }
-    return sprintf_js_1.sprintf.apply(void 0, [curLang.dict[key]].concat(args));
-}
-exports.lang = lang;
-function setCurLang(_lang) {
-    curLang = _lang;
-}
-exports.setCurLang = setCurLang;
-function getLangs() {
-    return langs;
-}
-exports.getLangs = getLangs;
-function getCurLang() {
-    return curLang;
-}
-exports.getCurLang = getCurLang;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-i18n/src/lang.js.map
-
-/***/ }),
-
-/***/ "../uxele-fileadapter-image/node_modules/uxele-i18n/build/langs/en.js":
-/*!*********************************************************************!*\
-  !*** .-fileadapter-image/node_modules/uxele-i18n/build/langs/en.js ***!
-  \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.en = {
-    "name": "English",
-    "slug": "en",
-    "dict": {
-        error_openfile_no_adapter: "Cannot find decoder for file: %s",
-        error_canvas_convert_file_fail: "Cannot export canvas to blob with format %s. Detailed error: %s",
-        error_layerExport_exportImage_unsupported_layerType: "Cannot export layer: %s as an Image, unsupported layer type: %s",
-        tool_hand_name: "Hand",
-        ok: "OK",
-        no: "NO",
-        yes: "YES"
-    }
-};
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/psdetch-i18n/src/langs/en.js.map
-
-/***/ }),
-
-/***/ "../uxele-fileadapter-image/node_modules/uxele-utils/build/canvas.js":
-/*!********************************************************************!*\
-  !*** .-fileadapter-image/node_modules/uxele-utils/build/canvas.js ***!
-  \********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var uxele_i18n_1 = __webpack_require__(/*! uxele-i18n */ "../uxele-fileadapter-image/node_modules/uxele-i18n/build/index.js");
-function canvasToImg(canvas) {
-    var img = document.createElement("img");
-    return new Promise(function (resolve, reject) {
-        canvas.toBlob(function (blob) {
-            if (blob) {
-                var src_1 = URL.createObjectURL(blob);
-                img.src = src_1;
-                img.onload = function () {
-                    URL.revokeObjectURL(src_1);
-                    resolve(img);
-                };
-            }
-            else {
-                reject(uxele_i18n_1.lang("error_canvas_convert_file_fail", "PNG", "Blob returned as null."));
-            }
-        });
-    });
-    // img.src=canvas.toDataURL();
-    // return img;
-}
-exports.canvasToImg = canvasToImg;
-function svgToCanvas(svg, scale) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (resolve, reject) {
-                    var img = new Image();
-                    img.src = svgToUrl(svg);
-                    img.onload = function () {
-                        var width = img.width * scale;
-                        var height = img.height * scale;
-                        var canvas = document.createElement("canvas");
-                        canvas.width = width;
-                        canvas.height = height;
-                        var ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas);
-                    };
-                })];
-        });
-    });
-}
-exports.svgToCanvas = svgToCanvas;
-function canvasToFile(canvas, name, format, quality) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (resolve, reject) {
-                    canvas.toBlob(function (blob) {
-                        if (blob) {
-                            var f = new File([blob], name, { type: format });
-                            resolve(f);
-                        }
-                        else {
-                            reject(uxele_i18n_1.lang("error_canvas_convert_file_fail", format, "Blob returned as null."));
-                        }
-                    }, format, quality);
-                })];
-        });
-    });
-}
-exports.canvasToFile = canvasToFile;
-function zoomImg(img, zoom) {
-    var canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth * zoom;
-    canvas.height = img.naturalHeight * zoom;
-    var ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    return canvasToImg(canvas);
-}
-exports.zoomImg = zoomImg;
-function cropCanvas(canvas, rect) {
-    if (rect.right > canvas.width) {
-        rect.right = canvas.width;
-    }
-    if (rect.left < 0) {
-        rect.left = 0;
-    }
-    if (rect.top < 0) {
-        rect.top = 0;
-    }
-    if (rect.bottom > canvas.height) {
-        rect.bottom = canvas.height;
-    }
-    var newCanvas = document.createElement("canvas");
-    newCanvas.width = rect.width;
-    newCanvas.height = rect.height;
-    var ctx = newCanvas.getContext("2d");
-    if (ctx) {
-        ctx.drawImage(canvas, rect.left, rect.top, rect.width, rect.height, 0, 0, rect.width, rect.height);
-    }
-    return newCanvas;
-}
-exports.cropCanvas = cropCanvas;
-// export function canvasToFabricImage(canvas: HTMLCanvasElement): Promise<fabric.Image> {
-//   return canvasToImgUrl(canvas)
-//     .then(imgUrlToFabricImage)
-// }
-function canvasToImgUrl(canvas) {
-    return new Promise(function (resolve, reject) {
-        canvas.toBlob(function (blob) {
-            var src = URL.createObjectURL(blob);
-            resolve(src);
-        });
-    });
-}
-exports.canvasToImgUrl = canvasToImgUrl;
-// export function imgUrlToFabricImage(url: string): Promise<fabric.Image> {
-//   return new Promise<fabric.Image>((resolve, reject) => {
-//     window.fabric.Image.fromURL(url, (img) => {
-//       // URL.revokeObjectURL(src);
-//       resolve(img);
-//     });
-//   })
-// }
-function svgToUrl(svgData) {
-    var svg = new Blob([svgData], { type: "image/svg+xml" });
-    return URL.createObjectURL(svg);
-}
-exports.svgToUrl = svgToUrl;
-function imgToCanvas(img) {
-    var canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    var ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    return canvas;
-}
-exports.imgToCanvas = imgToCanvas;
-function scaleCanvas(oriCanvas, scale) {
-    if (scale === 1) {
-        return oriCanvas;
-    }
-    var rtn = document.createElement("canvas");
-    rtn.width = oriCanvas.width * scale;
-    rtn.height = oriCanvas.height * scale;
-    var ctx = rtn.getContext("2d");
-    ctx.drawImage(oriCanvas, 0, 0, oriCanvas.width, oriCanvas.height, 0, 0, rtn.width, rtn.height);
-    return rtn;
-}
-exports.scaleCanvas = scaleCanvas;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-utils/src/canvas.js.map
 
 /***/ }),
 
@@ -4607,7 +4354,7 @@ function artboardPsd(p) {
     var bgImg = psdImgObjToCanvas_1.psdImgObjToCanvas(p.image.obj);
     var rtn = [];
     var _loop_1 = function (c) {
-        var rect;
+        var rect = void 0;
         if (c.layer.artboard) {
             rect = uxele_core_1.Rect.fromJson(c.layer.artboard().export().coords);
         }
@@ -4617,6 +4364,7 @@ function artboardPsd(p) {
         var bgPage = uxele_utils_1.canvas.cropCanvas(bgImg, rect);
         var layers = undefined;
         var page = {
+            id: c.name,
             name: c.name,
             offsetX: rect.left,
             offsetY: rect.top,
@@ -4628,7 +4376,7 @@ function artboardPsd(p) {
                     switch (_a.label) {
                         case 0:
                             if (!!layers) return [3 /*break*/, 2];
-                            return [4 /*yield*/, psdLayerConvert_1.psdRawLayerConvert(c, rect)];
+                            return [4 /*yield*/, psdLayerConvert_1.psdRawLayerConvert(c, page)];
                         case 1:
                             layers = _a.sent();
                             _a.label = 2;
@@ -4846,14 +4594,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var build_1 = __webpack_require__(/*! uxele-utils/build */ "../uxele-utils/build/index.js");
+// export function genGetPreview(bgCanvas: HTMLCanvasElement) {
+//   const cache: { [key: number]: HTMLImageElement } = {};
+//   return async (zoom: number) => {
+//     if (cache[zoom]) {
+//       return cache[zoom];
+//     } else {
+//       cache[zoom] = await canvasToImg(scaleCanvas(bgCanvas, zoom));
+//       return cache[zoom];
+//     }
+//   }
+// }
 function genGetPreview(bgCanvas) {
     var _this = this;
     var cache = {};
-    return function (zoom) { return __awaiter(_this, void 0, void 0, function () {
-        var _a, _b;
+    return function () { return __awaiter(_this, void 0, void 0, function () {
+        var zoom, _a, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
+                    zoom = 1;
                     if (!cache[zoom]) return [3 /*break*/, 1];
                     return [2 /*return*/, cache[zoom]];
                 case 1:
@@ -5096,10 +4856,15 @@ var uxele_core_1 = __webpack_require__(/*! uxele-core */ "../uxele-core/build/in
 var psdImgObjToCanvas_1 = __webpack_require__(/*! ./psdImgObjToCanvas */ "../uxele-fileadapter-psd/build/psdImgObjToCanvas.js");
 var uxele_utils_1 = __webpack_require__(/*! uxele-utils */ "../uxele-utils/build/index.js");
 var layer_1 = __webpack_require__(/*! uxele-utils/build/layer */ "../uxele-utils/build/layer.js");
-function psdRawLayerConvert(parent, pageRect) {
+function psdRawLayerConvert(parent, page) {
     return __awaiter(this, void 0, void 0, function () {
-        var psdRawLayers, rtn, _i, psdRawLayers_1, rawNode, layerMeta;
+        var left, top, right, bottom, pageRect, psdRawLayers, rtn, _i, psdRawLayers_1, rawNode, layerMeta;
         return __generator(this, function (_a) {
+            left = page.offsetX ? page.offsetX : 0;
+            top = page.offsetY ? page.offsetY : 0;
+            right = left + page.width;
+            bottom = top + page.height;
+            pageRect = new uxele_core_1.Rect(left, top, right, bottom);
             psdRawLayers = parent.children();
             rtn = [];
             for (_i = 0, psdRawLayers_1 = psdRawLayers; _i < psdRawLayers_1.length; _i++) {
@@ -5109,10 +4874,11 @@ function psdRawLayerConvert(parent, pageRect) {
                     rect: getRect(rawNode, pageRect),
                     visible: rawNode.visible(),
                     layerType: getLayerType(rawNode),
+                    page: page
                 };
                 switch (layerMeta.layerType) {
                     case uxele_core_1.LayerType.folder:
-                        buildFolderLayer(layerMeta, rawNode, pageRect);
+                        buildFolderLayer(layerMeta, rawNode, pageRect, page);
                         break;
                     case uxele_core_1.LayerType.pixel:
                         buildPixelLayer(layerMeta, rawNode);
@@ -5158,7 +4924,7 @@ function trimLayerRect(layer, rawNode) {
         });
     });
 }
-function buildFolderLayer(layer, rawNode, pageRect) {
+function buildFolderLayer(layer, rawNode, pageRect, page) {
     var _this = this;
     var l = layer;
     var children = undefined;
@@ -5167,7 +4933,7 @@ function buildFolderLayer(layer, rawNode, pageRect) {
             switch (_a.label) {
                 case 0:
                     if (!!children) return [3 /*break*/, 2];
-                    return [4 /*yield*/, psdRawLayerConvert(rawNode, pageRect)];
+                    return [4 /*yield*/, psdRawLayerConvert(rawNode, page)];
                 case 1:
                     children = _a.sent();
                     _a.label = 2;
@@ -6631,6 +6397,7 @@ function singlePagePsd(p, defaultPageName) {
     var bgImg = psdImgObjToCanvas_1.psdImgObjToCanvas(p.image.obj);
     var layers = undefined;
     var page = {
+        id: name,
         name: name,
         width: bgImg.width,
         height: bgImg.height,
@@ -6640,7 +6407,7 @@ function singlePagePsd(p, defaultPageName) {
                 switch (_a.label) {
                     case 0:
                         if (!!layers) return [3 /*break*/, 2];
-                        return [4 /*yield*/, psdLayerConvert_1.psdRawLayerConvert(tree)];
+                        return [4 /*yield*/, psdLayerConvert_1.psdRawLayerConvert(tree, page)];
                     case 1:
                         layers = _a.sent();
                         _a.label = 2;
@@ -6755,7 +6522,7 @@ __export(__webpack_require__(/*! ./lang */ "../uxele-i18n/build/lang.js"));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var sprintf_js_1 = __webpack_require__(/*! sprintf-js */ "../uxele-i18n/node_modules/sprintf-js/src/sprintf.js");
+var sprintf_js_1 = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module 'sprintf-js'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 var en_1 = __webpack_require__(/*! ./langs/en */ "../uxele-i18n/build/langs/en.js");
 var langs = [en_1.en];
 var curLang = en_1.en;
@@ -6813,240 +6580,10 @@ exports.en = {
 
 /***/ }),
 
-/***/ "../uxele-i18n/node_modules/sprintf-js/src/sprintf.js":
-/*!*****************************************************!*\
-  !*** .-i18n/node_modules/sprintf-js/src/sprintf.js ***!
-  \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
-
-!function() {
-    'use strict'
-
-    var re = {
-        not_string: /[^s]/,
-        not_bool: /[^t]/,
-        not_type: /[^T]/,
-        not_primitive: /[^v]/,
-        number: /[diefg]/,
-        numeric_arg: /[bcdiefguxX]/,
-        json: /[j]/,
-        not_json: /[^j]/,
-        text: /^[^\x25]+/,
-        modulo: /^\x25{2}/,
-        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,
-        key: /^([a-z_][a-z_\d]*)/i,
-        key_access: /^\.([a-z_][a-z_\d]*)/i,
-        index_access: /^\[(\d+)\]/,
-        sign: /^[\+\-]/
-    }
-
-    function sprintf(key) {
-        // `arguments` is not an array, but should be fine for this call
-        return sprintf_format(sprintf_parse(key), arguments)
-    }
-
-    function vsprintf(fmt, argv) {
-        return sprintf.apply(null, [fmt].concat(argv || []))
-    }
-
-    function sprintf_format(parse_tree, argv) {
-        var cursor = 1, tree_length = parse_tree.length, arg, output = '', i, k, match, pad, pad_character, pad_length, is_positive, sign
-        for (i = 0; i < tree_length; i++) {
-            if (typeof parse_tree[i] === 'string') {
-                output += parse_tree[i]
-            }
-            else if (Array.isArray(parse_tree[i])) {
-                match = parse_tree[i] // convenience purposes only
-                if (match[2]) { // keyword argument
-                    arg = argv[cursor]
-                    for (k = 0; k < match[2].length; k++) {
-                        if (!arg.hasOwnProperty(match[2][k])) {
-                            throw new Error(sprintf('[sprintf] property "%s" does not exist', match[2][k]))
-                        }
-                        arg = arg[match[2][k]]
-                    }
-                }
-                else if (match[1]) { // positional argument (explicit)
-                    arg = argv[match[1]]
-                }
-                else { // positional argument (implicit)
-                    arg = argv[cursor++]
-                }
-
-                if (re.not_type.test(match[8]) && re.not_primitive.test(match[8]) && arg instanceof Function) {
-                    arg = arg()
-                }
-
-                if (re.numeric_arg.test(match[8]) && (typeof arg !== 'number' && isNaN(arg))) {
-                    throw new TypeError(sprintf('[sprintf] expecting number but found %T', arg))
-                }
-
-                if (re.number.test(match[8])) {
-                    is_positive = arg >= 0
-                }
-
-                switch (match[8]) {
-                    case 'b':
-                        arg = parseInt(arg, 10).toString(2)
-                        break
-                    case 'c':
-                        arg = String.fromCharCode(parseInt(arg, 10))
-                        break
-                    case 'd':
-                    case 'i':
-                        arg = parseInt(arg, 10)
-                        break
-                    case 'j':
-                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
-                        break
-                    case 'e':
-                        arg = match[7] ? parseFloat(arg).toExponential(match[7]) : parseFloat(arg).toExponential()
-                        break
-                    case 'f':
-                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
-                        break
-                    case 'g':
-                        arg = match[7] ? String(Number(arg.toPrecision(match[7]))) : parseFloat(arg)
-                        break
-                    case 'o':
-                        arg = (parseInt(arg, 10) >>> 0).toString(8)
-                        break
-                    case 's':
-                        arg = String(arg)
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 't':
-                        arg = String(!!arg)
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'T':
-                        arg = Object.prototype.toString.call(arg).slice(8, -1).toLowerCase()
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'u':
-                        arg = parseInt(arg, 10) >>> 0
-                        break
-                    case 'v':
-                        arg = arg.valueOf()
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'x':
-                        arg = (parseInt(arg, 10) >>> 0).toString(16)
-                        break
-                    case 'X':
-                        arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase()
-                        break
-                }
-                if (re.json.test(match[8])) {
-                    output += arg
-                }
-                else {
-                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
-                        sign = is_positive ? '+' : '-'
-                        arg = arg.toString().replace(re.sign, '')
-                    }
-                    else {
-                        sign = ''
-                    }
-                    pad_character = match[4] ? match[4] === '0' ? '0' : match[4].charAt(1) : ' '
-                    pad_length = match[6] - (sign + arg).length
-                    pad = match[6] ? (pad_length > 0 ? pad_character.repeat(pad_length) : '') : ''
-                    output += match[5] ? sign + arg + pad : (pad_character === '0' ? sign + pad + arg : pad + sign + arg)
-                }
-            }
-        }
-        return output
-    }
-
-    var sprintf_cache = Object.create(null)
-
-    function sprintf_parse(fmt) {
-        if (sprintf_cache[fmt]) {
-            return sprintf_cache[fmt]
-        }
-
-        var _fmt = fmt, match, parse_tree = [], arg_names = 0
-        while (_fmt) {
-            if ((match = re.text.exec(_fmt)) !== null) {
-                parse_tree.push(match[0])
-            }
-            else if ((match = re.modulo.exec(_fmt)) !== null) {
-                parse_tree.push('%')
-            }
-            else if ((match = re.placeholder.exec(_fmt)) !== null) {
-                if (match[2]) {
-                    arg_names |= 1
-                    var field_list = [], replacement_field = match[2], field_match = []
-                    if ((field_match = re.key.exec(replacement_field)) !== null) {
-                        field_list.push(field_match[1])
-                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
-                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
-                                field_list.push(field_match[1])
-                            }
-                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
-                                field_list.push(field_match[1])
-                            }
-                            else {
-                                throw new SyntaxError('[sprintf] failed to parse named argument key')
-                            }
-                        }
-                    }
-                    else {
-                        throw new SyntaxError('[sprintf] failed to parse named argument key')
-                    }
-                    match[2] = field_list
-                }
-                else {
-                    arg_names |= 2
-                }
-                if (arg_names === 3) {
-                    throw new Error('[sprintf] mixing positional and named placeholders is not (yet) supported')
-                }
-                parse_tree.push(match)
-            }
-            else {
-                throw new SyntaxError('[sprintf] unexpected placeholder')
-            }
-            _fmt = _fmt.substring(match[0].length)
-        }
-        return sprintf_cache[fmt] = parse_tree
-    }
-
-    /**
-     * export to either browser or node.js
-     */
-    /* eslint-disable quote-props */
-    if (true) {
-        exports['sprintf'] = sprintf
-        exports['vsprintf'] = vsprintf
-    }
-    if (typeof window !== 'undefined') {
-        window['sprintf'] = sprintf
-        window['vsprintf'] = vsprintf
-
-        if (true) {
-            !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
-                return {
-                    'sprintf': sprintf,
-                    'vsprintf': vsprintf
-                }
-            }).call(exports, __webpack_require__, exports, module),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
-        }
-    }
-    /* eslint-enable quote-props */
-}()
-
-
-/***/ }),
-
-/***/ "../uxele-render-fabric/build/FabricRenderer.js":
-/*!***********************************************!*\
-  !*** .-render-fabric/build/FabricRenderer.js ***!
-  \***********************************************/
+/***/ "../uxele-render-svg/build/SvgRenderer.js":
+/*!*****************************************!*\
+  !*** .-render-svg/build/SvgRenderer.js ***!
+  \*****************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7062,217 +6599,396 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core = __importStar(__webpack_require__(/*! uxele-core */ "../uxele-core/build/index.js"));
-__webpack_require__(/*! script-loader!./vendor/fabric.min.js */ "../uxele-render-fabric/node_modules/script-loader/index.js!../uxele-render-fabric/build/vendor/fabric.min.js");
-function emptyGroup(width, height) {
-    return new window.fabric.Group(undefined, {
-        selectable: false,
-        originX: "left",
-        originY: "top"
-    });
-}
-var FabricRenderer = /** @class */ (function (_super) {
-    __extends(FabricRenderer, _super);
-    function FabricRenderer(ele, renderWidth, renderHeight) {
-        var _this = _super.call(this, ele, renderWidth, renderHeight) || this;
-        _this.ele = ele;
-        _this.renderWidth = renderWidth;
-        _this.renderHeight = renderHeight;
-        _this.canvasLayers = {
-            "low": emptyGroup(_this.renderWidth, _this.renderHeight),
-            "normal": emptyGroup(_this.renderWidth, _this.renderHeight),
-            "high": emptyGroup(_this.renderWidth, _this.renderHeight),
-        };
-        _this.fabricCanvas = new window.fabric.Canvas(ele, {
-            hoverCursor: "inherit",
-            selection: false,
-            renderOnAddRemove: true
-        });
-        _this.fabricCanvas.setWidth(renderWidth);
-        _this.fabricCanvas.setHeight(renderHeight);
-        _this.bindEvents();
-        var keys = Object.keys(_this.canvasLayers);
-        for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
-            var key = keys_1[_i];
-            _this.fabricCanvas.add(_this.canvasLayers[key]);
-        }
+var uxele_core_1 = __webpack_require__(/*! uxele-core */ "../uxele-core/build/index.js");
+var svg_js_1 = __importDefault(__webpack_require__(/*! svg.js */ "../uxele-render-svg/node_modules/svg.js/dist/svg.js"));
+var uxele_utils_1 = __webpack_require__(/*! uxele-utils */ "../uxele-utils/build/index.js");
+var SvgRenderer = /** @class */ (function (_super) {
+    __extends(SvgRenderer, _super);
+    function SvgRenderer(parent) {
+        var _this = _super.call(this, parent) || this;
+        _this._originImgWidth = 0;
+        _this._originImgHeight = 0;
+        _this.svg = svg_js_1.default(parent);
+        _this.background = _this.svg.group().move(0, 0);
+        _this.labelGroup = _this.svg.group().move(0, 0);
+        _this.pluginDraw = _this.svg.group().move(0, 0);
+        _this.labelGroup.after(_this.background);
+        _this.pluginDraw.front();
+        _this.svg.width(parent.clientWidth);
+        _this.svg.height(parent.clientHeight);
         return _this;
     }
-    FabricRenderer.prototype.setCanvasSize = function (width, height) {
-        this.fabricCanvas.setDimensions({ width: width, height: height });
-        this.fabricCanvas.renderAll();
+    SvgRenderer.prototype.removeDrawableGroup = function (group) {
+        this.pluginDraw.removeElement(group);
     };
-    FabricRenderer.prototype.bindEvents = function () {
-        var _this = this;
-        this.fabricCanvas["__onMouseWheel"] = function (evt) {
-            evt.preventDefault();
-            evt.stopPropagation();
-            var factor = evt.deltaFactor ? isNaN(evt.deltaFactor) ? 1 : evt.deltaFactor : 1;
-            if (evt.deltaX) {
-                _this.panX(_this.panX() + evt.deltaX * factor);
-            }
-            if (evt.deltaY) {
-                _this.panY(_this.panY() + evt.deltaY * factor);
-            }
-            // this.onInvalidate.emit();
+    SvgRenderer.prototype.measureText = function (text, options) {
+        var txt = this.draw(__assign({}, options, { txt: text, textBackgroundFill: undefined }));
+        var rbox = txt.bbox();
+        var rtn = {
+            width: rbox.width,
+            height: rbox.height
         };
-        // click
+        txt.remove();
+        return rtn;
+    };
+    SvgRenderer.prototype.realPointToPagePoint = function (realPoint, page) {
+        if (this.pageLayouts) {
+            var pageLayout = this.pageLayouts.find(function (pageLayout) { return pageLayout.page === page; });
+            if (pageLayout) {
+                return {
+                    x: realPoint.x - pageLayout.rect.left,
+                    y: realPoint.y - pageLayout.rect.top
+                };
+            }
+            else {
+                console.warn("page not found in realPointToPagePoint");
+                return { x: 0, y: 0 };
+            }
+        }
+        else {
+            console.warn("pageLayout is not ready while realPointToPagePoint is called");
+            return { x: 0, y: 0 };
+        }
+    };
+    SvgRenderer.prototype.pagePointToRealPoint = function (pagePoint, page) {
+        if (this.pageLayouts) {
+            var pageLayout = this.pageLayouts.find(function (pageLayout) { return pageLayout.page === page; });
+            if (pageLayout) {
+                return {
+                    x: pagePoint.x + pageLayout.rect.left,
+                    y: pagePoint.y + pageLayout.rect.top
+                };
+            }
+            else {
+                console.warn("page not found in pagePointToRealPoint");
+                return { x: 0, y: 0 };
+            }
+        }
+        else {
+            console.warn("pageLayout is not ready while pagePointToRealPoint is called");
+            return { x: 0, y: 0 };
+        }
+    };
+    SvgRenderer.prototype.getDrawableGroup = function () {
+        return this.pluginDraw.group().move(0, 0);
+    };
+    SvgRenderer.prototype.delegateEvents = function (event, handler) {
+        var _this = this;
+        this.svg.on(event, function (e) {
+            if (event !== "click") {
+                handler({
+                    e: e
+                });
+            }
+        });
+        this.svg.on("mousewheel", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.deltaX) {
+                _this.panX(_this.panX() + e.deltaX);
+            }
+            if (e.deltaY) {
+                _this.panY(_this.panY() + e.deltaY);
+            }
+        });
+        // click -- only fire if mouse button down / up within 200 ms and pointer does not move more than 50px..
         var downEvt;
-        this.fabricCanvas.on("mouse:down", function (evt) {
+        this.svg.on("mousedown", function (evt) {
             downEvt = evt;
         });
-        this.fabricCanvas.on("mouse:up", function (evt) {
+        this.svg.on("mouseup", function (evt) {
             if (downEvt) {
-                if (evt.e.timeStamp - downEvt.e.timeStamp < 200) {
-                    if (Math.sqrt(Math.pow(evt.e.offsetX - downEvt.e.offsetX, 2) +
-                        Math.pow(evt.e.offsetY - downEvt.e.offsetY, 2)) < 50) {
-                        _this.emit("click", evt);
+                if (evt.timeStamp - downEvt.timeStamp < 200) {
+                    if (Math.sqrt(Math.pow(evt.screenX - downEvt.screenX, 2) +
+                        Math.pow(evt.screenY - downEvt.screenY, 2)) < 50) {
+                        _this.emit("click", { e: evt });
                     }
                 }
             }
         });
     };
-    FabricRenderer.prototype.on = function (evt, handler) {
-        switch (evt) {
-            case "mousedown":
-                this.fabricCanvas.on("mouse:down", handler);
-                break;
-            case "mouseup":
-                this.fabricCanvas.on("mouse:up", handler);
-                break;
-            case "mousemove":
-                this.fabricCanvas.on("mouse:move", handler);
-                break;
-            case "mouseleave":
-                this.fabricCanvas.on("mouse:out", handler);
-                break;
-            default:
-                _super.prototype.on.call(this, evt, handler);
-        }
+    SvgRenderer.prototype.resizeRender = function () {
+        this.svg.width(this.renderWidth);
+        this.svg.height(this.renderHeight);
+        var current = this.svg.viewbox();
+        this.svg.viewbox(current.x, current.y, this.renderWidth, this.renderHeight);
     };
-    FabricRenderer.prototype.off = function (evt, handler) {
-        _super.prototype.off.call(this, evt, handler);
-        if (evt) {
-            switch (evt) {
-                case "mousedown":
-                    this.fabricCanvas.off("mouse:down", handler);
-                    break;
-                case "mouseup":
-                    this.fabricCanvas.off("mouse:up", handler);
-                    break;
-                case "mousemove":
-                    this.fabricCanvas.off("mouse:move", handler);
-                    break;
-                case "mouseleave":
-                    this.fabricCanvas.off("mouse:out", handler);
-                    break;
-                default:
-                    _super.prototype.off.call(this, evt, handler);
-            }
-        }
-        else {
-            this.fabricCanvas.off();
-        }
+    SvgRenderer.prototype.destroy = function () {
+        this.svg.remove();
     };
-    FabricRenderer.prototype.clearDrawing = function (params, zindex) {
-        // if (params){
-        //   if (zindex){
-        //     const layer = this.canvasLayers[zindex];
-        //     layer.removeWithUpdate(params);
-        //   }else{
-        //     (Object.keys(this.canvasLayers) as core.RendererDrawZIndex[]).forEach((key:core.RendererDrawZIndex)=>{
-        //       this.canvasLayers[key].removeWithUpdate(params);
-        //     })
-        //   }
-        // }else{
-        //   if (zindex) {
-        //     const layer = this.canvasLayers[zindex];
-        //     layer.remove(...layer.getObjects());
-        //   } else {
-        //     const keys: core.RendererDrawZIndex[] = Object.keys(this.canvasLayers) as core.RendererDrawZIndex[];
-        //     for (const key of keys) {
-        //       const layer = this.canvasLayers[key];
-        //       layer.remove(...layer.getObjects());
-        //     }
-        //   }
-        // }
-        if (params) {
-            this.fabricCanvas.remove(params);
+    Object.defineProperty(SvgRenderer.prototype, "imgWidth", {
+        get: function () {
+            return this._originImgWidth * this.zoom();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SvgRenderer.prototype, "imgHeight", {
+        get: function () {
+            return this._originImgHeight * this.zoom();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SvgRenderer.prototype.zoom = function (level) {
+        // throw new Error("Method not implemented.");
+        if (level !== undefined) {
+            this.zoomLevel = level;
+            this._renderPageLayout();
         }
-        else {
-            this.fabricCanvas.clear();
-            if (this.canvasBackground) {
-                this.fabricCanvas.add(this.canvasBackground);
-            }
-        }
-        this.fabricCanvas.requestRenderAll();
+        return this.zoomLevel;
     };
-    FabricRenderer.prototype.getBackground = function () {
-        return this.canvasBackground ? this.canvasBackground.getElement() : undefined;
-    };
-    FabricRenderer.prototype.setBackground = function (img) {
-        if (img) {
-            if (this.canvasBackground) {
-                this.fabricCanvas.remove(this.canvasBackground);
-            }
-            this.canvasBackground = new window.fabric.Image(img, { left: 0, top: 0, selectable: false });
-            this.fabricCanvas.insertAt(this.canvasBackground, 0, false);
-        }
-        else {
-            if (this.canvasBackground) {
-                this.fabricCanvas.remove(this.canvasBackground);
-                this.canvasBackground = undefined;
-            }
-        }
-    };
-    FabricRenderer.prototype.draw = function (param, zindex) {
-        if (zindex === void 0) { zindex = "normal"; }
-        // if (!this.canvasLayers[zindex].contains(param)){
-        //   // this.canvasLayers[zindex].removeWithUpdate(param);
-        //   this.canvasLayers[zindex].addWithUpdate(param);
-        // }
-        // (this.canvasLayers[zindex] as any ).setCoords();
-        if (!this.fabricCanvas.contains(param)) {
-            this.fabricCanvas.add(param);
-        }
-        this.fabricCanvas.requestRenderAll();
-        // console.log(this.canvasLayers[zindex].left);
-        // console.log(this.canvasLayers[zindex].top);
-    };
-    FabricRenderer.prototype.destroy = function () {
-        this.fabricCanvas.dispose();
-    };
-    FabricRenderer.prototype.panX = function (pixel) {
+    SvgRenderer.prototype._panX = function (pixel) {
         if (pixel !== undefined) {
-            this.fabricCanvas.absolutePan(new window.fabric.Point(Math.min(Math.max(pixel, this.minX), this.maxX), this.panY()));
+            var current = this.svg.viewbox();
+            this.svg.viewbox(pixel, current.y, current.width, current.height);
         }
-        return -this.fabricCanvas.viewportTransform[4];
+        return this.svg.viewbox().x;
     };
-    FabricRenderer.prototype.panY = function (pixel) {
+    SvgRenderer.prototype._panY = function (pixel) {
         if (pixel !== undefined) {
-            this.fabricCanvas.absolutePan(new window.fabric.Point(this.panX(), Math.min(Math.max(pixel, this.minY), this.maxY)));
+            var current = this.svg.viewbox();
+            this.svg.viewbox(current.x, pixel, current.width, current.height);
         }
-        return -this.fabricCanvas.viewportTransform[5];
+        return this.svg.viewbox().y;
     };
-    return FabricRenderer;
-}(core.BaseRenderer));
-exports.FabricRenderer = FabricRenderer;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-render-fabric/src/FabricRenderer.js.map
+    SvgRenderer.prototype.pageByRealCoords = function (coords) {
+        if (this.pageLayouts) {
+            var layout = this.pageLayouts.find(function (pageLayout) { return pageLayout.rect.containsCoords(coords.x, coords.y); });
+            return layout ? layout.page : null;
+        }
+        else {
+            return null;
+        }
+    };
+    SvgRenderer.prototype.renderPages = function (pages) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.pageLayouts = uxele_utils_1.render.pagesToLayout(pages);
+                        this.zoomLevel = 1;
+                        return [4 /*yield*/, this._renderPageLayout()];
+                    case 1:
+                        _a.sent();
+                        this._originImgWidth = this.background.rbox().width;
+                        this._originImgHeight = this.background.rbox().height;
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    SvgRenderer.prototype._renderPageLayout = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var scaledPageLayouts, _i, scaledPageLayouts_1, pageLayout, page, img;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.pageLayouts) return [3 /*break*/, 5];
+                        this.clearBackground();
+                        scaledPageLayouts = uxele_utils_1.render.scalePageLayouts(this.pageLayouts, this.zoom());
+                        _i = 0, scaledPageLayouts_1 = scaledPageLayouts;
+                        _a.label = 1;
+                    case 1:
+                        if (!(_i < scaledPageLayouts_1.length)) return [3 /*break*/, 4];
+                        pageLayout = scaledPageLayouts_1[_i];
+                        page = pageLayout.page;
+                        return [4 /*yield*/, page.getPreview()];
+                    case 2:
+                        img = _a.sent();
+                        this.svg.image(img.src, pageLayout.rect.width, pageLayout.rect.height).addTo(this.background).move(pageLayout.rect.left, pageLayout.rect.top);
+                        _a.label = 3;
+                    case 3:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 4:
+                        this.renderLabels(scaledPageLayouts);
+                        _a.label = 5;
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    SvgRenderer.prototype.renderLabels = function (pageLayouts) {
+        this.labelGroup.clear();
+        for (var _i = 0, pageLayouts_1 = pageLayouts; _i < pageLayouts_1.length; _i++) {
+            var pageLayout = pageLayouts_1[_i];
+            var page = pageLayout.page;
+            var txt = page.name;
+            var txtEle = this.svg.text(txt).fill("white")
+                .addTo(this.labelGroup).move(pageLayout.rect.left, pageLayout.rect.top - 20);
+            var txtLen = txt.length;
+            while (txtEle.bbox().width > pageLayout.rect.width && txtEle.text() !== "...") {
+                txtLen--;
+                txtEle.text(txt.substr(0, txtLen - 1) + "...");
+            }
+        }
+    };
+    SvgRenderer.prototype.clearBackground = function () {
+        var eles = this.background.children();
+        for (var _i = 0, eles_1 = eles; _i < eles_1.length; _i++) {
+            var ele = eles_1[_i];
+            ele.off();
+        }
+        this.background.clear();
+    };
+    SvgRenderer.prototype.applyDrawOptions = function (item, options) {
+        item.stroke({
+            color: options.strokeColor,
+            width: options.strokeWidth,
+            dasharray: options.strokeDashArray
+        })
+            .fill({
+            color: options.fillColor,
+            rule: options.fillRule
+        })
+            .opacity(options.opacity ? options.opacity : 1);
+        if (options.scaleX && options.scaleY) {
+            item.scale(options.scaleX ? options.scaleX : 1, options.scaleY);
+        }
+        if (options.left !== undefined && options.top !== undefined) {
+            item.move(options.left, options.top);
+        }
+        if (options.clip) {
+            var clip = this.svg.clip();
+            if (options.clip.circle) {
+                var circle = this.draw(options.clip.circle);
+                clip.add(circle);
+            }
+            item.clipWith(clip);
+        }
+        return item;
+    };
+    SvgRenderer.prototype.draw = function (options, group) {
+        var item = undefined;
+        if (uxele_core_1.isDrawLine(options)) {
+            item = this.svg.line(options.x1, options.y1, options.x2, options.y2);
+        }
+        else if (uxele_core_1.isDrawText(options)) {
+            var txt = options.txt;
+            if (options.textBackgroundFill) {
+                var measure = this.measureText(txt, options);
+                this.draw({
+                    left: options.left,
+                    top: options.top,
+                    width: measure.width,
+                    height: measure.height,
+                    fillColor: options.textBackgroundFill
+                }, group);
+            }
+            item = this.svg.text(txt)
+                .font({
+                family: options.fontFamily,
+                size: options.fontSize,
+                weight: options.fontWeight
+            });
+        }
+        else if (uxele_core_1.isDrawRect(options)) {
+            item = this.svg.rect(options.width, options.height);
+        }
+        else if (uxele_core_1.isDrawCircle(options)) {
+            item = this.svg.circle(options.radius * 2);
+        }
+        else if (uxele_core_1.isDrawImage(options)) {
+            item = this.svg.image(options.img.src, options.img.width, options.img.height);
+        }
+        if (item) {
+            return this.applyDrawOptions(item, options)
+                .addTo(group ? group : this.pluginDraw);
+        }
+        else {
+            throw (new Error("draw with unknow options:" + JSON.stringify(options)));
+        }
+    };
+    SvgRenderer.prototype.updateDraw = function (item, options) {
+        if (uxele_core_1.isDrawLine(options)) {
+            item.plot([options.x1, options.y1, options.x2, options.y2]);
+        }
+        else if (uxele_core_1.isDrawText(options)) {
+            item.text(options.txt).font({
+                family: options.fontFamily,
+                size: options.fontSize,
+                weight: options.fontWeight
+            });
+        }
+        else if (uxele_core_1.isDrawRect(options)) {
+            item.size(options.width, options.height);
+        }
+        else if (uxele_core_1.isDrawCircle(options)) {
+            item.radius(options.radius);
+        }
+        else if (uxele_core_1.isDrawImage(options)) {
+            item.load(options.img.src).size(options.img.width, options.img.height);
+        }
+        this.applyDrawOptions(item, options);
+        return item;
+    };
+    SvgRenderer.prototype.clearDrawing = function (group) {
+        if (group) {
+            group.clear();
+        }
+        else {
+            this.pluginDraw.clear();
+        }
+    };
+    return SvgRenderer;
+}(uxele_core_1.BaseRenderer));
+exports.SvgRenderer = SvgRenderer;
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-render-svg/src/SvgRenderer.js.map
 
 /***/ }),
 
-/***/ "../uxele-render-fabric/build/index.js":
-/*!**************************************!*\
-  !*** .-render-fabric/build/index.js ***!
-  \**************************************/
+/***/ "../uxele-render-svg/build/index.js":
+/*!***********************************!*\
+  !*** .-render-svg/build/index.js ***!
+  \***********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7282,68 +6998,5627 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./FabricRenderer */ "../uxele-render-fabric/build/FabricRenderer.js"));
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-render-fabric/src/index.js.map
+__export(__webpack_require__(/*! ./SvgRenderer */ "../uxele-render-svg/build/SvgRenderer.js"));
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-render-svg/src/index.js.map
 
 /***/ }),
 
-/***/ "../uxele-render-fabric/node_modules/raw-loader/index.js!../uxele-render-fabric/build/vendor/fabric.min.js":
-/*!******************************************************************************************!*\
-  !*** .-render-fabric/node_modules/raw-loader!.-render-fabric/build/vendor/fabric.min.js ***!
-  \******************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = "var fabric=fabric||{version:\"2.3.6\"};function resizeCanvasIfNeeded(t){var e=t.targetCanvas,i=e.width,r=e.height,n=t.destinationWidth,s=t.destinationHeight;i===n&&r===s||(e.width=n,e.height=s)}function copyGLTo2DDrawImage(t,e){var i=t.canvas,r=e.targetCanvas,n=r.getContext(\"2d\");n.translate(0,r.height),n.scale(1,-1);var s=i.height-r.height;n.drawImage(i,0,s,r.width,r.height,0,0,r.width,r.height)}function copyGLTo2DPutImageData(t,e){var i=e.targetCanvas.getContext(\"2d\"),r=e.destinationWidth,n=e.destinationHeight,s=r*n*4,o=new Uint8Array(this.imageBuffer,0,s),a=new Uint8ClampedArray(this.imageBuffer,0,s);t.readPixels(0,0,r,n,t.RGBA,t.UNSIGNED_BYTE,o);var h=new ImageData(a,r,n);i.putImageData(h,0,0)}\"undefined\"!=typeof exports?exports.fabric=fabric:\"function\"==typeof define&&define.amd&&define([],function(){return fabric}),\"undefined\"!=typeof document&&\"undefined\"!=typeof window?(fabric.document=document,fabric.window=window):(fabric.document=require(\"jsdom\").jsdom(decodeURIComponent(\"%3C!DOCTYPE%20html%3E%3Chtml%3E%3Chead%3E%3C%2Fhead%3E%3Cbody%3E%3C%2Fbody%3E%3C%2Fhtml%3E\"),{features:{FetchExternalResources:[\"img\"]}}),fabric.jsdomImplForWrapper=require(\"jsdom/lib/jsdom/living/generated/utils\").implForWrapper,fabric.nodeCanvas=require(\"jsdom/lib/jsdom/utils\").Canvas,fabric.window=fabric.document.defaultView,DOMParser=require(\"xmldom\").DOMParser),fabric.isTouchSupported=\"ontouchstart\"in fabric.window,fabric.isLikelyNode=\"undefined\"!=typeof Buffer&&\"undefined\"==typeof window,fabric.SHARED_ATTRIBUTES=[\"display\",\"transform\",\"fill\",\"fill-opacity\",\"fill-rule\",\"opacity\",\"stroke\",\"stroke-dasharray\",\"stroke-linecap\",\"stroke-linejoin\",\"stroke-miterlimit\",\"stroke-opacity\",\"stroke-width\",\"id\",\"paint-order\",\"instantiated_by_use\"],fabric.DPI=96,fabric.reNum=\"(?:[-+]?(?:\\\\d+|\\\\d*\\\\.\\\\d+)(?:e[-+]?\\\\d+)?)\",fabric.fontPaths={},fabric.iMatrix=[1,0,0,1,0,0],fabric.canvasModule=\"canvas\",fabric.perfLimitSizeTotal=2097152,fabric.maxCacheSideLimit=4096,fabric.minCacheSideLimit=256,fabric.charWidthsCache={},fabric.textureSize=2048,fabric.enableGLFiltering=!0,fabric.devicePixelRatio=fabric.window.devicePixelRatio||fabric.window.webkitDevicePixelRatio||fabric.window.mozDevicePixelRatio||1,fabric.browserShadowBlurConstant=1,fabric.arcToSegmentsCache={},fabric.boundsOfCurveCache={},fabric.cachesBoundsOfCurve=!0,fabric.initFilterBackend=function(){return fabric.enableGLFiltering&&fabric.isWebglSupported&&fabric.isWebglSupported(fabric.textureSize)?(console.log(\"max texture size: \"+fabric.maxTextureSize),new fabric.WebglFilterBackend({tileSize:fabric.textureSize})):fabric.Canvas2dFilterBackend?new fabric.Canvas2dFilterBackend:void 0},\"undefined\"!=typeof document&&\"undefined\"!=typeof window&&(window.fabric=fabric),function(){function r(t,e){if(this.__eventListeners[t]){var i=this.__eventListeners[t];e?i[i.indexOf(e)]=!1:fabric.util.array.fill(i,!1)}}function t(t,e){if(this.__eventListeners||(this.__eventListeners={}),1===arguments.length)for(var i in t)this.on(i,t[i]);else this.__eventListeners[t]||(this.__eventListeners[t]=[]),this.__eventListeners[t].push(e);return this}function e(t,e){if(this.__eventListeners){if(0===arguments.length)for(t in this.__eventListeners)r.call(this,t);else if(1===arguments.length&&\"object\"==typeof t)for(var i in t)r.call(this,i,t[i]);else r.call(this,t,e);return this}}function i(t,e){if(this.__eventListeners){var i=this.__eventListeners[t];if(i){for(var r=0,n=i.length;r<n;r++)i[r]&&i[r].call(this,e||{});return this.__eventListeners[t]=i.filter(function(t){return!1!==t}),this}}}fabric.Observable={observe:t,stopObserving:e,fire:i,on:t,off:e,trigger:i}}(),fabric.Collection={_objects:[],add:function(){if(this._objects.push.apply(this._objects,arguments),this._onObjectAdded)for(var t=0,e=arguments.length;t<e;t++)this._onObjectAdded(arguments[t]);return this.renderOnAddRemove&&this.requestRenderAll(),this},insertAt:function(t,e,i){var r=this._objects;return i?r[e]=t:r.splice(e,0,t),this._onObjectAdded&&this._onObjectAdded(t),this.renderOnAddRemove&&this.requestRenderAll(),this},remove:function(){for(var t,e=this._objects,i=!1,r=0,n=arguments.length;r<n;r++)-1!==(t=e.indexOf(arguments[r]))&&(i=!0,e.splice(t,1),this._onObjectRemoved&&this._onObjectRemoved(arguments[r]));return this.renderOnAddRemove&&i&&this.requestRenderAll(),this},forEachObject:function(t,e){for(var i=this.getObjects(),r=0,n=i.length;r<n;r++)t.call(e,i[r],r,i);return this},getObjects:function(e){return void 0===e?this._objects.concat():this._objects.filter(function(t){return t.type===e})},item:function(t){return this._objects[t]},isEmpty:function(){return 0===this._objects.length},size:function(){return this._objects.length},contains:function(t){return-1<this._objects.indexOf(t)},complexity:function(){return this._objects.reduce(function(t,e){return t+=e.complexity?e.complexity():0},0)}},fabric.CommonMethods={_setOptions:function(t){for(var e in t)this.set(e,t[e])},_initGradient:function(t,e){!t||!t.colorStops||t instanceof fabric.Gradient||this.set(e,new fabric.Gradient(t))},_initPattern:function(t,e,i){!t||!t.source||t instanceof fabric.Pattern?i&&i():this.set(e,new fabric.Pattern(t,i))},_initClipping:function(t){if(t.clipTo&&\"string\"==typeof t.clipTo){var e=fabric.util.getFunctionBody(t.clipTo);void 0!==e&&(this.clipTo=new Function(\"ctx\",e))}},_setObject:function(t){for(var e in t)this._set(e,t[e])},set:function(t,e){return\"object\"==typeof t?this._setObject(t):\"function\"==typeof e&&\"clipTo\"!==t?this._set(t,e(this.get(t))):this._set(t,e),this},_set:function(t,e){this[t]=e},toggle:function(t){var e=this.get(t);return\"boolean\"==typeof e&&this.set(t,!e),this},get:function(t){return this[t]}},function(s){var d=Math.sqrt,g=Math.atan2,o=Math.pow,a=Math.abs,h=Math.PI/180,i=Math.PI/2;fabric.util={cos:function(t){if(0===t)return 1;switch(t<0&&(t=-t),t/i){case 1:case 3:return 0;case 2:return-1}return Math.cos(t)},sin:function(t){if(0===t)return 0;var e=1;switch(t<0&&(e=-1),t/i){case 1:return e;case 2:return 0;case 3:return-e}return Math.sin(t)},removeFromArray:function(t,e){var i=t.indexOf(e);return-1!==i&&t.splice(i,1),t},getRandomInt:function(t,e){return Math.floor(Math.random()*(e-t+1))+t},degreesToRadians:function(t){return t*h},radiansToDegrees:function(t){return t/h},rotatePoint:function(t,e,i){t.subtractEquals(e);var r=fabric.util.rotateVector(t,i);return new fabric.Point(r.x,r.y).addEquals(e)},rotateVector:function(t,e){var i=fabric.util.sin(e),r=fabric.util.cos(e);return{x:t.x*r-t.y*i,y:t.x*i+t.y*r}},transformPoint:function(t,e,i){return i?new fabric.Point(e[0]*t.x+e[2]*t.y,e[1]*t.x+e[3]*t.y):new fabric.Point(e[0]*t.x+e[2]*t.y+e[4],e[1]*t.x+e[3]*t.y+e[5])},makeBoundingBoxFromPoints:function(t){var e=[t[0].x,t[1].x,t[2].x,t[3].x],i=fabric.util.array.min(e),r=fabric.util.array.max(e)-i,n=[t[0].y,t[1].y,t[2].y,t[3].y],s=fabric.util.array.min(n);return{left:i,top:s,width:r,height:fabric.util.array.max(n)-s}},invertTransform:function(t){var e=1/(t[0]*t[3]-t[1]*t[2]),i=[e*t[3],-e*t[1],-e*t[2],e*t[0]],r=fabric.util.transformPoint({x:t[4],y:t[5]},i,!0);return i[4]=-r.x,i[5]=-r.y,i},toFixed:function(t,e){return parseFloat(Number(t).toFixed(e))},parseUnit:function(t,e){var i=/\\D{0,2}$/.exec(t),r=parseFloat(t);switch(e||(e=fabric.Text.DEFAULT_SVG_FONT_SIZE),i[0]){case\"mm\":return r*fabric.DPI/25.4;case\"cm\":return r*fabric.DPI/2.54;case\"in\":return r*fabric.DPI;case\"pt\":return r*fabric.DPI/72;case\"pc\":return r*fabric.DPI/72*12;case\"em\":return r*e;default:return r}},falseFunction:function(){return!1},getKlass:function(t,e){return t=fabric.util.string.camelize(t.charAt(0).toUpperCase()+t.slice(1)),fabric.util.resolveNamespace(e)[t]},getSvgAttributes:function(t){var e=[\"instantiated_by_use\",\"style\",\"id\",\"class\"];switch(t){case\"linearGradient\":e=e.concat([\"x1\",\"y1\",\"x2\",\"y2\",\"gradientUnits\",\"gradientTransform\"]);break;case\"radialGradient\":e=e.concat([\"gradientUnits\",\"gradientTransform\",\"cx\",\"cy\",\"r\",\"fx\",\"fy\",\"fr\"]);break;case\"stop\":e=e.concat([\"offset\",\"stop-color\",\"stop-opacity\"])}return e},resolveNamespace:function(t){if(!t)return fabric;var e,i=t.split(\".\"),r=i.length,n=s||fabric.window;for(e=0;e<r;++e)n=n[i[e]];return n},loadImage:function(t,e,i,r){if(t){var n=fabric.util.createImage(),s=function(){e&&e.call(i,n),n=n.onload=n.onerror=null};n.onload=s,n.onerror=function(){fabric.log(\"Error loading \"+n.src),e&&e.call(i,null,!0),n=n.onload=n.onerror=null},0!==t.indexOf(\"data\")&&r&&(n.crossOrigin=r),\"data:image/svg\"===t.substring(0,14)&&(n.onload=null,fabric.util.loadImageInDom(n,s)),n.src=t}else e&&e.call(i,t)},loadImageInDom:function(t,e){var i=fabric.document.createElement(\"div\");i.style.width=i.style.height=\"1px\",i.style.left=i.style.top=\"-100%\",i.style.position=\"absolute\",i.appendChild(t),fabric.document.querySelector(\"body\").appendChild(i),t.onload=function(){e(),i.parentNode.removeChild(i),i=null}},enlivenObjects:function(t,e,n,s){function o(){++i===r&&e&&e(a)}var a=[],i=0,r=(t=t||[]).length;r?t.forEach(function(i,r){i&&i.type?fabric.util.getKlass(i.type,n).fromObject(i,function(t,e){e||(a[r]=t),s&&s(i,t,e),o()}):o()}):e&&e(a)},enlivenPatterns:function(t,e){function i(){++n===s&&e&&e(r)}var r=[],n=0,s=(t=t||[]).length;s?t.forEach(function(t,e){t&&t.source?new fabric.Pattern(t,function(t){r[e]=t,i()}):(r[e]=t,i())}):e&&e(r)},groupSVGElements:function(t,e,i){var r;return 1===t.length?t[0]:(e&&(e.width&&e.height?e.centerPoint={x:e.width/2,y:e.height/2}:(delete e.width,delete e.height)),r=new fabric.Group(t,e),void 0!==i&&(r.sourcePath=i),r)},populateWithProperties:function(t,e,i){if(i&&\"[object Array]\"===Object.prototype.toString.call(i))for(var r=0,n=i.length;r<n;r++)i[r]in t&&(e[i[r]]=t[i[r]])},drawDashedLine:function(t,e,i,r,n,s){var o=r-e,a=n-i,h=d(o*o+a*a),c=g(a,o),l=s.length,u=0,f=!0;for(t.save(),t.translate(e,i),t.moveTo(0,0),t.rotate(c),e=0;e<h;)h<(e+=s[u++%l])&&(e=h),t[f?\"lineTo\":\"moveTo\"](e,0),f=!f;t.restore()},createCanvasElement:function(){return fabric.document.createElement(\"canvas\")},createImage:function(){return fabric.document.createElement(\"img\")},clipContext:function(t,e){e.save(),e.beginPath(),t.clipTo(e),e.clip()},multiplyTransformMatrices:function(t,e,i){return[t[0]*e[0]+t[2]*e[1],t[1]*e[0]+t[3]*e[1],t[0]*e[2]+t[2]*e[3],t[1]*e[2]+t[3]*e[3],i?0:t[0]*e[4]+t[2]*e[5]+t[4],i?0:t[1]*e[4]+t[3]*e[5]+t[5]]},qrDecompose:function(t){var e=g(t[1],t[0]),i=o(t[0],2)+o(t[1],2),r=d(i),n=(t[0]*t[3]-t[2]*t[1])/r,s=g(t[0]*t[2]+t[1]*t[3],i);return{angle:e/h,scaleX:r,scaleY:n,skewX:s/h,skewY:0,translateX:t[4],translateY:t[5]}},customTransformMatrix:function(t,e,i){var r=[1,0,a(Math.tan(i*h)),1],n=[a(t),0,0,a(e)];return fabric.util.multiplyTransformMatrices(n,r,!0)},resetObjectTransform:function(t){t.scaleX=1,t.scaleY=1,t.skewX=0,t.skewY=0,t.flipX=!1,t.flipY=!1,t.rotate(0)},saveObjectTransform:function(t){return{scaleX:t.scaleX,scaleY:t.scaleY,skewX:t.skewX,skewY:t.skewY,angle:t.angle,left:t.left,flipX:t.flipX,flipY:t.flipY,top:t.top}},getFunctionBody:function(t){return(String(t).match(/function[^{]*\\{([\\s\\S]*)\\}/)||{})[1]},isTransparent:function(t,e,i,r){0<r&&(r<e?e-=r:e=0,r<i?i-=r:i=0);var n,s=!0,o=t.getImageData(e,i,2*r||1,2*r||1),a=o.data.length;for(n=3;n<a&&!1!==(s=o.data[n]<=0);n+=4);return o=null,s},parsePreserveAspectRatioAttribute:function(t){var e,i=\"meet\",r=t.split(\" \");return r&&r.length&&(\"meet\"!==(i=r.pop())&&\"slice\"!==i?(e=i,i=\"meet\"):r.length&&(e=r.pop())),{meetOrSlice:i,alignX:\"none\"!==e?e.slice(1,4):\"none\",alignY:\"none\"!==e?e.slice(5,8):\"none\"}},clearFabricFontCache:function(t){(t=(t||\"\").toLowerCase())?fabric.charWidthsCache[t]&&delete fabric.charWidthsCache[t]:fabric.charWidthsCache={}},limitDimsByArea:function(t,e){var i=Math.sqrt(e*t),r=Math.floor(e/i);return{x:Math.floor(i),y:r}},capValue:function(t,e,i){return Math.max(t,Math.min(e,i))},findScaleToFit:function(t,e){return Math.min(e.width/t.width,e.height/t.height)},findScaleToCover:function(t,e){return Math.max(e.width/t.width,e.height/t.height)}}}(\"undefined\"!=typeof exports?exports:this),function(){var Q=Array.prototype.join;function v(t,e,i,r,n,s,o){var a=Q.call(arguments);if(fabric.arcToSegmentsCache[a])return fabric.arcToSegmentsCache[a];var h=Math.PI,c=o*h/180,l=fabric.util.sin(c),u=fabric.util.cos(c),f=0,d=0,g=-u*t*.5-l*e*.5,p=-u*e*.5+l*t*.5,v=(i=Math.abs(i))*i,m=(r=Math.abs(r))*r,b=p*p,_=g*g,y=v*m-v*b-m*_,x=0;if(y<0){var C=Math.sqrt(1-y/(v*m));i*=C,r*=C}else x=(n===s?-1:1)*Math.sqrt(y/(v*b+m*_));var S=x*i*p/r,T=-x*r*g/i,w=u*S-l*T+.5*t,O=l*S+u*T+.5*e,k=Z(1,0,(g-S)/i,(p-T)/r),E=Z((g-S)/i,(p-T)/r,(-g-S)/i,(-p-T)/r);0===s&&0<E?E-=2*h:1===s&&E<0&&(E+=2*h);for(var D,j,A,P,F,M,I,L,R,B,X,W,Y,U,z,G,N,H=Math.ceil(Math.abs(E/h*2)),V=[],q=E/H,K=8/3*Math.sin(q/4)*Math.sin(q/4)/Math.sin(q/2),J=k+q,$=0;$<H;$++)V[$]=(D=k,j=J,A=u,P=l,F=i,M=r,I=w,L=O,R=K,B=f,X=d,void 0,W=fabric.util.cos(D),Y=fabric.util.sin(D),U=fabric.util.cos(j),z=fabric.util.sin(j),[B+R*(-A*F*Y-P*M*W),X+R*(-P*F*Y+A*M*W),(G=A*F*U-P*M*z+I)+R*(A*F*z+P*M*U),(N=P*F*U+A*M*z+L)+R*(P*F*z-A*M*U),G,N]),f=V[$][4],d=V[$][5],k=J,J+=q;return fabric.arcToSegmentsCache[a]=V}function Z(t,e,i,r){var n=Math.atan2(e,t),s=Math.atan2(r,i);return n<=s?s-n:2*Math.PI-(n-s)}function m(t,e,i,r,n,s,o,a){var h;if(fabric.cachesBoundsOfCurve&&(h=Q.call(arguments),fabric.boundsOfCurveCache[h]))return fabric.boundsOfCurveCache[h];var c,l,u,f,d,g,p,v,m=Math.sqrt,b=Math.min,_=Math.max,y=Math.abs,x=[],C=[[],[]];l=6*t-12*i+6*n,c=-3*t+9*i-9*n+3*o,u=3*i-3*t;for(var S=0;S<2;++S)if(0<S&&(l=6*e-12*r+6*s,c=-3*e+9*r-9*s+3*a,u=3*r-3*e),y(c)<1e-12){if(y(l)<1e-12)continue;0<(f=-u/l)&&f<1&&x.push(f)}else(p=l*l-4*u*c)<0||(0<(d=(-l+(v=m(p)))/(2*c))&&d<1&&x.push(d),0<(g=(-l-v)/(2*c))&&g<1&&x.push(g));for(var T,w,O,k=x.length,E=k;k--;)T=(O=1-(f=x[k]))*O*O*t+3*O*O*f*i+3*O*f*f*n+f*f*f*o,C[0][k]=T,w=O*O*O*e+3*O*O*f*r+3*O*f*f*s+f*f*f*a,C[1][k]=w;C[0][E]=t,C[1][E]=e,C[0][E+1]=o,C[1][E+1]=a;var D=[{x:b.apply(null,C[0]),y:b.apply(null,C[1])},{x:_.apply(null,C[0]),y:_.apply(null,C[1])}];return fabric.cachesBoundsOfCurve&&(fabric.boundsOfCurveCache[h]=D),D}fabric.util.drawArc=function(t,e,i,r){for(var n=r[0],s=r[1],o=r[2],a=r[3],h=r[4],c=[[],[],[],[]],l=v(r[5]-e,r[6]-i,n,s,a,h,o),u=0,f=l.length;u<f;u++)c[u][0]=l[u][0]+e,c[u][1]=l[u][1]+i,c[u][2]=l[u][2]+e,c[u][3]=l[u][3]+i,c[u][4]=l[u][4]+e,c[u][5]=l[u][5]+i,t.bezierCurveTo.apply(t,c[u])},fabric.util.getBoundsOfArc=function(t,e,i,r,n,s,o,a,h){for(var c,l=0,u=0,f=[],d=v(a-t,h-e,i,r,s,o,n),g=0,p=d.length;g<p;g++)c=m(l,u,d[g][0],d[g][1],d[g][2],d[g][3],d[g][4],d[g][5]),f.push({x:c[0].x+t,y:c[0].y+e}),f.push({x:c[1].x+t,y:c[1].y+e}),l=d[g][4],u=d[g][5];return f},fabric.util.getBoundsOfCurve=m}(),function(){var o=Array.prototype.slice;function i(t,e,i){if(t&&0!==t.length){var r=t.length-1,n=e?t[r][e]:t[r];if(e)for(;r--;)i(t[r][e],n)&&(n=t[r][e]);else for(;r--;)i(t[r],n)&&(n=t[r]);return n}}fabric.util.array={fill:function(t,e){for(var i=t.length;i--;)t[i]=e;return t},invoke:function(t,e){for(var i=o.call(arguments,2),r=[],n=0,s=t.length;n<s;n++)r[n]=i.length?t[n][e].apply(t[n],i):t[n][e].call(t[n]);return r},min:function(t,e){return i(t,e,function(t,e){return t<e})},max:function(t,e){return i(t,e,function(t,e){return e<=t})}}}(),function(){function o(t,e,i){if(i)if(!fabric.isLikelyNode&&e instanceof Element)t=e;else if(e instanceof Array){t=[];for(var r=0,n=e.length;r<n;r++)t[r]=o({},e[r],i)}else if(e&&\"object\"==typeof e)for(var s in e)e.hasOwnProperty(s)&&(t[s]=o({},e[s],i));else t=e;else for(var s in e)t[s]=e[s];return t}fabric.util.object={extend:o,clone:function(t,e){return o({},t,e)}},fabric.util.object.extend(fabric.util,fabric.Observable)}(),function(){function n(t,e){var i=t.charCodeAt(e);if(isNaN(i))return\"\";if(i<55296||57343<i)return t.charAt(e);if(55296<=i&&i<=56319){if(t.length<=e+1)throw\"High surrogate without following low surrogate\";var r=t.charCodeAt(e+1);if(r<56320||57343<r)throw\"High surrogate without following low surrogate\";return t.charAt(e)+t.charAt(e+1)}if(0===e)throw\"Low surrogate without preceding high surrogate\";var n=t.charCodeAt(e-1);if(n<55296||56319<n)throw\"Low surrogate without preceding high surrogate\";return!1}fabric.util.string={camelize:function(t){return t.replace(/-+(.)?/g,function(t,e){return e?e.toUpperCase():\"\"})},capitalize:function(t,e){return t.charAt(0).toUpperCase()+(e?t.slice(1):t.slice(1).toLowerCase())},escapeXml:function(t){return t.replace(/&/g,\"&amp;\").replace(/\"/g,\"&quot;\").replace(/'/g,\"&apos;\").replace(/</g,\"&lt;\").replace(/>/g,\"&gt;\")},graphemeSplit:function(t){var e,i=0,r=[];for(i=0;i<t.length;i++)!1!==(e=n(t,i))&&r.push(e);return r}}}(),function(){var s=Array.prototype.slice,o=function(){},i=function(){for(var t in{toString:1})if(\"toString\"===t)return!1;return!0}(),a=function(t,r,n){for(var e in r)e in t.prototype&&\"function\"==typeof t.prototype[e]&&-1<(r[e]+\"\").indexOf(\"callSuper\")?t.prototype[e]=function(i){return function(){var t=this.constructor.superclass;this.constructor.superclass=n;var e=r[i].apply(this,arguments);if(this.constructor.superclass=t,\"initialize\"!==i)return e}}(e):t.prototype[e]=r[e],i&&(r.toString!==Object.prototype.toString&&(t.prototype.toString=r.toString),r.valueOf!==Object.prototype.valueOf&&(t.prototype.valueOf=r.valueOf))};function h(){}function c(t){for(var e=null,i=this;i.constructor.superclass;){var r=i.constructor.superclass.prototype[t];if(i[t]!==r){e=r;break}i=i.constructor.superclass.prototype}return e?1<arguments.length?e.apply(this,s.call(arguments,1)):e.call(this):console.log(\"tried to callSuper \"+t+\", method not found in prototype chain\",this)}fabric.util.createClass=function(){var t=null,e=s.call(arguments,0);function i(){this.initialize.apply(this,arguments)}\"function\"==typeof e[0]&&(t=e.shift()),i.superclass=t,i.subclasses=[],t&&(h.prototype=t.prototype,i.prototype=new h,t.subclasses.push(i));for(var r=0,n=e.length;r<n;r++)a(i,e[r],t);return i.prototype.initialize||(i.prototype.initialize=o),(i.prototype.constructor=i).prototype.callSuper=c,i}}(),function(){function t(t){var e,i,r=Array.prototype.slice.call(arguments,1),n=r.length;for(i=0;i<n;i++)if(e=typeof t[r[i]],!/^(?:function|object|unknown)$/.test(e))return!1;return!0}var n,s,e,i,a=(e=0,function(t){return t.__uniqueID||(t.__uniqueID=\"uniqueID__\"+e++)});function o(t,e){return{handler:e,wrappedHandler:(i=t,r=e,function(t){r.call(n(i),t||fabric.window.event)})};var i,r}i={},n=function(t){return i[t]},s=function(t,e){i[t]=e};var r,h,c=t(fabric.document.documentElement,\"addEventListener\",\"removeEventListener\")&&t(fabric.window,\"addEventListener\",\"removeEventListener\"),l=t(fabric.document.documentElement,\"attachEvent\",\"detachEvent\")&&t(fabric.window,\"attachEvent\",\"detachEvent\"),u={},f={};c?(r=function(t,e,i,r){t&&t.addEventListener(e,i,!l&&r)},h=function(t,e,i,r){t&&t.removeEventListener(e,i,!l&&r)}):l?(r=function(t,e,i){if(t){var r=a(t);s(r,t),u[r]||(u[r]={}),u[r][e]||(u[r][e]=[]);var n=o(r,i);u[r][e].push(n),t.attachEvent(\"on\"+e,n.wrappedHandler)}},h=function(t,e,i){if(t){var r,n=a(t);if(u[n]&&u[n][e])for(var s=0,o=u[n][e].length;s<o;s++)(r=u[n][e][s])&&r.handler===i&&(t.detachEvent(\"on\"+e,r.wrappedHandler),u[n][e][s]=null)}}):(r=function(t,e,i){if(t){var n,s,r=a(t);if(f[r]||(f[r]={}),!f[r][e]){f[r][e]=[];var o=t[\"on\"+e];o&&f[r][e].push(o),t[\"on\"+e]=(n=r,s=e,function(t){if(f[n]&&f[n][s])for(var e=f[n][s],i=0,r=e.length;i<r;i++)e[i].call(this,t||fabric.window.event)})}f[r][e].push(i)}},h=function(t,e,i){if(t){var r=a(t);if(f[r]&&f[r][e])for(var n=f[r][e],s=0,o=n.length;s<o;s++)n[s]===i&&n.splice(s,1)}}),fabric.util.addListener=r,fabric.util.removeListener=h;var d=function(t){return t.clientX},g=function(t){return t.clientY};function p(t,e,i){var r,n=t[\"touchend\"===t.type?\"changedTouches\":\"touches\"];return n&&n[0]&&(r=n[0][i]),void 0===r&&(r=t[i]),r}fabric.isTouchSupported&&(d=function(t){return p(t,0,\"clientX\")},g=function(t){return p(t,0,\"clientY\")}),fabric.util.getPointer=function(t){t||(t=fabric.window.event);var e=t.target||(\"unknown\"!=typeof t.srcElement?t.srcElement:null),i=fabric.util.getScrollLeftTop(e);return{x:d(t)+i.left,y:g(t)+i.top}}}(),function(){var t=fabric.document.createElement(\"div\"),e=\"string\"==typeof t.style.opacity,i=\"string\"==typeof t.style.filter,r=/alpha\\s*\\(\\s*opacity\\s*=\\s*([^\\)]+)\\)/,n=function(t){return t};e?n=function(t,e){return t.style.opacity=e,t}:i&&(n=function(t,e){var i=t.style;return t.currentStyle&&!t.currentStyle.hasLayout&&(i.zoom=1),r.test(i.filter)?(e=.9999<=e?\"\":\"alpha(opacity=\"+100*e+\")\",i.filter=i.filter.replace(r,e)):i.filter+=\" alpha(opacity=\"+100*e+\")\",t}),fabric.util.setStyle=function(t,e){var i=t.style;if(!i)return t;if(\"string\"==typeof e)return t.style.cssText+=\";\"+e,-1<e.indexOf(\"opacity\")?n(t,e.match(/opacity:\\s*(\\d?\\.?\\d*)/)[1]):t;for(var r in e)\"opacity\"===r?n(t,e[r]):i[\"float\"===r||\"cssFloat\"===r?void 0===i.styleFloat?\"cssFloat\":\"styleFloat\":r]=e[r];return t}}(),function(){var e=Array.prototype.slice;var t,h,i,r,n=function(t){return e.call(t,0)};try{t=n(fabric.document.childNodes)instanceof Array}catch(t){}function s(t,e){var i=fabric.document.createElement(t);for(var r in e)\"class\"===r?i.className=e[r]:\"for\"===r?i.htmlFor=e[r]:i.setAttribute(r,e[r]);return i}function c(t){for(var e=0,i=0,r=fabric.document.documentElement,n=fabric.document.body||{scrollLeft:0,scrollTop:0};t&&(t.parentNode||t.host)&&((t=t.parentNode||t.host)===fabric.document?(e=n.scrollLeft||r.scrollLeft||0,i=n.scrollTop||r.scrollTop||0):(e+=t.scrollLeft||0,i+=t.scrollTop||0),1!==t.nodeType||\"fixed\"!==t.style.position););return{left:e,top:i}}t||(n=function(t){for(var e=new Array(t.length),i=t.length;i--;)e[i]=t[i];return e}),h=fabric.document.defaultView&&fabric.document.defaultView.getComputedStyle?function(t,e){var i=fabric.document.defaultView.getComputedStyle(t,null);return i?i[e]:void 0}:function(t,e){var i=t.style[e];return!i&&t.currentStyle&&(i=t.currentStyle[e]),i},i=fabric.document.documentElement.style,r=\"userSelect\"in i?\"userSelect\":\"MozUserSelect\"in i?\"MozUserSelect\":\"WebkitUserSelect\"in i?\"WebkitUserSelect\":\"KhtmlUserSelect\"in i?\"KhtmlUserSelect\":\"\",fabric.util.makeElementUnselectable=function(t){return void 0!==t.onselectstart&&(t.onselectstart=fabric.util.falseFunction),r?t.style[r]=\"none\":\"string\"==typeof t.unselectable&&(t.unselectable=\"on\"),t},fabric.util.makeElementSelectable=function(t){return void 0!==t.onselectstart&&(t.onselectstart=null),r?t.style[r]=\"\":\"string\"==typeof t.unselectable&&(t.unselectable=\"\"),t},fabric.util.getScript=function(t,e){var i=fabric.document.getElementsByTagName(\"head\")[0],r=fabric.document.createElement(\"script\"),n=!0;r.onload=r.onreadystatechange=function(t){if(n){if(\"string\"==typeof this.readyState&&\"loaded\"!==this.readyState&&\"complete\"!==this.readyState)return;n=!1,e(t||fabric.window.event),r=r.onload=r.onreadystatechange=null}},r.src=t,i.appendChild(r)},fabric.util.getById=function(t){return\"string\"==typeof t?fabric.document.getElementById(t):t},fabric.util.toArray=n,fabric.util.makeElement=s,fabric.util.addClass=function(t,e){t&&-1===(\" \"+t.className+\" \").indexOf(\" \"+e+\" \")&&(t.className+=(t.className?\" \":\"\")+e)},fabric.util.wrapElement=function(t,e,i){return\"string\"==typeof e&&(e=s(e,i)),t.parentNode&&t.parentNode.replaceChild(e,t),e.appendChild(t),e},fabric.util.getScrollLeftTop=c,fabric.util.getElementOffset=function(t){var e,i,r=t&&t.ownerDocument,n={left:0,top:0},s={left:0,top:0},o={borderLeftWidth:\"left\",borderTopWidth:\"top\",paddingLeft:\"left\",paddingTop:\"top\"};if(!r)return s;for(var a in o)s[o[a]]+=parseInt(h(t,a),10)||0;return e=r.documentElement,void 0!==t.getBoundingClientRect&&(n=t.getBoundingClientRect()),i=c(t),{left:n.left+i.left-(e.clientLeft||0)+s.left,top:n.top+i.top-(e.clientTop||0)+s.top}},fabric.util.getElementStyle=h,fabric.util.getNodeCanvas=function(t){var e=fabric.jsdomImplForWrapper(t);return e._canvas||e._image},fabric.util.cleanUpJsdomNode=function(t){if(fabric.isLikelyNode){var e=fabric.jsdomImplForWrapper(t);e&&(e._image=null,e._canvas=null,e._currentSrc=null,e._attributes=null,e._classList=null)}}}(),function(){var h=function(){for(var t=[function(){return new fabric.window.XMLHttpRequest},function(){return new ActiveXObject(\"Microsoft.XMLHTTP\")},function(){return new ActiveXObject(\"Msxml2.XMLHTTP\")},function(){return new ActiveXObject(\"Msxml2.XMLHTTP.3.0\")}],e=t.length;e--;)try{if(t[e]())return t[e]}catch(t){}}();function c(){}fabric.util.request=function(t,e){e||(e={});var i,r,n=e.method?e.method.toUpperCase():\"GET\",s=e.onComplete||function(){},o=h(),a=e.body||e.parameters;return o.onreadystatechange=function(){4===o.readyState&&(s(o),o.onreadystatechange=c)},\"GET\"===n&&(a=null,\"string\"==typeof e.parameters&&(i=t,r=e.parameters,t=i+(/\\?/.test(i)?\"&\":\"?\")+r)),o.open(n,t,!0),\"POST\"!==n&&\"PUT\"!==n||o.setRequestHeader(\"Content-Type\",\"application/x-www-form-urlencoded\"),o.send(a),o}}(),fabric.log=function(){},fabric.warn=function(){},\"undefined\"!=typeof console&&[\"log\",\"warn\"].forEach(function(t){void 0!==console[t]&&\"function\"==typeof console[t].apply&&(fabric[t]=function(){return console[t].apply(console,arguments)})}),function(){function e(){return!1}var t=fabric.window.requestAnimationFrame||fabric.window.webkitRequestAnimationFrame||fabric.window.mozRequestAnimationFrame||fabric.window.oRequestAnimationFrame||fabric.window.msRequestAnimationFrame||function(t){return fabric.window.setTimeout(t,1e3/60)},i=fabric.window.cancelAnimationFrame||fabric.window.clearTimeout;function b(){return t.apply(fabric.window,arguments)}fabric.util.animate=function(m){b(function(t){m||(m={});var o,a=t||+new Date,h=m.duration||500,c=a+h,l=m.onChange||e,u=m.abort||e,f=m.onComplete||e,d=m.easing||function(t,e,i,r){return-i*Math.cos(t/r*(Math.PI/2))+i+e},g=\"startValue\"in m?m.startValue:0,p=\"endValue\"in m?m.endValue:100,v=m.byValue||p-g;m.onStart&&m.onStart(),function t(e){if(u())f(p,1,1);else{o=e||+new Date;var i=c<o?h:o-a,r=i/h,n=d(i,g,v,h),s=Math.abs((n-g)/v);l(n,s,r),c<o?m.onComplete&&m.onComplete():b(t)}}(a)})},fabric.util.requestAnimFrame=b,fabric.util.cancelAnimFrame=function(){return i.apply(fabric.window,arguments)}}(),fabric.util.animateColor=function(t,e,i,c){var r=new fabric.Color(t).getSource(),n=new fabric.Color(e).getSource();c=c||{},fabric.util.animate(fabric.util.object.extend(c,{duration:i||500,startValue:r,endValue:n,byValue:n,easing:function(t,e,i,r){var n,s,o,a,h=c.colorEasing?c.colorEasing(t,r):1-Math.cos(t/r*(Math.PI/2));return n=e,s=i,o=h,a=\"rgba(\"+parseInt(n[0]+o*(s[0]-n[0]),10)+\",\"+parseInt(n[1]+o*(s[1]-n[1]),10)+\",\"+parseInt(n[2]+o*(s[2]-n[2]),10),a+=\",\"+(n&&s?parseFloat(n[3]+o*(s[3]-n[3])):1),a+=\")\"}}))},function(){function o(t,e,i,r){return t<Math.abs(e)?(t=e,r=i/4):r=0===e&&0===t?i/(2*Math.PI)*Math.asin(1):i/(2*Math.PI)*Math.asin(e/t),{a:t,c:e,p:i,s:r}}function a(t,e,i){return t.a*Math.pow(2,10*(e-=1))*Math.sin((e*i-t.s)*(2*Math.PI)/t.p)}function n(t,e,i,r){return i-s(r-t,0,i,r)+e}function s(t,e,i,r){return(t/=r)<1/2.75?i*(7.5625*t*t)+e:t<2/2.75?i*(7.5625*(t-=1.5/2.75)*t+.75)+e:t<2.5/2.75?i*(7.5625*(t-=2.25/2.75)*t+.9375)+e:i*(7.5625*(t-=2.625/2.75)*t+.984375)+e}fabric.util.ease={easeInQuad:function(t,e,i,r){return i*(t/=r)*t+e},easeOutQuad:function(t,e,i,r){return-i*(t/=r)*(t-2)+e},easeInOutQuad:function(t,e,i,r){return(t/=r/2)<1?i/2*t*t+e:-i/2*(--t*(t-2)-1)+e},easeInCubic:function(t,e,i,r){return i*(t/=r)*t*t+e},easeOutCubic:function(t,e,i,r){return i*((t=t/r-1)*t*t+1)+e},easeInOutCubic:function(t,e,i,r){return(t/=r/2)<1?i/2*t*t*t+e:i/2*((t-=2)*t*t+2)+e},easeInQuart:function(t,e,i,r){return i*(t/=r)*t*t*t+e},easeOutQuart:function(t,e,i,r){return-i*((t=t/r-1)*t*t*t-1)+e},easeInOutQuart:function(t,e,i,r){return(t/=r/2)<1?i/2*t*t*t*t+e:-i/2*((t-=2)*t*t*t-2)+e},easeInQuint:function(t,e,i,r){return i*(t/=r)*t*t*t*t+e},easeOutQuint:function(t,e,i,r){return i*((t=t/r-1)*t*t*t*t+1)+e},easeInOutQuint:function(t,e,i,r){return(t/=r/2)<1?i/2*t*t*t*t*t+e:i/2*((t-=2)*t*t*t*t+2)+e},easeInSine:function(t,e,i,r){return-i*Math.cos(t/r*(Math.PI/2))+i+e},easeOutSine:function(t,e,i,r){return i*Math.sin(t/r*(Math.PI/2))+e},easeInOutSine:function(t,e,i,r){return-i/2*(Math.cos(Math.PI*t/r)-1)+e},easeInExpo:function(t,e,i,r){return 0===t?e:i*Math.pow(2,10*(t/r-1))+e},easeOutExpo:function(t,e,i,r){return t===r?e+i:i*(1-Math.pow(2,-10*t/r))+e},easeInOutExpo:function(t,e,i,r){return 0===t?e:t===r?e+i:(t/=r/2)<1?i/2*Math.pow(2,10*(t-1))+e:i/2*(2-Math.pow(2,-10*--t))+e},easeInCirc:function(t,e,i,r){return-i*(Math.sqrt(1-(t/=r)*t)-1)+e},easeOutCirc:function(t,e,i,r){return i*Math.sqrt(1-(t=t/r-1)*t)+e},easeInOutCirc:function(t,e,i,r){return(t/=r/2)<1?-i/2*(Math.sqrt(1-t*t)-1)+e:i/2*(Math.sqrt(1-(t-=2)*t)+1)+e},easeInElastic:function(t,e,i,r){var n=0;return 0===t?e:1==(t/=r)?e+i:(n||(n=.3*r),-a(o(i,i,n,1.70158),t,r)+e)},easeOutElastic:function(t,e,i,r){var n=0;if(0===t)return e;if(1==(t/=r))return e+i;n||(n=.3*r);var s=o(i,i,n,1.70158);return s.a*Math.pow(2,-10*t)*Math.sin((t*r-s.s)*(2*Math.PI)/s.p)+s.c+e},easeInOutElastic:function(t,e,i,r){var n=0;if(0===t)return e;if(2==(t/=r/2))return e+i;n||(n=r*(.3*1.5));var s=o(i,i,n,1.70158);return t<1?-.5*a(s,t,r)+e:s.a*Math.pow(2,-10*(t-=1))*Math.sin((t*r-s.s)*(2*Math.PI)/s.p)*.5+s.c+e},easeInBack:function(t,e,i,r,n){return void 0===n&&(n=1.70158),i*(t/=r)*t*((n+1)*t-n)+e},easeOutBack:function(t,e,i,r,n){return void 0===n&&(n=1.70158),i*((t=t/r-1)*t*((n+1)*t+n)+1)+e},easeInOutBack:function(t,e,i,r,n){return void 0===n&&(n=1.70158),(t/=r/2)<1?i/2*(t*t*((1+(n*=1.525))*t-n))+e:i/2*((t-=2)*t*((1+(n*=1.525))*t+n)+2)+e},easeInBounce:n,easeOutBounce:s,easeInOutBounce:function(t,e,i,r){return t<r/2?.5*n(2*t,0,i,r)+e:.5*s(2*t-r,0,i,r)+.5*i+e}}}(),function(t){\"use strict\";var C=t.fabric||(t.fabric={}),d=C.util.object.extend,u=C.util.object.clone,g=C.util.toFixed,S=C.util.parseUnit,h=C.util.multiplyTransformMatrices,p={cx:\"left\",x:\"left\",r:\"radius\",cy:\"top\",y:\"top\",display:\"visible\",visibility:\"visible\",transform:\"transformMatrix\",\"fill-opacity\":\"fillOpacity\",\"fill-rule\":\"fillRule\",\"font-family\":\"fontFamily\",\"font-size\":\"fontSize\",\"font-style\":\"fontStyle\",\"font-weight\":\"fontWeight\",\"letter-spacing\":\"charSpacing\",\"paint-order\":\"paintFirst\",\"stroke-dasharray\":\"strokeDashArray\",\"stroke-linecap\":\"strokeLineCap\",\"stroke-linejoin\":\"strokeLineJoin\",\"stroke-miterlimit\":\"strokeMiterLimit\",\"stroke-opacity\":\"strokeOpacity\",\"stroke-width\":\"strokeWidth\",\"text-decoration\":\"textDecoration\",\"text-anchor\":\"textAnchor\",opacity:\"opacity\"},v={stroke:\"strokeOpacity\",fill:\"fillOpacity\"};function m(t,e,i,r){var n,s=\"[object Array]\"===Object.prototype.toString.call(e);if(\"fill\"!==t&&\"stroke\"!==t||\"none\"!==e)if(\"strokeDashArray\"===t)e=\"none\"===e?null:e.replace(/,/g,\" \").split(/\\s+/).map(function(t){return parseFloat(t)});else if(\"transformMatrix\"===t)e=i&&i.transformMatrix?h(i.transformMatrix,C.parseTransformAttribute(e)):C.parseTransformAttribute(e);else if(\"visible\"===t)e=\"none\"!==e&&\"hidden\"!==e,i&&!1===i.visible&&(e=!1);else if(\"opacity\"===t)e=parseFloat(e),i&&void 0!==i.opacity&&(e*=i.opacity);else if(\"textAnchor\"===t)e=\"start\"===e?\"left\":\"end\"===e?\"right\":\"center\";else if(\"charSpacing\"===t)n=S(e,r)/r*1e3;else if(\"paintFirst\"===t){var o=e.indexOf(\"fill\"),a=e.indexOf(\"stroke\");e=\"fill\";-1<o&&-1<a&&a<o?e=\"stroke\":-1===o&&-1<a&&(e=\"stroke\")}else n=s?e.map(S):S(e,r);else e=\"\";return!s&&isNaN(n)?e:n}function e(t){return new RegExp(\"^(\"+t.join(\"|\")+\")\\\\b\",\"i\")}function b(t,e){var i,r,n,s,o=[];for(n=0,s=e.length;n<s;n++)i=e[n],r=t.getElementsByTagName(i),o=o.concat(Array.prototype.slice.call(r));return o}function _(t,e){var i,r=!0;return(i=n(t,e.pop()))&&e.length&&(r=function(t,e){var i,r=!0;for(;t.parentNode&&1===t.parentNode.nodeType&&e.length;)r&&(i=e.pop()),t=t.parentNode,r=n(t,i);return 0===e.length}(t,e)),i&&r&&0===e.length}function n(t,e){var i,r,n=t.nodeName,s=t.getAttribute(\"class\"),o=t.getAttribute(\"id\");if(i=new RegExp(\"^\"+n,\"i\"),e=e.replace(i,\"\"),o&&e.length&&(i=new RegExp(\"#\"+o+\"(?![a-zA-Z\\\\-]+)\",\"i\"),e=e.replace(i,\"\")),s&&e.length)for(r=(s=s.split(\" \")).length;r--;)i=new RegExp(\"\\\\.\"+s[r]+\"(?![a-zA-Z\\\\-]+)\",\"i\"),e=e.replace(i,\"\");return 0===e.length}function y(t,e){var i;if(t.getElementById&&(i=t.getElementById(e)),i)return i;var r,n,s,o=t.getElementsByTagName(\"*\");for(n=0,s=o.length;n<s;n++)if(e===(r=o[n]).getAttribute(\"id\"))return r}C.svgValidTagNamesRegEx=e([\"path\",\"circle\",\"polygon\",\"polyline\",\"ellipse\",\"rect\",\"line\",\"image\",\"text\",\"linearGradient\",\"radialGradient\",\"stop\"]),C.svgViewBoxElementsRegEx=e([\"symbol\",\"image\",\"marker\",\"pattern\",\"view\",\"svg\"]),C.svgInvalidAncestorsRegEx=e([\"pattern\",\"defs\",\"symbol\",\"metadata\",\"clipPath\",\"mask\",\"desc\"]),C.svgValidParentsRegEx=e([\"symbol\",\"g\",\"a\",\"svg\"]),C.cssRules={},C.gradientDefs={},C.parseTransformAttribute=function(){function b(t,e,i){t[i]=Math.tan(C.util.degreesToRadians(e[0]))}var _=[1,0,0,1,0,0],t=C.reNum,e=\"(?:\\\\s+,?\\\\s*|,\\\\s*)\",y=\"(?:\"+(\"(?:(matrix)\\\\s*\\\\(\\\\s*(\"+t+\")\"+e+\"(\"+t+\")\"+e+\"(\"+t+\")\"+e+\"(\"+t+\")\"+e+\"(\"+t+\")\"+e+\"(\"+t+\")\\\\s*\\\\))\")+\"|\"+(\"(?:(translate)\\\\s*\\\\(\\\\s*(\"+t+\")(?:\"+e+\"(\"+t+\"))?\\\\s*\\\\))\")+\"|\"+(\"(?:(scale)\\\\s*\\\\(\\\\s*(\"+t+\")(?:\"+e+\"(\"+t+\"))?\\\\s*\\\\))\")+\"|\"+(\"(?:(rotate)\\\\s*\\\\(\\\\s*(\"+t+\")(?:\"+e+\"(\"+t+\")\"+e+\"(\"+t+\"))?\\\\s*\\\\))\")+\"|\"+(\"(?:(skewX)\\\\s*\\\\(\\\\s*(\"+t+\")\\\\s*\\\\))\")+\"|\"+(\"(?:(skewY)\\\\s*\\\\(\\\\s*(\"+t+\")\\\\s*\\\\))\")+\")\",i=new RegExp(\"^\\\\s*(?:\"+(\"(?:\"+y+\"(?:\"+e+\"*\"+y+\")*)\")+\"?)\\\\s*$\"),r=new RegExp(y,\"g\");return function(t){var v=_.concat(),m=[];if(!t||t&&!i.test(t))return v;t.replace(r,function(t){var e,i,r,n,s,o,a,h,c,l,u,f,d=new RegExp(y).exec(t).filter(function(t){return!!t}),g=d[1],p=d.slice(2).map(parseFloat);switch(g){case\"translate\":f=p,(u=v)[4]=f[0],2===f.length&&(u[5]=f[1]);break;case\"rotate\":p[0]=C.util.degreesToRadians(p[0]),s=v,o=p,a=C.util.cos(o[0]),h=C.util.sin(o[0]),l=c=0,3===o.length&&(c=o[1],l=o[2]),s[0]=a,s[1]=h,s[2]=-h,s[3]=a,s[4]=c-(a*c-h*l),s[5]=l-(h*c+a*l);break;case\"scale\":e=v,r=(i=p)[0],n=2===i.length?i[1]:i[0],e[0]=r,e[3]=n;break;case\"skewX\":b(v,p,2);break;case\"skewY\":b(v,p,1);break;case\"matrix\":v=p}m.push(v.concat()),v=_.concat()});for(var e=m[0];1<m.length;)m.shift(),e=C.util.multiplyTransformMatrices(e,m[0]);return e}}();var T=new RegExp(\"^\\\\s*(\"+C.reNum+\"+)\\\\s*,?\\\\s*(\"+C.reNum+\"+)\\\\s*,?\\\\s*(\"+C.reNum+\"+)\\\\s*,?\\\\s*(\"+C.reNum+\"+)\\\\s*$\");function x(t){var e,i,r,n,s,o,a=t.getAttribute(\"viewBox\"),h=1,c=1,l=t.getAttribute(\"width\"),u=t.getAttribute(\"height\"),f=t.getAttribute(\"x\")||0,d=t.getAttribute(\"y\")||0,g=t.getAttribute(\"preserveAspectRatio\")||\"\",p=!a||!C.svgViewBoxElementsRegEx.test(t.nodeName)||!(a=a.match(T)),v=!l||!u||\"100%\"===l||\"100%\"===u,m=p&&v,b={},_=\"\",y=0,x=0;if(b.width=0,b.height=0,b.toBeParsed=m)return b;if(p)return b.width=S(l),b.height=S(u),b;if(e=-parseFloat(a[1]),i=-parseFloat(a[2]),r=parseFloat(a[3]),n=parseFloat(a[4]),v?(b.width=r,b.height=n):(b.width=S(l),b.height=S(u),h=b.width/r,c=b.height/n),\"none\"!==(g=C.util.parsePreserveAspectRatioAttribute(g)).alignX&&(\"meet\"===g.meetOrSlice&&(c=h=c<h?c:h),\"slice\"===g.meetOrSlice&&(c=h=c<h?h:c),y=b.width-r*h,x=b.height-n*h,\"Mid\"===g.alignX&&(y/=2),\"Mid\"===g.alignY&&(x/=2),\"Min\"===g.alignX&&(y=0),\"Min\"===g.alignY&&(x=0)),1===h&&1===c&&0===e&&0===i&&0===f&&0===d)return b;if((f||d)&&(_=\" translate(\"+S(f)+\" \"+S(d)+\") \"),s=_+\" matrix(\"+h+\" 0 0 \"+c+\" \"+(e*h+y)+\" \"+(i*c+x)+\") \",\"svg\"===t.nodeName){for(o=t.ownerDocument.createElement(\"g\");t.firstChild;)o.appendChild(t.firstChild);t.appendChild(o)}else s=(o=t).getAttribute(\"transform\")+s;return o.setAttribute(\"transform\",s),b}C.parseSVGDocument=function(t,i,e,r){if(t){!function(t){for(var e=b(t,[\"use\",\"svg:use\"]),i=0;e.length&&i<e.length;){var r,n,s,o,a=e[i],h=(a.getAttribute(\"xlink:href\")||a.getAttribute(\"href\")).substr(1),c=a.getAttribute(\"x\")||0,l=a.getAttribute(\"y\")||0,u=y(t,h).cloneNode(!0),f=(u.getAttribute(\"transform\")||\"\")+\" translate(\"+c+\", \"+l+\")\",d=e.length;if(x(u),/^svg$/i.test(u.nodeName)){var g=u.ownerDocument.createElement(\"g\");for(n=0,o=(s=u.attributes).length;n<o;n++)r=s.item(n),g.setAttribute(r.nodeName,r.nodeValue);for(;u.firstChild;)g.appendChild(u.firstChild);u=g}for(n=0,o=(s=a.attributes).length;n<o;n++)\"x\"!==(r=s.item(n)).nodeName&&\"y\"!==r.nodeName&&\"xlink:href\"!==r.nodeName&&\"href\"!==r.nodeName&&(\"transform\"===r.nodeName?f=r.nodeValue+\" \"+f:u.setAttribute(r.nodeName,r.nodeValue));u.setAttribute(\"transform\",f),u.setAttribute(\"instantiated_by_use\",\"1\"),u.removeAttribute(\"id\"),a.parentNode.replaceChild(u,a),e.length===d&&i++}}(t);var n,s,o=C.Object.__uid++,a=x(t),h=C.util.toArray(t.getElementsByTagName(\"*\"));if(a.crossOrigin=r&&r.crossOrigin,a.svgUid=o,0===h.length&&C.isLikelyNode){var c=[];for(n=0,s=(h=t.selectNodes('//*[name(.)!=\"svg\"]')).length;n<s;n++)c[n]=h[n];h=c}var l=h.filter(function(t){return x(t),C.svgValidTagNamesRegEx.test(t.nodeName.replace(\"svg:\",\"\"))&&!function(t,e){for(;t&&(t=t.parentNode);)if(t.nodeName&&e.test(t.nodeName.replace(\"svg:\",\"\"))&&!t.getAttribute(\"instantiated_by_use\"))return!0;return!1}(t,C.svgInvalidAncestorsRegEx)});!l||l&&!l.length?i&&i([],{}):(C.gradientDefs[o]=C.getGradientDefs(t),C.cssRules[o]=C.getCSSRules(t),C.parseElements(l,function(t,e){i&&i(t,a,e,h)},u(a),e,r))}};var c=new RegExp(\"(normal|italic)?\\\\s*(normal|small-caps)?\\\\s*(normal|bold|bolder|lighter|100|200|300|400|500|600|700|800|900)?\\\\s*(\"+C.reNum+\"(?:px|cm|mm|em|pt|pc|in)*)(?:\\\\/(normal|\"+C.reNum+\"))?\\\\s+(.*)\");d(C,{parseFontDeclaration:function(t,e){var i=t.match(c);if(i){var r=i[1],n=i[3],s=i[4],o=i[5],a=i[6];r&&(e.fontStyle=r),n&&(e.fontWeight=isNaN(parseFloat(n))?n:parseFloat(n)),s&&(e.fontSize=S(s)),a&&(e.fontFamily=a),o&&(e.lineHeight=\"normal\"===o?1:o)}},getGradientDefs:function(t){var e,i,r,n=b(t,[\"linearGradient\",\"radialGradient\",\"svg:linearGradient\",\"svg:radialGradient\"]),s=0,o={},a={};for(s=n.length;s--;)r=(e=n[s]).getAttribute(\"xlink:href\"),i=e.getAttribute(\"id\"),r&&(a[i]=r.substr(1)),o[i]=e;for(i in a){var h=o[a[i]].cloneNode(!0);for(e=o[i];h.firstChild;)e.appendChild(h.firstChild)}return o},parseAttributes:function(i,t,e){if(i){var r,n,s={};void 0===e&&(e=i.getAttribute(\"svgUid\")),i.parentNode&&C.svgValidParentsRegEx.test(i.parentNode.nodeName)&&(s=C.parseAttributes(i.parentNode,t,e)),n=s&&s.fontSize||i.getAttribute(\"font-size\")||C.Text.DEFAULT_SVG_FONT_SIZE;var o=t.reduce(function(t,e){return(r=i.getAttribute(e))&&(t[e]=r),t},{});o=d(o,d(function(t,e){var i={};for(var r in C.cssRules[e])if(_(t,r.split(\" \")))for(var n in C.cssRules[e][r])i[n]=C.cssRules[e][r][n];return i}(i,e),C.parseStyleAttribute(i)));var a,h,c,l={};for(var u in o)h=m(a=(c=u)in p?p[c]:c,o[u],s,n),l[a]=h;l&&l.font&&C.parseFontDeclaration(l.font,l);var f=d(s,l);return C.svgValidParentsRegEx.test(i.nodeName)?f:function(t){for(var e in v)if(void 0!==t[v[e]]&&\"\"!==t[e]){if(void 0===t[e]){if(!C.Object.prototype[e])continue;t[e]=C.Object.prototype[e]}if(0!==t[e].indexOf(\"url(\")){var i=new C.Color(t[e]);t[e]=i.setAlpha(g(i.getAlpha()*t[v[e]],2)).toRgba()}}return t}(f)}},parseElements:function(t,e,i,r,n){new C.ElementsParser(t,e,i,r,n).parse()},parseStyleAttribute:function(t){var i,r,n,e={},s=t.getAttribute(\"style\");return s&&(\"string\"==typeof s?(i=e,s.replace(/;\\s*$/,\"\").split(\";\").forEach(function(t){var e=t.split(\":\");r=e[0].trim().toLowerCase(),n=e[1].trim(),i[r]=n})):function(t,e){var i,r;for(var n in t)void 0!==t[n]&&(i=n.toLowerCase(),r=t[n],e[i]=r)}(s,e)),e},parsePointsAttribute:function(t){if(!t)return null;var e,i,r=[];for(e=0,i=(t=(t=t.replace(/,/g,\" \").trim()).split(/\\s+/)).length;e<i;e+=2)r.push({x:parseFloat(t[e]),y:parseFloat(t[e+1])});return r},getCSSRules:function(t){var a,h,e=t.getElementsByTagName(\"style\"),c={};for(a=0,h=e.length;a<h;a++){var i=e[a].textContent||e[a].text;\"\"!==(i=i.replace(/\\/\\*[\\s\\S]*?\\*\\//g,\"\")).trim()&&i.match(/[^{]*\\{[\\s\\S]*?\\}/g).map(function(t){return t.trim()}).forEach(function(t){var e=t.match(/([\\s\\S]*?)\\s*\\{([^}]*)\\}/),i={},r=e[2].trim().replace(/;$/,\"\").split(/\\s*;\\s*/);for(a=0,h=r.length;a<h;a++){var n=r[a].split(/\\s*:\\s*/),s=n[0],o=n[1];i[s]=o}(t=e[1]).split(\",\").forEach(function(t){\"\"!==(t=t.replace(/^svg/i,\"\").trim())&&(c[t]?C.util.object.extend(c[t],i):c[t]=C.util.object.clone(i))})})}return c},loadSVGFromURL:function(t,n,i,r){t=t.replace(/^\\n\\s*/,\"\").trim(),new C.util.request(t,{method:\"get\",onComplete:function(t){var e=t.responseXML;e&&!e.documentElement&&C.window.ActiveXObject&&t.responseText&&((e=new ActiveXObject(\"Microsoft.XMLDOM\")).async=\"false\",e.loadXML(t.responseText.replace(/<!DOCTYPE[\\s\\S]*?(\\[[\\s\\S]*\\])*?>/i,\"\")));e&&e.documentElement||n&&n(null);C.parseSVGDocument(e.documentElement,function(t,e,i,r){n&&n(t,e,i,r)},i,r)}})},loadSVGFromString:function(t,n,e,i){var r;if(t=t.trim(),\"undefined\"!=typeof DOMParser){var s=new DOMParser;s&&s.parseFromString&&(r=s.parseFromString(t,\"text/xml\"))}else C.window.ActiveXObject&&((r=new ActiveXObject(\"Microsoft.XMLDOM\")).async=\"false\",r.loadXML(t.replace(/<!DOCTYPE[\\s\\S]*?(\\[[\\s\\S]*\\])*?>/i,\"\")));C.parseSVGDocument(r.documentElement,function(t,e,i,r){n(t,e,i,r)},e,i)}})}(\"undefined\"!=typeof exports?exports:this),fabric.ElementsParser=function(t,e,i,r,n){this.elements=t,this.callback=e,this.options=i,this.reviver=r,this.svgUid=i&&i.svgUid||0,this.parsingOptions=n,this.regexUrl=/^url\\(['\"]?#([^'\"]+)['\"]?\\)/g},fabric.ElementsParser.prototype.parse=function(){this.instances=new Array(this.elements.length),this.numElements=this.elements.length,this.createObjects()},fabric.ElementsParser.prototype.createObjects=function(){for(var t=0,e=this.elements.length;t<e;t++)this.elements[t].setAttribute(\"svgUid\",this.svgUid),function(t,e){setTimeout(function(){t.createObject(t.elements[e],e)},0)}(this,t)},fabric.ElementsParser.prototype.createObject=function(t,e){var i=fabric[fabric.util.string.capitalize(t.tagName.replace(\"svg:\",\"\"))];if(i&&i.fromElement)try{this._createObject(i,t,e)}catch(t){fabric.log(t)}else this.checkIfDone()},fabric.ElementsParser.prototype._createObject=function(t,e,i){t.fromElement(e,this.createCallback(i,e),this.options)},fabric.ElementsParser.prototype.createCallback=function(i,r){var n=this;return function(t){var e;n.resolveGradient(t,\"fill\"),n.resolveGradient(t,\"stroke\"),t instanceof fabric.Image&&(e=t.parsePreserveAspectRatioAttribute(r)),t._removeTransformMatrix(e),n.reviver&&n.reviver(r,t),n.instances[i]=t,n.checkIfDone()}},fabric.ElementsParser.prototype.resolveGradient=function(t,e){var i=t[e];if(/^url\\(/.test(i)){var r=this.regexUrl.exec(i)[1];this.regexUrl.lastIndex=0,fabric.gradientDefs[this.svgUid][r]&&t.set(e,fabric.Gradient.fromElement(fabric.gradientDefs[this.svgUid][r],t))}},fabric.ElementsParser.prototype.checkIfDone=function(){0==--this.numElements&&(this.instances=this.instances.filter(function(t){return null!=t}),this.callback(this.instances,this.elements))},function(t){\"use strict\";var e=t.fabric||(t.fabric={});function i(t,e){this.x=t,this.y=e}e.Point?e.warn(\"fabric.Point is already defined\"):(e.Point=i).prototype={type:\"point\",constructor:i,add:function(t){return new i(this.x+t.x,this.y+t.y)},addEquals:function(t){return this.x+=t.x,this.y+=t.y,this},scalarAdd:function(t){return new i(this.x+t,this.y+t)},scalarAddEquals:function(t){return this.x+=t,this.y+=t,this},subtract:function(t){return new i(this.x-t.x,this.y-t.y)},subtractEquals:function(t){return this.x-=t.x,this.y-=t.y,this},scalarSubtract:function(t){return new i(this.x-t,this.y-t)},scalarSubtractEquals:function(t){return this.x-=t,this.y-=t,this},multiply:function(t){return new i(this.x*t,this.y*t)},multiplyEquals:function(t){return this.x*=t,this.y*=t,this},divide:function(t){return new i(this.x/t,this.y/t)},divideEquals:function(t){return this.x/=t,this.y/=t,this},eq:function(t){return this.x===t.x&&this.y===t.y},lt:function(t){return this.x<t.x&&this.y<t.y},lte:function(t){return this.x<=t.x&&this.y<=t.y},gt:function(t){return this.x>t.x&&this.y>t.y},gte:function(t){return this.x>=t.x&&this.y>=t.y},lerp:function(t,e){return void 0===e&&(e=.5),e=Math.max(Math.min(1,e),0),new i(this.x+(t.x-this.x)*e,this.y+(t.y-this.y)*e)},distanceFrom:function(t){var e=this.x-t.x,i=this.y-t.y;return Math.sqrt(e*e+i*i)},midPointFrom:function(t){return this.lerp(t)},min:function(t){return new i(Math.min(this.x,t.x),Math.min(this.y,t.y))},max:function(t){return new i(Math.max(this.x,t.x),Math.max(this.y,t.y))},toString:function(){return this.x+\",\"+this.y},setXY:function(t,e){return this.x=t,this.y=e,this},setX:function(t){return this.x=t,this},setY:function(t){return this.y=t,this},setFromPoint:function(t){return this.x=t.x,this.y=t.y,this},swap:function(t){var e=this.x,i=this.y;this.x=t.x,this.y=t.y,t.x=e,t.y=i},clone:function(){return new i(this.x,this.y)}}}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var f=t.fabric||(t.fabric={});function d(t){this.status=t,this.points=[]}f.Intersection?f.warn(\"fabric.Intersection is already defined\"):(f.Intersection=d,f.Intersection.prototype={constructor:d,appendPoint:function(t){return this.points.push(t),this},appendPoints:function(t){return this.points=this.points.concat(t),this}},f.Intersection.intersectLineLine=function(t,e,i,r){var n,s=(r.x-i.x)*(t.y-i.y)-(r.y-i.y)*(t.x-i.x),o=(e.x-t.x)*(t.y-i.y)-(e.y-t.y)*(t.x-i.x),a=(r.y-i.y)*(e.x-t.x)-(r.x-i.x)*(e.y-t.y);if(0!==a){var h=s/a,c=o/a;0<=h&&h<=1&&0<=c&&c<=1?(n=new d(\"Intersection\")).appendPoint(new f.Point(t.x+h*(e.x-t.x),t.y+h*(e.y-t.y))):n=new d}else n=new d(0===s||0===o?\"Coincident\":\"Parallel\");return n},f.Intersection.intersectLinePolygon=function(t,e,i){var r,n,s,o,a=new d,h=i.length;for(o=0;o<h;o++)r=i[o],n=i[(o+1)%h],s=d.intersectLineLine(t,e,r,n),a.appendPoints(s.points);return 0<a.points.length&&(a.status=\"Intersection\"),a},f.Intersection.intersectPolygonPolygon=function(t,e){var i,r=new d,n=t.length;for(i=0;i<n;i++){var s=t[i],o=t[(i+1)%n],a=d.intersectLinePolygon(s,o,e);r.appendPoints(a.points)}return 0<r.points.length&&(r.status=\"Intersection\"),r},f.Intersection.intersectPolygonRectangle=function(t,e,i){var r=e.min(i),n=e.max(i),s=new f.Point(n.x,r.y),o=new f.Point(r.x,n.y),a=d.intersectLinePolygon(r,s,t),h=d.intersectLinePolygon(s,n,t),c=d.intersectLinePolygon(n,o,t),l=d.intersectLinePolygon(o,r,t),u=new d;return u.appendPoints(a.points),u.appendPoints(h.points),u.appendPoints(c.points),u.appendPoints(l.points),0<u.points.length&&(u.status=\"Intersection\"),u})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var c=t.fabric||(t.fabric={});function l(t){t?this._tryParsingColor(t):this.setSource([0,0,0,1])}function u(t,e,i){return i<0&&(i+=1),1<i&&(i-=1),i<1/6?t+6*(e-t)*i:i<.5?e:i<2/3?t+(e-t)*(2/3-i)*6:t}c.Color?c.warn(\"fabric.Color is already defined.\"):(c.Color=l,c.Color.prototype={_tryParsingColor:function(t){var e;t in l.colorNameMap&&(t=l.colorNameMap[t]),\"transparent\"===t&&(e=[255,255,255,0]),e||(e=l.sourceFromHex(t)),e||(e=l.sourceFromRgb(t)),e||(e=l.sourceFromHsl(t)),e||(e=[0,0,0,1]),e&&this.setSource(e)},_rgbToHsl:function(t,e,i){t/=255,e/=255,i/=255;var r,n,s,o=c.util.array.max([t,e,i]),a=c.util.array.min([t,e,i]);if(s=(o+a)/2,o===a)r=n=0;else{var h=o-a;switch(n=.5<s?h/(2-o-a):h/(o+a),o){case t:r=(e-i)/h+(e<i?6:0);break;case e:r=(i-t)/h+2;break;case i:r=(t-e)/h+4}r/=6}return[Math.round(360*r),Math.round(100*n),Math.round(100*s)]},getSource:function(){return this._source},setSource:function(t){this._source=t},toRgb:function(){var t=this.getSource();return\"rgb(\"+t[0]+\",\"+t[1]+\",\"+t[2]+\")\"},toRgba:function(){var t=this.getSource();return\"rgba(\"+t[0]+\",\"+t[1]+\",\"+t[2]+\",\"+t[3]+\")\"},toHsl:function(){var t=this.getSource(),e=this._rgbToHsl(t[0],t[1],t[2]);return\"hsl(\"+e[0]+\",\"+e[1]+\"%,\"+e[2]+\"%)\"},toHsla:function(){var t=this.getSource(),e=this._rgbToHsl(t[0],t[1],t[2]);return\"hsla(\"+e[0]+\",\"+e[1]+\"%,\"+e[2]+\"%,\"+t[3]+\")\"},toHex:function(){var t,e,i,r=this.getSource();return t=1===(t=r[0].toString(16)).length?\"0\"+t:t,e=1===(e=r[1].toString(16)).length?\"0\"+e:e,i=1===(i=r[2].toString(16)).length?\"0\"+i:i,t.toUpperCase()+e.toUpperCase()+i.toUpperCase()},toHexa:function(){var t,e=this.getSource();return t=1===(t=(t=Math.round(255*e[3])).toString(16)).length?\"0\"+t:t,this.toHex()+t.toUpperCase()},getAlpha:function(){return this.getSource()[3]},setAlpha:function(t){var e=this.getSource();return e[3]=t,this.setSource(e),this},toGrayscale:function(){var t=this.getSource(),e=parseInt((.3*t[0]+.59*t[1]+.11*t[2]).toFixed(0),10),i=t[3];return this.setSource([e,e,e,i]),this},toBlackWhite:function(t){var e=this.getSource(),i=(.3*e[0]+.59*e[1]+.11*e[2]).toFixed(0),r=e[3];return t=t||127,i=Number(i)<Number(t)?0:255,this.setSource([i,i,i,r]),this},overlayWith:function(t){t instanceof l||(t=new l(t));var e,i=[],r=this.getAlpha(),n=this.getSource(),s=t.getSource();for(e=0;e<3;e++)i.push(Math.round(.5*n[e]+.5*s[e]));return i[3]=r,this.setSource(i),this}},c.Color.reRGBa=/^rgba?\\(\\s*(\\d{1,3}(?:\\.\\d+)?\\%?)\\s*,\\s*(\\d{1,3}(?:\\.\\d+)?\\%?)\\s*,\\s*(\\d{1,3}(?:\\.\\d+)?\\%?)\\s*(?:\\s*,\\s*((?:\\d*\\.?\\d+)?)\\s*)?\\)$/i,c.Color.reHSLa=/^hsla?\\(\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3}\\%)\\s*,\\s*(\\d{1,3}\\%)\\s*(?:\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)$/i,c.Color.reHex=/^#?([0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})$/i,c.Color.colorNameMap={aliceblue:\"#F0F8FF\",antiquewhite:\"#FAEBD7\",aqua:\"#00FFFF\",aquamarine:\"#7FFFD4\",azure:\"#F0FFFF\",beige:\"#F5F5DC\",bisque:\"#FFE4C4\",black:\"#000000\",blanchedalmond:\"#FFEBCD\",blue:\"#0000FF\",blueviolet:\"#8A2BE2\",brown:\"#A52A2A\",burlywood:\"#DEB887\",cadetblue:\"#5F9EA0\",chartreuse:\"#7FFF00\",chocolate:\"#D2691E\",coral:\"#FF7F50\",cornflowerblue:\"#6495ED\",cornsilk:\"#FFF8DC\",crimson:\"#DC143C\",cyan:\"#00FFFF\",darkblue:\"#00008B\",darkcyan:\"#008B8B\",darkgoldenrod:\"#B8860B\",darkgray:\"#A9A9A9\",darkgrey:\"#A9A9A9\",darkgreen:\"#006400\",darkkhaki:\"#BDB76B\",darkmagenta:\"#8B008B\",darkolivegreen:\"#556B2F\",darkorange:\"#FF8C00\",darkorchid:\"#9932CC\",darkred:\"#8B0000\",darksalmon:\"#E9967A\",darkseagreen:\"#8FBC8F\",darkslateblue:\"#483D8B\",darkslategray:\"#2F4F4F\",darkslategrey:\"#2F4F4F\",darkturquoise:\"#00CED1\",darkviolet:\"#9400D3\",deeppink:\"#FF1493\",deepskyblue:\"#00BFFF\",dimgray:\"#696969\",dimgrey:\"#696969\",dodgerblue:\"#1E90FF\",firebrick:\"#B22222\",floralwhite:\"#FFFAF0\",forestgreen:\"#228B22\",fuchsia:\"#FF00FF\",gainsboro:\"#DCDCDC\",ghostwhite:\"#F8F8FF\",gold:\"#FFD700\",goldenrod:\"#DAA520\",gray:\"#808080\",grey:\"#808080\",green:\"#008000\",greenyellow:\"#ADFF2F\",honeydew:\"#F0FFF0\",hotpink:\"#FF69B4\",indianred:\"#CD5C5C\",indigo:\"#4B0082\",ivory:\"#FFFFF0\",khaki:\"#F0E68C\",lavender:\"#E6E6FA\",lavenderblush:\"#FFF0F5\",lawngreen:\"#7CFC00\",lemonchiffon:\"#FFFACD\",lightblue:\"#ADD8E6\",lightcoral:\"#F08080\",lightcyan:\"#E0FFFF\",lightgoldenrodyellow:\"#FAFAD2\",lightgray:\"#D3D3D3\",lightgrey:\"#D3D3D3\",lightgreen:\"#90EE90\",lightpink:\"#FFB6C1\",lightsalmon:\"#FFA07A\",lightseagreen:\"#20B2AA\",lightskyblue:\"#87CEFA\",lightslategray:\"#778899\",lightslategrey:\"#778899\",lightsteelblue:\"#B0C4DE\",lightyellow:\"#FFFFE0\",lime:\"#00FF00\",limegreen:\"#32CD32\",linen:\"#FAF0E6\",magenta:\"#FF00FF\",maroon:\"#800000\",mediumaquamarine:\"#66CDAA\",mediumblue:\"#0000CD\",mediumorchid:\"#BA55D3\",mediumpurple:\"#9370DB\",mediumseagreen:\"#3CB371\",mediumslateblue:\"#7B68EE\",mediumspringgreen:\"#00FA9A\",mediumturquoise:\"#48D1CC\",mediumvioletred:\"#C71585\",midnightblue:\"#191970\",mintcream:\"#F5FFFA\",mistyrose:\"#FFE4E1\",moccasin:\"#FFE4B5\",navajowhite:\"#FFDEAD\",navy:\"#000080\",oldlace:\"#FDF5E6\",olive:\"#808000\",olivedrab:\"#6B8E23\",orange:\"#FFA500\",orangered:\"#FF4500\",orchid:\"#DA70D6\",palegoldenrod:\"#EEE8AA\",palegreen:\"#98FB98\",paleturquoise:\"#AFEEEE\",palevioletred:\"#DB7093\",papayawhip:\"#FFEFD5\",peachpuff:\"#FFDAB9\",peru:\"#CD853F\",pink:\"#FFC0CB\",plum:\"#DDA0DD\",powderblue:\"#B0E0E6\",purple:\"#800080\",rebeccapurple:\"#663399\",red:\"#FF0000\",rosybrown:\"#BC8F8F\",royalblue:\"#4169E1\",saddlebrown:\"#8B4513\",salmon:\"#FA8072\",sandybrown:\"#F4A460\",seagreen:\"#2E8B57\",seashell:\"#FFF5EE\",sienna:\"#A0522D\",silver:\"#C0C0C0\",skyblue:\"#87CEEB\",slateblue:\"#6A5ACD\",slategray:\"#708090\",slategrey:\"#708090\",snow:\"#FFFAFA\",springgreen:\"#00FF7F\",steelblue:\"#4682B4\",tan:\"#D2B48C\",teal:\"#008080\",thistle:\"#D8BFD8\",tomato:\"#FF6347\",turquoise:\"#40E0D0\",violet:\"#EE82EE\",wheat:\"#F5DEB3\",white:\"#FFFFFF\",whitesmoke:\"#F5F5F5\",yellow:\"#FFFF00\",yellowgreen:\"#9ACD32\"},c.Color.fromRgb=function(t){return l.fromSource(l.sourceFromRgb(t))},c.Color.sourceFromRgb=function(t){var e=t.match(l.reRGBa);if(e){var i=parseInt(e[1],10)/(/%$/.test(e[1])?100:1)*(/%$/.test(e[1])?255:1),r=parseInt(e[2],10)/(/%$/.test(e[2])?100:1)*(/%$/.test(e[2])?255:1),n=parseInt(e[3],10)/(/%$/.test(e[3])?100:1)*(/%$/.test(e[3])?255:1);return[parseInt(i,10),parseInt(r,10),parseInt(n,10),e[4]?parseFloat(e[4]):1]}},c.Color.fromRgba=l.fromRgb,c.Color.fromHsl=function(t){return l.fromSource(l.sourceFromHsl(t))},c.Color.sourceFromHsl=function(t){var e=t.match(l.reHSLa);if(e){var i,r,n,s=(parseFloat(e[1])%360+360)%360/360,o=parseFloat(e[2])/(/%$/.test(e[2])?100:1),a=parseFloat(e[3])/(/%$/.test(e[3])?100:1);if(0===o)i=r=n=a;else{var h=a<=.5?a*(o+1):a+o-a*o,c=2*a-h;i=u(c,h,s+1/3),r=u(c,h,s),n=u(c,h,s-1/3)}return[Math.round(255*i),Math.round(255*r),Math.round(255*n),e[4]?parseFloat(e[4]):1]}},c.Color.fromHsla=l.fromHsl,c.Color.fromHex=function(t){return l.fromSource(l.sourceFromHex(t))},c.Color.sourceFromHex=function(t){if(t.match(l.reHex)){var e=t.slice(t.indexOf(\"#\")+1),i=3===e.length||4===e.length,r=8===e.length||4===e.length,n=i?e.charAt(0)+e.charAt(0):e.substring(0,2),s=i?e.charAt(1)+e.charAt(1):e.substring(2,4),o=i?e.charAt(2)+e.charAt(2):e.substring(4,6),a=r?i?e.charAt(3)+e.charAt(3):e.substring(6,8):\"FF\";return[parseInt(n,16),parseInt(s,16),parseInt(o,16),parseFloat((parseInt(a,16)/255).toFixed(2))]}},c.Color.fromSource=function(t){var e=new l;return e.setSource(t),e})}(\"undefined\"!=typeof exports?exports:this),function(){function d(t){var e,i,r,n,s=t.getAttribute(\"style\"),o=t.getAttribute(\"offset\")||0;if(o=(o=parseFloat(o)/(/%$/.test(o)?100:1))<0?0:1<o?1:o,s){var a=s.split(/\\s*;\\s*/);for(\"\"===a[a.length-1]&&a.pop(),n=a.length;n--;){var h=a[n].split(/\\s*:\\s*/),c=h[0].trim(),l=h[1].trim();\"stop-color\"===c?e=l:\"stop-opacity\"===c&&(r=l)}}return e||(e=t.getAttribute(\"stop-color\")||\"rgb(0,0,0)\"),r||(r=t.getAttribute(\"stop-opacity\")),i=(e=new fabric.Color(e)).getAlpha(),r=isNaN(parseFloat(r))?1:parseFloat(r),r*=i,{offset:o,color:e.toRgb(),opacity:r}}var g=fabric.util.object.clone;function p(t,e,i){var r,n=0,s=1,o=\"\";for(var a in e)\"Infinity\"===e[a]?e[a]=1:\"-Infinity\"===e[a]&&(e[a]=0),r=parseFloat(e[a],10),s=\"string\"==typeof e[a]&&/^(\\d+\\.\\d+)%|(\\d+)%$/.test(e[a])?.01:1,\"x1\"===a||\"x2\"===a||\"r2\"===a?(s*=\"objectBoundingBox\"===i?t.width:1,n=\"objectBoundingBox\"===i&&t.left||0):\"y1\"!==a&&\"y2\"!==a||(s*=\"objectBoundingBox\"===i?t.height:1,n=\"objectBoundingBox\"===i&&t.top||0),e[a]=r*s+n;if(\"ellipse\"===t.type&&null!==e.r2&&\"objectBoundingBox\"===i&&t.rx!==t.ry){var h=t.ry/t.rx;o=\" scale(1, \"+h+\")\",e.y1&&(e.y1/=h),e.y2&&(e.y2/=h)}return o}fabric.Gradient=fabric.util.createClass({offsetX:0,offsetY:0,initialize:function(t){t||(t={});var e={};this.id=fabric.Object.__uid++,this.type=t.type||\"linear\",e={x1:t.coords.x1||0,y1:t.coords.y1||0,x2:t.coords.x2||0,y2:t.coords.y2||0},\"radial\"===this.type&&(e.r1=t.coords.r1||0,e.r2=t.coords.r2||0),this.coords=e,this.colorStops=t.colorStops.slice(),t.gradientTransform&&(this.gradientTransform=t.gradientTransform),this.offsetX=t.offsetX||this.offsetX,this.offsetY=t.offsetY||this.offsetY},addColorStop:function(t){for(var e in t){var i=new fabric.Color(t[e]);this.colorStops.push({offset:parseFloat(e),color:i.toRgb(),opacity:i.getAlpha()})}return this},toObject:function(t){var e={type:this.type,coords:this.coords,colorStops:this.colorStops,offsetX:this.offsetX,offsetY:this.offsetY,gradientTransform:this.gradientTransform?this.gradientTransform.concat():this.gradientTransform};return fabric.util.populateWithProperties(this,e,t),e},toSVG:function(t){var e,i,r,n,s=g(this.coords,!0),o=g(this.colorStops,!0),a=s.r1>s.r2,h=t.width/2,c=t.height/2;for(var l in o.sort(function(t,e){return t.offset-e.offset}),\"path\"===t.type&&(h-=t.pathOffset.x,c-=t.pathOffset.y),s)\"x1\"===l||\"x2\"===l?s[l]+=this.offsetX-h:\"y1\"!==l&&\"y2\"!==l||(s[l]+=this.offsetY-c);if(n='id=\"SVGID_'+this.id+'\" gradientUnits=\"userSpaceOnUse\"',this.gradientTransform&&(n+=' gradientTransform=\"matrix('+this.gradientTransform.join(\" \")+')\" '),\"linear\"===this.type?r=[\"<linearGradient \",n,' x1=\"',s.x1,'\" y1=\"',s.y1,'\" x2=\"',s.x2,'\" y2=\"',s.y2,'\">\\n']:\"radial\"===this.type&&(r=[\"<radialGradient \",n,' cx=\"',a?s.x1:s.x2,'\" cy=\"',a?s.y1:s.y2,'\" r=\"',a?s.r1:s.r2,'\" fx=\"',a?s.x2:s.x1,'\" fy=\"',a?s.y2:s.y1,'\">\\n']),\"radial\"===this.type){if(a)for((o=o.concat()).reverse(),e=0,i=o.length;e<i;e++)o[e].offset=1-o[e].offset;var u=Math.min(s.r1,s.r2);if(0<u){var f=u/Math.max(s.r1,s.r2);for(e=0,i=o.length;e<i;e++)o[e].offset+=f*(1-o[e].offset)}}for(e=0,i=o.length;e<i;e++){var d=o[e];r.push(\"<stop \",'offset=\"',100*d.offset+\"%\",'\" style=\"stop-color:',d.color,void 0!==d.opacity?\";stop-opacity: \"+d.opacity:\";\",'\"/>\\n')}return r.push(\"linear\"===this.type?\"</linearGradient>\\n\":\"</radialGradient>\\n\"),r.join(\"\")},toLive:function(t){var e,i,r,n=fabric.util.object.clone(this.coords);if(this.type){for(\"linear\"===this.type?e=t.createLinearGradient(n.x1,n.y1,n.x2,n.y2):\"radial\"===this.type&&(e=t.createRadialGradient(n.x1,n.y1,n.r1,n.x2,n.y2,n.r2)),i=0,r=this.colorStops.length;i<r;i++){var s=this.colorStops[i].color,o=this.colorStops[i].opacity,a=this.colorStops[i].offset;void 0!==o&&(s=new fabric.Color(s).setAlpha(o).toRgba()),e.addColorStop(a,s)}return e}}}),fabric.util.object.extend(fabric.Gradient,{fromElement:function(t,e){var i,r,n,s,o,a,h=t.getElementsByTagName(\"stop\"),c=t.getAttribute(\"gradientUnits\")||\"objectBoundingBox\",l=t.getAttribute(\"gradientTransform\"),u=[];for(\"linear\"===(i=\"linearGradient\"===t.nodeName||\"LINEARGRADIENT\"===t.nodeName?\"linear\":\"radial\")?r={x1:(a=t).getAttribute(\"x1\")||0,y1:a.getAttribute(\"y1\")||0,x2:a.getAttribute(\"x2\")||\"100%\",y2:a.getAttribute(\"y2\")||0}:\"radial\"===i&&(r={x1:(o=t).getAttribute(\"fx\")||o.getAttribute(\"cx\")||\"50%\",y1:o.getAttribute(\"fy\")||o.getAttribute(\"cy\")||\"50%\",r1:0,x2:o.getAttribute(\"cx\")||\"50%\",y2:o.getAttribute(\"cy\")||\"50%\",r2:o.getAttribute(\"r\")||\"50%\"}),s=h.length;s--;)u.push(d(h[s]));n=p(e,r,c);var f=new fabric.Gradient({type:i,coords:r,colorStops:u,offsetX:-e.left,offsetY:-e.top});return(l||\"\"!==n)&&(f.gradientTransform=fabric.parseTransformAttribute((l||\"\")+n)),f},forObject:function(t,e){return e||(e={}),p(t,e.coords,\"userSpaceOnUse\"),new fabric.Gradient(e)}})}(),function(){\"use strict\";var n=fabric.util.toFixed;fabric.Pattern=fabric.util.createClass({repeat:\"repeat\",offsetX:0,offsetY:0,crossOrigin:\"\",patternTransform:null,initialize:function(t,e){if(t||(t={}),this.id=fabric.Object.__uid++,this.setOptions(t),!t.source||t.source&&\"string\"!=typeof t.source)e&&e(this);else if(void 0!==fabric.util.getFunctionBody(t.source))this.source=new Function(fabric.util.getFunctionBody(t.source)),e&&e(this);else{var i=this;this.source=fabric.util.createImage(),fabric.util.loadImage(t.source,function(t){i.source=t,e&&e(i)},null,this.crossOrigin)}},toObject:function(t){var e,i,r=fabric.Object.NUM_FRACTION_DIGITS;return\"function\"==typeof this.source?e=String(this.source):\"string\"==typeof this.source.src?e=this.source.src:\"object\"==typeof this.source&&this.source.toDataURL&&(e=this.source.toDataURL()),i={type:\"pattern\",source:e,repeat:this.repeat,crossOrigin:this.crossOrigin,offsetX:n(this.offsetX,r),offsetY:n(this.offsetY,r),patternTransform:this.patternTransform?this.patternTransform.concat():null},fabric.util.populateWithProperties(this,i,t),i},toSVG:function(t){var e=\"function\"==typeof this.source?this.source():this.source,i=e.width/t.width,r=e.height/t.height,n=this.offsetX/t.width,s=this.offsetY/t.height,o=\"\";return\"repeat-x\"!==this.repeat&&\"no-repeat\"!==this.repeat||(r=1,s&&(r+=Math.abs(s))),\"repeat-y\"!==this.repeat&&\"no-repeat\"!==this.repeat||(i=1,n&&(i+=Math.abs(n))),e.src?o=e.src:e.toDataURL&&(o=e.toDataURL()),'<pattern id=\"SVGID_'+this.id+'\" x=\"'+n+'\" y=\"'+s+'\" width=\"'+i+'\" height=\"'+r+'\">\\n<image x=\"0\" y=\"0\" width=\"'+e.width+'\" height=\"'+e.height+'\" xlink:href=\"'+o+'\"></image>\\n</pattern>\\n'},setOptions:function(t){for(var e in t)this[e]=t[e]},toLive:function(t){var e=\"function\"==typeof this.source?this.source():this.source;if(!e)return\"\";if(void 0!==e.src){if(!e.complete)return\"\";if(0===e.naturalWidth||0===e.naturalHeight)return\"\"}return t.createPattern(e,this.repeat)}})}(),function(t){\"use strict\";var o=t.fabric||(t.fabric={}),a=o.util.toFixed;o.Shadow?o.warn(\"fabric.Shadow is already defined.\"):(o.Shadow=o.util.createClass({color:\"rgb(0,0,0)\",blur:0,offsetX:0,offsetY:0,affectStroke:!1,includeDefaultValues:!0,initialize:function(t){for(var e in\"string\"==typeof t&&(t=this._parseShadow(t)),t)this[e]=t[e];this.id=o.Object.__uid++},_parseShadow:function(t){var e=t.trim(),i=o.Shadow.reOffsetsAndBlur.exec(e)||[];return{color:(e.replace(o.Shadow.reOffsetsAndBlur,\"\")||\"rgb(0,0,0)\").trim(),offsetX:parseInt(i[1],10)||0,offsetY:parseInt(i[2],10)||0,blur:parseInt(i[3],10)||0}},toString:function(){return[this.offsetX,this.offsetY,this.blur,this.color].join(\"px \")},toSVG:function(t){var e=40,i=40,r=o.Object.NUM_FRACTION_DIGITS,n=o.util.rotateVector({x:this.offsetX,y:this.offsetY},o.util.degreesToRadians(-t.angle)),s=new o.Color(this.color);return t.width&&t.height&&(e=100*a((Math.abs(n.x)+this.blur)/t.width,r)+20,i=100*a((Math.abs(n.y)+this.blur)/t.height,r)+20),t.flipX&&(n.x*=-1),t.flipY&&(n.y*=-1),'<filter id=\"SVGID_'+this.id+'\" y=\"-'+i+'%\" height=\"'+(100+2*i)+'%\" x=\"-'+e+'%\" width=\"'+(100+2*e)+'%\" >\\n\\t<feGaussianBlur in=\"SourceAlpha\" stdDeviation=\"'+a(this.blur?this.blur/2:0,r)+'\"></feGaussianBlur>\\n\\t<feOffset dx=\"'+a(n.x,r)+'\" dy=\"'+a(n.y,r)+'\" result=\"oBlur\" ></feOffset>\\n\\t<feFlood flood-color=\"'+s.toRgb()+'\" flood-opacity=\"'+s.getAlpha()+'\"/>\\n\\t<feComposite in2=\"oBlur\" operator=\"in\" />\\n\\t<feMerge>\\n\\t\\t<feMergeNode></feMergeNode>\\n\\t\\t<feMergeNode in=\"SourceGraphic\"></feMergeNode>\\n\\t</feMerge>\\n</filter>\\n'},toObject:function(){if(this.includeDefaultValues)return{color:this.color,blur:this.blur,offsetX:this.offsetX,offsetY:this.offsetY,affectStroke:this.affectStroke};var e={},i=o.Shadow.prototype;return[\"color\",\"blur\",\"offsetX\",\"offsetY\",\"affectStroke\"].forEach(function(t){this[t]!==i[t]&&(e[t]=this[t])},this),e}}),o.Shadow.reOffsetsAndBlur=/(?:\\s|^)(-?\\d+(?:px)?(?:\\s?|$))?(-?\\d+(?:px)?(?:\\s?|$))?(\\d+(?:px)?)?(?:\\s?|$)(?:$|\\s)/)}(\"undefined\"!=typeof exports?exports:this),function(){\"use strict\";if(fabric.StaticCanvas)fabric.warn(\"fabric.StaticCanvas is already defined.\");else{var r=fabric.util.object.extend,t=fabric.util.getElementOffset,c=fabric.util.removeFromArray,a=fabric.util.toFixed,s=fabric.util.transformPoint,o=fabric.util.invertTransform,e=new Error(\"Could not initialize `canvas` element\");fabric.StaticCanvas=fabric.util.createClass(fabric.CommonMethods,{initialize:function(t,e){e||(e={}),this.renderAndResetBound=this.renderAndReset.bind(this),this.requestRenderAllBound=this.requestRenderAll.bind(this),this._initStatic(t,e)},backgroundColor:\"\",backgroundImage:null,overlayColor:\"\",overlayImage:null,includeDefaultValues:!0,stateful:!1,renderOnAddRemove:!0,clipTo:null,controlsAboveOverlay:!1,allowTouchScrolling:!1,imageSmoothingEnabled:!0,viewportTransform:fabric.iMatrix.concat(),backgroundVpt:!0,overlayVpt:!0,onBeforeScaleRotate:function(){},enableRetinaScaling:!0,vptCoords:{},skipOffscreen:!0,_initStatic:function(t,e){var i=this.requestRenderAllBound;this._objects=[],this._createLowerCanvas(t),this._initOptions(e),this._setImageSmoothing(),this.interactive||this._initRetinaScaling(),e.overlayImage&&this.setOverlayImage(e.overlayImage,i),e.backgroundImage&&this.setBackgroundImage(e.backgroundImage,i),e.backgroundColor&&this.setBackgroundColor(e.backgroundColor,i),e.overlayColor&&this.setOverlayColor(e.overlayColor,i),this.calcOffset()},_isRetinaScaling:function(){return 1!==fabric.devicePixelRatio&&this.enableRetinaScaling},getRetinaScaling:function(){return this._isRetinaScaling()?fabric.devicePixelRatio:1},_initRetinaScaling:function(){this._isRetinaScaling()&&(this.lowerCanvasEl.setAttribute(\"width\",this.width*fabric.devicePixelRatio),this.lowerCanvasEl.setAttribute(\"height\",this.height*fabric.devicePixelRatio),this.contextContainer.scale(fabric.devicePixelRatio,fabric.devicePixelRatio))},calcOffset:function(){return this._offset=t(this.lowerCanvasEl),this},setOverlayImage:function(t,e,i){return this.__setBgOverlayImage(\"overlayImage\",t,e,i)},setBackgroundImage:function(t,e,i){return this.__setBgOverlayImage(\"backgroundImage\",t,e,i)},setOverlayColor:function(t,e){return this.__setBgOverlayColor(\"overlayColor\",t,e)},setBackgroundColor:function(t,e){return this.__setBgOverlayColor(\"backgroundColor\",t,e)},_setImageSmoothing:function(){var t=this.getContext();t.imageSmoothingEnabled=t.imageSmoothingEnabled||t.webkitImageSmoothingEnabled||t.mozImageSmoothingEnabled||t.msImageSmoothingEnabled||t.oImageSmoothingEnabled,t.imageSmoothingEnabled=this.imageSmoothingEnabled},__setBgOverlayImage:function(e,t,i,r){return\"string\"==typeof t?fabric.util.loadImage(t,function(t){t&&(this[e]=new fabric.Image(t,r)),i&&i(t)},this,r&&r.crossOrigin):(r&&t.setOptions(r),this[e]=t,i&&i(t)),this},__setBgOverlayColor:function(t,e,i){return this[t]=e,this._initGradient(e,t),this._initPattern(e,t,i),this},_createCanvasElement:function(){var t=fabric.util.createCanvasElement();if(!t)throw e;if(t.style||(t.style={}),void 0===t.getContext)throw e;return t},_initOptions:function(t){this._setOptions(t),this.width=this.width||parseInt(this.lowerCanvasEl.width,10)||0,this.height=this.height||parseInt(this.lowerCanvasEl.height,10)||0,this.lowerCanvasEl.style&&(this.lowerCanvasEl.width=this.width,this.lowerCanvasEl.height=this.height,this.lowerCanvasEl.style.width=this.width+\"px\",this.lowerCanvasEl.style.height=this.height+\"px\",this.viewportTransform=this.viewportTransform.slice())},_createLowerCanvas:function(t){t&&t.getContext?this.lowerCanvasEl=t:this.lowerCanvasEl=fabric.util.getById(t)||this._createCanvasElement(),fabric.util.addClass(this.lowerCanvasEl,\"lower-canvas\"),this.interactive&&this._applyCanvasStyle(this.lowerCanvasEl),this.contextContainer=this.lowerCanvasEl.getContext(\"2d\")},getWidth:function(){return this.width},getHeight:function(){return this.height},setWidth:function(t,e){return this.setDimensions({width:t},e)},setHeight:function(t,e){return this.setDimensions({height:t},e)},setDimensions:function(t,e){var i;for(var r in e=e||{},t)i=t[r],e.cssOnly||(this._setBackstoreDimension(r,t[r]),i+=\"px\",this.hasLostContext=!0),e.backstoreOnly||this._setCssDimension(r,i);return this._isCurrentlyDrawing&&this.freeDrawingBrush&&this.freeDrawingBrush._setBrushStyles(),this._initRetinaScaling(),this._setImageSmoothing(),this.calcOffset(),e.cssOnly||this.requestRenderAll(),this},_setBackstoreDimension:function(t,e){return this.lowerCanvasEl[t]=e,this.upperCanvasEl&&(this.upperCanvasEl[t]=e),this.cacheCanvasEl&&(this.cacheCanvasEl[t]=e),this[t]=e,this},_setCssDimension:function(t,e){return this.lowerCanvasEl.style[t]=e,this.upperCanvasEl&&(this.upperCanvasEl.style[t]=e),this.wrapperEl&&(this.wrapperEl.style[t]=e),this},getZoom:function(){return this.viewportTransform[0]},setViewportTransform:function(t){var e,i,r,n=this._activeObject;for(this.viewportTransform=t,i=0,r=this._objects.length;i<r;i++)(e=this._objects[i]).group||e.setCoords(!1,!0);return n&&\"activeSelection\"===n.type&&n.setCoords(!1,!0),this.calcViewportBoundaries(),this.renderOnAddRemove&&this.requestRenderAll(),this},zoomToPoint:function(t,e){var i=t,r=this.viewportTransform.slice(0);t=s(t,o(this.viewportTransform)),r[0]=e,r[3]=e;var n=s(t,r);return r[4]+=i.x-n.x,r[5]+=i.y-n.y,this.setViewportTransform(r)},setZoom:function(t){return this.zoomToPoint(new fabric.Point(0,0),t),this},absolutePan:function(t){var e=this.viewportTransform.slice(0);return e[4]=-t.x,e[5]=-t.y,this.setViewportTransform(e)},relativePan:function(t){return this.absolutePan(new fabric.Point(-t.x-this.viewportTransform[4],-t.y-this.viewportTransform[5]))},getElement:function(){return this.lowerCanvasEl},_onObjectAdded:function(t){this.stateful&&t.setupState(),t._set(\"canvas\",this),t.setCoords(),this.fire(\"object:added\",{target:t}),t.fire(\"added\")},_onObjectRemoved:function(t){this.fire(\"object:removed\",{target:t}),t.fire(\"removed\"),delete t.canvas},clearContext:function(t){return t.clearRect(0,0,this.width,this.height),this},getContext:function(){return this.contextContainer},clear:function(){return this._objects.length=0,this.backgroundImage=null,this.overlayImage=null,this.backgroundColor=\"\",this.overlayColor=\"\",this._hasITextHandlers&&(this.off(\"mouse:up\",this._mouseUpITextHandler),this._iTextInstances=null,this._hasITextHandlers=!1),this.clearContext(this.contextContainer),this.fire(\"canvas:cleared\"),this.renderOnAddRemove&&this.requestRenderAll(),this},renderAll:function(){var t=this.contextContainer;return this.renderCanvas(t,this._objects),this},renderAndReset:function(){this.isRendering=0,this.renderAll()},requestRenderAll:function(){return this.isRendering||(this.isRendering=fabric.util.requestAnimFrame(this.renderAndResetBound)),this},calcViewportBoundaries:function(){var t={},e=this.width,i=this.height,r=o(this.viewportTransform);return t.tl=s({x:0,y:0},r),t.br=s({x:e,y:i},r),t.tr=new fabric.Point(t.br.x,t.tl.y),t.bl=new fabric.Point(t.tl.x,t.br.y),this.vptCoords=t},cancelRequestedRender:function(){this.isRendering&&(fabric.util.cancelAnimFrame(this.isRendering),this.isRendering=0)},renderCanvas:function(t,e){var i=this.viewportTransform;this.cancelRequestedRender(),this.calcViewportBoundaries(),this.clearContext(t),this.fire(\"before:render\"),this.clipTo&&fabric.util.clipContext(this,t),this._renderBackground(t),t.save(),t.transform(i[0],i[1],i[2],i[3],i[4],i[5]),this._renderObjects(t,e),t.restore(),!this.controlsAboveOverlay&&this.interactive&&this.drawControls(t),this.clipTo&&t.restore(),this._renderOverlay(t),this.controlsAboveOverlay&&this.interactive&&this.drawControls(t),this.fire(\"after:render\")},_renderObjects:function(t,e){var i,r;for(i=0,r=e.length;i<r;++i)e[i]&&e[i].render(t)},_renderBackgroundOrOverlay:function(t,e){var i,r=this[e+\"Color\"];r&&(t.fillStyle=r.toLive?r.toLive(t,this):r,t.fillRect(r.offsetX||0,r.offsetY||0,this.width,this.height)),(r=this[e+\"Image\"])&&(this[e+\"Vpt\"]&&(i=this.viewportTransform,t.save(),t.transform(i[0],i[1],i[2],i[3],i[4],i[5])),r.render(t),this[e+\"Vpt\"]&&t.restore())},_renderBackground:function(t){this._renderBackgroundOrOverlay(t,\"background\")},_renderOverlay:function(t){this._renderBackgroundOrOverlay(t,\"overlay\")},getCenter:function(){return{top:this.height/2,left:this.width/2}},centerObjectH:function(t){return this._centerObject(t,new fabric.Point(this.getCenter().left,t.getCenterPoint().y))},centerObjectV:function(t){return this._centerObject(t,new fabric.Point(t.getCenterPoint().x,this.getCenter().top))},centerObject:function(t){var e=this.getCenter();return this._centerObject(t,new fabric.Point(e.left,e.top))},viewportCenterObject:function(t){var e=this.getVpCenter();return this._centerObject(t,e)},viewportCenterObjectH:function(t){var e=this.getVpCenter();return this._centerObject(t,new fabric.Point(e.x,t.getCenterPoint().y)),this},viewportCenterObjectV:function(t){var e=this.getVpCenter();return this._centerObject(t,new fabric.Point(t.getCenterPoint().x,e.y))},getVpCenter:function(){var t=this.getCenter(),e=o(this.viewportTransform);return s({x:t.left,y:t.top},e)},_centerObject:function(t,e){return t.setPositionByOrigin(e,\"center\",\"center\"),t.setCoords(),this.renderOnAddRemove&&this.requestRenderAll(),this},toDatalessJSON:function(t){return this.toDatalessObject(t)},toObject:function(t){return this._toObjectMethod(\"toObject\",t)},toDatalessObject:function(t){return this._toObjectMethod(\"toDatalessObject\",t)},_toObjectMethod:function(t,e){var i={version:fabric.version,objects:this._toObjects(t,e)};return r(i,this.__serializeBgOverlay(t,e)),fabric.util.populateWithProperties(this,i,e),i},_toObjects:function(e,i){return this._objects.filter(function(t){return!t.excludeFromExport}).map(function(t){return this._toObject(t,e,i)},this)},_toObject:function(t,e,i){var r;this.includeDefaultValues||(r=t.includeDefaultValues,t.includeDefaultValues=!1);var n=t[e](i);return this.includeDefaultValues||(t.includeDefaultValues=r),n},__serializeBgOverlay:function(t,e){var i={},r=this.backgroundImage,n=this.overlayImage;return this.backgroundColor&&(i.background=this.backgroundColor.toObject?this.backgroundColor.toObject(e):this.backgroundColor),this.overlayColor&&(i.overlay=this.overlayColor.toObject?this.overlayColor.toObject(e):this.overlayColor),r&&!r.excludeFromExport&&(i.backgroundImage=this._toObject(r,t,e)),n&&!n.excludeFromExport&&(i.overlayImage=this._toObject(n,t,e)),i},svgViewportTransformation:!0,toSVG:function(t,e){t||(t={});var i=[];return this._setSVGPreamble(i,t),this._setSVGHeader(i,t),this._setSVGBgOverlayColor(i,\"backgroundColor\"),this._setSVGBgOverlayImage(i,\"backgroundImage\",e),this._setSVGObjects(i,e),this._setSVGBgOverlayColor(i,\"overlayColor\"),this._setSVGBgOverlayImage(i,\"overlayImage\",e),i.push(\"</svg>\"),i.join(\"\")},_setSVGPreamble:function(t,e){e.suppressPreamble||t.push('<?xml version=\"1.0\" encoding=\"',e.encoding||\"UTF-8\",'\" standalone=\"no\" ?>\\n','<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" ','\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\\n')},_setSVGHeader:function(t,e){var i,r=e.width||this.width,n=e.height||this.height,s='viewBox=\"0 0 '+this.width+\" \"+this.height+'\" ',o=fabric.Object.NUM_FRACTION_DIGITS;e.viewBox?s='viewBox=\"'+e.viewBox.x+\" \"+e.viewBox.y+\" \"+e.viewBox.width+\" \"+e.viewBox.height+'\" ':this.svgViewportTransformation&&(i=this.viewportTransform,s='viewBox=\"'+a(-i[4]/i[0],o)+\" \"+a(-i[5]/i[3],o)+\" \"+a(this.width/i[0],o)+\" \"+a(this.height/i[3],o)+'\" '),t.push(\"<svg \",'xmlns=\"http://www.w3.org/2000/svg\" ','xmlns:xlink=\"http://www.w3.org/1999/xlink\" ','version=\"1.1\" ','width=\"',r,'\" ','height=\"',n,'\" ',s,'xml:space=\"preserve\">\\n',\"<desc>Created with Fabric.js \",fabric.version,\"</desc>\\n\",\"<defs>\\n\",this.createSVGFontFacesMarkup(),this.createSVGRefElementsMarkup(),\"</defs>\\n\")},createSVGRefElementsMarkup:function(){var i=this;return[\"backgroundColor\",\"overlayColor\"].map(function(t){var e=i[t];if(e&&e.toLive)return e.toSVG(i,!1)}).join(\"\")},createSVGFontFacesMarkup:function(){var t,e,i,r,n,s,o,a,h=\"\",c={},l=fabric.fontPaths,u=this._objects;for(o=0,a=u.length;o<a;o++)if(e=(t=u[o]).fontFamily,-1!==t.type.indexOf(\"text\")&&!c[e]&&l[e]&&(c[e]=!0,t.styles))for(n in i=t.styles)for(s in r=i[n])!c[e=r[s].fontFamily]&&l[e]&&(c[e]=!0);for(var f in c)h+=[\"\\t\\t@font-face {\\n\",\"\\t\\t\\tfont-family: '\",f,\"';\\n\",\"\\t\\t\\tsrc: url('\",l[f],\"');\\n\",\"\\t\\t}\\n\"].join(\"\");return h&&(h=['\\t<style type=\"text/css\">',\"<![CDATA[\\n\",h,\"]]>\",\"</style>\\n\"].join(\"\")),h},_setSVGObjects:function(t,e){var i,r,n,s=this._objects;for(r=0,n=s.length;r<n;r++)(i=s[r]).excludeFromExport||this._setSVGObject(t,i,e)},_setSVGObject:function(t,e,i){t.push(e.toSVG(i))},_setSVGBgOverlayImage:function(t,e,i){this[e]&&!this[e].excludeFromExport&&this[e].toSVG&&t.push(this[e].toSVG(i))},_setSVGBgOverlayColor:function(t,e){var i=this[e],r=this.viewportTransform,n=this.width/r[0],s=this.height/r[3];if(i)if(i.toLive){var o=i.repeat;t.push('<rect transform=\"translate(',n/2,\",\",s/2,')\"',' x=\"',i.offsetX-n/2,'\" y=\"',i.offsetY-s/2,'\" ','width=\"',\"repeat-y\"===o||\"no-repeat\"===o?i.source.width:n,'\" height=\"',\"repeat-x\"===o||\"no-repeat\"===o?i.source.height:s,'\" fill=\"url(#SVGID_'+i.id+')\"',\"></rect>\\n\")}else t.push('<rect x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" ','fill=\"',this[e],'\"',\"></rect>\\n\")},sendToBack:function(t){if(!t)return this;var e,i,r,n=this._activeObject;if(t===n&&\"activeSelection\"===t.type)for(e=(r=n._objects).length;e--;)i=r[e],c(this._objects,i),this._objects.unshift(i);else c(this._objects,t),this._objects.unshift(t);return this.renderOnAddRemove&&this.requestRenderAll(),this},bringToFront:function(t){if(!t)return this;var e,i,r,n=this._activeObject;if(t===n&&\"activeSelection\"===t.type)for(r=n._objects,e=0;e<r.length;e++)i=r[e],c(this._objects,i),this._objects.push(i);else c(this._objects,t),this._objects.push(t);return this.renderOnAddRemove&&this.requestRenderAll(),this},sendBackwards:function(t,e){if(!t)return this;var i,r,n,s,o,a=this._activeObject,h=0;if(t===a&&\"activeSelection\"===t.type)for(o=a._objects,i=0;i<o.length;i++)r=o[i],0+h<(n=this._objects.indexOf(r))&&(s=n-1,c(this._objects,r),this._objects.splice(s,0,r)),h++;else 0!==(n=this._objects.indexOf(t))&&(s=this._findNewLowerIndex(t,n,e),c(this._objects,t),this._objects.splice(s,0,t));return this.renderOnAddRemove&&this.requestRenderAll(),this},_findNewLowerIndex:function(t,e,i){var r,n;if(i)for(n=(r=e)-1;0<=n;--n){if(t.intersectsWithObject(this._objects[n])||t.isContainedWithinObject(this._objects[n])||this._objects[n].isContainedWithinObject(t)){r=n;break}}else r=e-1;return r},bringForward:function(t,e){if(!t)return this;var i,r,n,s,o,a=this._activeObject,h=0;if(t===a&&\"activeSelection\"===t.type)for(i=(o=a._objects).length;i--;)r=o[i],(n=this._objects.indexOf(r))<this._objects.length-1-h&&(s=n+1,c(this._objects,r),this._objects.splice(s,0,r)),h++;else(n=this._objects.indexOf(t))!==this._objects.length-1&&(s=this._findNewUpperIndex(t,n,e),c(this._objects,t),this._objects.splice(s,0,t));return this.renderOnAddRemove&&this.requestRenderAll(),this},_findNewUpperIndex:function(t,e,i){var r,n,s;if(i)for(n=(r=e)+1,s=this._objects.length;n<s;++n){if(t.intersectsWithObject(this._objects[n])||t.isContainedWithinObject(this._objects[n])||this._objects[n].isContainedWithinObject(t)){r=n;break}}else r=e+1;return r},moveTo:function(t,e){return c(this._objects,t),this._objects.splice(e,0,t),this.renderOnAddRemove&&this.requestRenderAll()},dispose:function(){return this.isRendering&&(fabric.util.cancelAnimFrame(this.isRendering),this.isRendering=0),this.forEachObject(function(t){t.dispose&&t.dispose()}),this._objects=[],this.backgroundImage&&this.backgroundImage.dispose&&this.backgroundImage.dispose(),this.backgroundImage=null,this.overlayImage&&this.overlayImage.dispose&&this.overlayImage.dispose(),this.overlayImage=null,this._iTextInstances=null,this.contextContainer=null,fabric.util.cleanUpJsdomNode(this.lowerCanvasEl),this.lowerCanvasEl=void 0,this},toString:function(){return\"#<fabric.Canvas (\"+this.complexity()+\"): { objects: \"+this._objects.length+\" }>\"}}),r(fabric.StaticCanvas.prototype,fabric.Observable),r(fabric.StaticCanvas.prototype,fabric.Collection),r(fabric.StaticCanvas.prototype,fabric.DataURLExporter),r(fabric.StaticCanvas,{EMPTY_JSON:'{\"objects\": [], \"background\": \"white\"}',supports:function(t){var e=fabric.util.createCanvasElement();if(!e||!e.getContext)return null;var i=e.getContext(\"2d\");if(!i)return null;switch(t){case\"getImageData\":return void 0!==i.getImageData;case\"setLineDash\":return void 0!==i.setLineDash;case\"toDataURL\":return void 0!==e.toDataURL;case\"toDataURLWithQuality\":try{return e.toDataURL(\"image/jpeg\",0),!0}catch(t){}return!1;default:return null}}}),fabric.StaticCanvas.prototype.toJSON=fabric.StaticCanvas.prototype.toObject,fabric.isLikelyNode&&(fabric.StaticCanvas.prototype.createPNGStream=function(){var t=fabric.util.getNodeCanvas(this.lowerCanvasEl);return t&&t.createPNGStream()},fabric.StaticCanvas.prototype.createJPEGStream=function(t){var e=fabric.util.getNodeCanvas(this.lowerCanvasEl);return e&&e.createJPEGStream(t)})}}(),fabric.BaseBrush=fabric.util.createClass({color:\"rgb(0, 0, 0)\",width:1,shadow:null,strokeLineCap:\"round\",strokeLineJoin:\"round\",strokeMiterLimit:10,strokeDashArray:null,setShadow:function(t){return this.shadow=new fabric.Shadow(t),this},_setBrushStyles:function(){var t=this.canvas.contextTop;t.strokeStyle=this.color,t.lineWidth=this.width,t.lineCap=this.strokeLineCap,t.miterLimit=this.strokeMiterLimit,t.lineJoin=this.strokeLineJoin,fabric.StaticCanvas.supports(\"setLineDash\")&&t.setLineDash(this.strokeDashArray||[])},_saveAndTransform:function(t){var e=this.canvas.viewportTransform;t.save(),t.transform(e[0],e[1],e[2],e[3],e[4],e[5])},_setShadow:function(){if(this.shadow){var t=this.canvas.contextTop,e=this.canvas.getZoom();t.shadowColor=this.shadow.color,t.shadowBlur=this.shadow.blur*e,t.shadowOffsetX=this.shadow.offsetX*e,t.shadowOffsetY=this.shadow.offsetY*e}},_resetShadow:function(){var t=this.canvas.contextTop;t.shadowColor=\"\",t.shadowBlur=t.shadowOffsetX=t.shadowOffsetY=0}}),fabric.PencilBrush=fabric.util.createClass(fabric.BaseBrush,{initialize:function(t){this.canvas=t,this._points=[]},_drawSegment:function(t,e,i){var r=e.midPointFrom(i);return t.quadraticCurveTo(e.x,e.y,r.x,r.y),r},onMouseDown:function(t){this._prepareForDrawing(t),this._captureDrawingPath(t),this._render()},onMouseMove:function(t){if(this._captureDrawingPath(t)&&1<this._points.length)if(this.needsFullRender)this.canvas.clearContext(this.canvas.contextTop),this._render();else{var e=this._points,i=e.length,r=this.canvas.contextTop;this._saveAndTransform(r),this.oldEnd&&(r.beginPath(),r.moveTo(this.oldEnd.x,this.oldEnd.y)),this.oldEnd=this._drawSegment(r,e[i-2],e[i-1],!0),r.stroke(),r.restore()}},onMouseUp:function(){this.oldEnd=void 0,this._finalizeAndAddPath()},_prepareForDrawing:function(t){var e=new fabric.Point(t.x,t.y);this._reset(),this._addPoint(e),this.canvas.contextTop.moveTo(e.x,e.y)},_addPoint:function(t){return!(1<this._points.length&&t.eq(this._points[this._points.length-1])||(this._points.push(t),0))},_reset:function(){this._points.length=0,this._setBrushStyles();var t=new fabric.Color(this.color);this.needsFullRender=t.getAlpha()<1,this._setShadow()},_captureDrawingPath:function(t){var e=new fabric.Point(t.x,t.y);return this._addPoint(e)},_render:function(){var t,e,i=this.canvas.contextTop,r=this._points[0],n=this._points[1];if(this._saveAndTransform(i),i.beginPath(),2===this._points.length&&r.x===n.x&&r.y===n.y){var s=this.width/1e3;r=new fabric.Point(r.x,r.y),n=new fabric.Point(n.x,n.y),r.x-=s,n.x+=s}for(i.moveTo(r.x,r.y),t=1,e=this._points.length;t<e;t++)this._drawSegment(i,r,n),r=this._points[t],n=this._points[t+1];i.lineTo(r.x,r.y),i.stroke(),i.restore()},convertPointsToSVGPath:function(t){var e,i=[],r=this.width/1e3,n=new fabric.Point(t[0].x,t[0].y),s=new fabric.Point(t[1].x,t[1].y),o=t.length,a=1,h=1,c=2<o;for(c&&(a=t[2].x<s.x?-1:t[2].x===s.x?0:1,h=t[2].y<s.y?-1:t[2].y===s.y?0:1),i.push(\"M \",n.x-a*r,\" \",n.y-h*r,\" \"),e=1;e<o;e++){if(!n.eq(s)){var l=n.midPointFrom(s);i.push(\"Q \",n.x,\" \",n.y,\" \",l.x,\" \",l.y,\" \")}n=t[e],e+1<t.length&&(s=t[e+1])}return c&&(a=n.x>t[e-2].x?1:n.x===t[e-2].x?0:-1,h=n.y>t[e-2].y?1:n.y===t[e-2].y?0:-1),i.push(\"L \",n.x+a*r,\" \",n.y+h*r),i},createPath:function(t){var e=new fabric.Path(t,{fill:null,stroke:this.color,strokeWidth:this.width,strokeLineCap:this.strokeLineCap,strokeMiterLimit:this.strokeMiterLimit,strokeLineJoin:this.strokeLineJoin,strokeDashArray:this.strokeDashArray}),i=new fabric.Point(e.left+e.width/2,e.top+e.height/2);return i=e.translateToGivenOrigin(i,\"center\",\"center\",e.originX,e.originY),e.top=i.y,e.left=i.x,this.shadow&&(this.shadow.affectStroke=!0,e.setShadow(this.shadow)),e},_finalizeAndAddPath:function(){this.canvas.contextTop.closePath();var t=this.convertPointsToSVGPath(this._points).join(\"\");if(\"M 0 0 Q 0 0 0 0 L 0 0\"!==t){var e=this.createPath(t);this.canvas.clearContext(this.canvas.contextTop),this.canvas.add(e),this.canvas.renderAll(),e.setCoords(),this._resetShadow(),this.canvas.fire(\"path:created\",{path:e})}else this.canvas.requestRenderAll()}}),fabric.CircleBrush=fabric.util.createClass(fabric.BaseBrush,{width:10,initialize:function(t){this.canvas=t,this.points=[]},drawDot:function(t){var e=this.addPoint(t),i=this.canvas.contextTop;this._saveAndTransform(i),i.fillStyle=e.fill,i.beginPath(),i.arc(e.x,e.y,e.radius,0,2*Math.PI,!1),i.closePath(),i.fill(),i.restore()},onMouseDown:function(t){this.points.length=0,this.canvas.clearContext(this.canvas.contextTop),this._setShadow(),this.drawDot(t)},_render:function(){var t,e,i,r=this.canvas.contextTop,n=this.points;for(this._saveAndTransform(r),t=0,e=n.length;t<e;t++)i=n[t],r.fillStyle=i.fill,r.beginPath(),r.arc(i.x,i.y,i.radius,0,2*Math.PI,!1),r.closePath(),r.fill();r.restore()},onMouseMove:function(t){this.drawDot(t)},onMouseUp:function(){var t,e,i=this.canvas.renderOnAddRemove;this.canvas.renderOnAddRemove=!1;var r=[];for(t=0,e=this.points.length;t<e;t++){var n=this.points[t],s=new fabric.Circle({radius:n.radius,left:n.x,top:n.y,originX:\"center\",originY:\"center\",fill:n.fill});this.shadow&&s.setShadow(this.shadow),r.push(s)}var o=new fabric.Group(r);o.canvas=this.canvas,this.canvas.add(o),this.canvas.fire(\"path:created\",{path:o}),this.canvas.clearContext(this.canvas.contextTop),this._resetShadow(),this.canvas.renderOnAddRemove=i,this.canvas.requestRenderAll()},addPoint:function(t){var e=new fabric.Point(t.x,t.y),i=fabric.util.getRandomInt(Math.max(0,this.width-20),this.width+20)/2,r=new fabric.Color(this.color).setAlpha(fabric.util.getRandomInt(0,100)/100).toRgba();return e.radius=i,e.fill=r,this.points.push(e),e}}),fabric.SprayBrush=fabric.util.createClass(fabric.BaseBrush,{width:10,density:20,dotWidth:1,dotWidthVariance:1,randomOpacity:!1,optimizeOverlapping:!0,initialize:function(t){this.canvas=t,this.sprayChunks=[]},onMouseDown:function(t){this.sprayChunks.length=0,this.canvas.clearContext(this.canvas.contextTop),this._setShadow(),this.addSprayChunk(t),this.render(this.sprayChunkPoints)},onMouseMove:function(t){this.addSprayChunk(t),this.render(this.sprayChunkPoints)},onMouseUp:function(){var t=this.canvas.renderOnAddRemove;this.canvas.renderOnAddRemove=!1;for(var e=[],i=0,r=this.sprayChunks.length;i<r;i++)for(var n=this.sprayChunks[i],s=0,o=n.length;s<o;s++){var a=new fabric.Rect({width:n[s].width,height:n[s].width,left:n[s].x+1,top:n[s].y+1,originX:\"center\",originY:\"center\",fill:this.color});e.push(a)}this.optimizeOverlapping&&(e=this._getOptimizedRects(e));var h=new fabric.Group(e);this.shadow&&h.setShadow(this.shadow),this.canvas.add(h),this.canvas.fire(\"path:created\",{path:h}),this.canvas.clearContext(this.canvas.contextTop),this._resetShadow(),this.canvas.renderOnAddRemove=t,this.canvas.requestRenderAll()},_getOptimizedRects:function(t){var e,i,r,n={};for(i=0,r=t.length;i<r;i++)n[e=t[i].left+\"\"+t[i].top]||(n[e]=t[i]);var s=[];for(e in n)s.push(n[e]);return s},render:function(t){var e,i,r=this.canvas.contextTop;for(r.fillStyle=this.color,this._saveAndTransform(r),e=0,i=t.length;e<i;e++){var n=t[e];void 0!==n.opacity&&(r.globalAlpha=n.opacity),r.fillRect(n.x,n.y,n.width,n.width)}r.restore()},_render:function(){var t,e,i=this.canvas.contextTop;for(i.fillStyle=this.color,this._saveAndTransform(i),t=0,e=this.sprayChunks.length;t<e;t++)this.render(this.sprayChunks[t]);i.restore()},addSprayChunk:function(t){this.sprayChunkPoints=[];var e,i,r,n,s=this.width/2;for(n=0;n<this.density;n++){e=fabric.util.getRandomInt(t.x-s,t.x+s),i=fabric.util.getRandomInt(t.y-s,t.y+s),r=this.dotWidthVariance?fabric.util.getRandomInt(Math.max(1,this.dotWidth-this.dotWidthVariance),this.dotWidth+this.dotWidthVariance):this.dotWidth;var o=new fabric.Point(e,i);o.width=r,this.randomOpacity&&(o.opacity=fabric.util.getRandomInt(0,100)/100),this.sprayChunkPoints.push(o)}this.sprayChunks.push(this.sprayChunkPoints)}}),fabric.PatternBrush=fabric.util.createClass(fabric.PencilBrush,{getPatternSrc:function(){var t=fabric.util.createCanvasElement(),e=t.getContext(\"2d\");return t.width=t.height=25,e.fillStyle=this.color,e.beginPath(),e.arc(10,10,10,0,2*Math.PI,!1),e.closePath(),e.fill(),t},getPatternSrcFunction:function(){return String(this.getPatternSrc).replace(\"this.color\",'\"'+this.color+'\"')},getPattern:function(){return this.canvas.contextTop.createPattern(this.source||this.getPatternSrc(),\"repeat\")},_setBrushStyles:function(){this.callSuper(\"_setBrushStyles\"),this.canvas.contextTop.strokeStyle=this.getPattern()},createPath:function(t){var e=this.callSuper(\"createPath\",t),i=e._getLeftTopCoords().scalarAdd(e.strokeWidth/2);return e.stroke=new fabric.Pattern({source:this.source||this.getPatternSrcFunction(),offsetX:-i.x,offsetY:-i.y}),e}}),function(){var h=fabric.util.getPointer,o=fabric.util.degreesToRadians,d=fabric.util.radiansToDegrees,g=Math.atan2,c=Math.abs,l=fabric.StaticCanvas.supports(\"setLineDash\");for(var t in fabric.Canvas=fabric.util.createClass(fabric.StaticCanvas,{initialize:function(t,e){e||(e={}),this.renderAndResetBound=this.renderAndReset.bind(this),this.requestRenderAllBound=this.requestRenderAll.bind(this),this._initStatic(t,e),this._initInteractive(),this._createCacheCanvas()},uniScaleTransform:!1,uniScaleKey:\"shiftKey\",centeredScaling:!1,centeredRotation:!1,centeredKey:\"altKey\",altActionKey:\"shiftKey\",interactive:!0,selection:!0,selectionKey:\"shiftKey\",altSelectionKey:null,selectionColor:\"rgba(100, 100, 255, 0.3)\",selectionDashArray:[],selectionBorderColor:\"rgba(255, 255, 255, 0.3)\",selectionLineWidth:1,selectionFullyContained:!1,hoverCursor:\"move\",moveCursor:\"move\",defaultCursor:\"default\",freeDrawingCursor:\"crosshair\",rotationCursor:\"crosshair\",notAllowedCursor:\"not-allowed\",containerClass:\"canvas-container\",perPixelTargetFind:!1,targetFindTolerance:0,skipTargetFind:!1,isDrawingMode:!1,preserveObjectStacking:!1,snapAngle:0,snapThreshold:null,stopContextMenu:!1,fireRightClick:!1,fireMiddleClick:!1,_initInteractive:function(){this._currentTransform=null,this._groupSelector=null,this._initWrapperElement(),this._createUpperCanvas(),this._initEventListeners(),this._initRetinaScaling(),this.freeDrawingBrush=fabric.PencilBrush&&new fabric.PencilBrush(this),this.calcOffset()},_chooseObjectsToRender:function(){var t,e,i,r=this.getActiveObjects();if(0<r.length&&!this.preserveObjectStacking){e=[],i=[];for(var n=0,s=this._objects.length;n<s;n++)t=this._objects[n],-1===r.indexOf(t)?e.push(t):i.push(t);1<r.length&&(this._activeObject._objects=i),e.push.apply(e,i)}else e=this._objects;return e},renderAll:function(){!this.contextTopDirty||this._groupSelector||this.isDrawingMode||(this.clearContext(this.contextTop),this.contextTopDirty=!1),this.hasLostContext&&this.renderTopLayer(this.contextTop);var t=this.contextContainer;return this.renderCanvas(t,this._chooseObjectsToRender()),this},renderTopLayer:function(t){this.isDrawingMode&&this._isCurrentlyDrawing&&this.freeDrawingBrush&&this.freeDrawingBrush._render(),this.selection&&this._groupSelector&&this._drawSelection(t)},renderTop:function(){var t=this.contextTop;return this.clearContext(t),this.renderTopLayer(t),this.fire(\"after:render\"),this.contextTopDirty=!0,this},_resetCurrentTransform:function(){var t=this._currentTransform;t.target.set({scaleX:t.original.scaleX,scaleY:t.original.scaleY,skewX:t.original.skewX,skewY:t.original.skewY,left:t.original.left,top:t.original.top}),this._shouldCenterTransform(t.target)?(\"center\"!==t.originX&&(\"right\"===t.originX?t.mouseXSign=-1:t.mouseXSign=1),\"center\"!==t.originY&&(\"bottom\"===t.originY?t.mouseYSign=-1:t.mouseYSign=1),t.originX=\"center\",t.originY=\"center\"):(t.originX=t.original.originX,t.originY=t.original.originY)},containsPoint:function(t,e,i){var r,n=i||this.getPointer(t,!0);return r=e.group&&e.group===this._activeObject&&\"activeSelection\"===e.group.type?this._normalizePointer(e.group,n):{x:n.x,y:n.y},e.containsPoint(r)||e._findTargetCorner(n)},_normalizePointer:function(t,e){var i=t.calcTransformMatrix(),r=fabric.util.invertTransform(i),n=this.restorePointerVpt(e);return fabric.util.transformPoint(n,r)},isTargetTransparent:function(t,e,i){if(t.shouldCache()&&t._cacheCanvas){var r=this._normalizePointer(t,{x:e,y:i}),n=t.cacheTranslationX+r.x*t.zoomX,s=t.cacheTranslationY+r.y*t.zoomY;return fabric.util.isTransparent(t._cacheContext,n,s,this.targetFindTolerance)}var o=this.contextCache,a=t.selectionBackgroundColor,h=this.viewportTransform;return t.selectionBackgroundColor=\"\",this.clearContext(o),o.save(),o.transform(h[0],h[1],h[2],h[3],h[4],h[5]),t.render(o),o.restore(),t===this._activeObject&&t._renderControls(o,{hasBorders:!1,transparentCorners:!1},{hasBorders:!1}),t.selectionBackgroundColor=a,fabric.util.isTransparent(o,e,i,this.targetFindTolerance)},_isSelectionKeyPressed:function(e){return\"[object Array]\"===Object.prototype.toString.call(this.selectionKey)?!!this.selectionKey.find(function(t){return!0===e[t]}):e[this.selectionKey]},_shouldClearSelection:function(t,e){var i=this.getActiveObjects(),r=this._activeObject;return!e||e&&r&&1<i.length&&-1===i.indexOf(e)&&r!==e&&!this._isSelectionKeyPressed(t)||e&&!e.evented||e&&!e.selectable&&r&&r!==e},_shouldCenterTransform:function(t){if(t){var e,i=this._currentTransform;return\"scale\"===i.action||\"scaleX\"===i.action||\"scaleY\"===i.action?e=this.centeredScaling||t.centeredScaling:\"rotate\"===i.action&&(e=this.centeredRotation||t.centeredRotation),e?!i.altKey:i.altKey}},_getOriginFromCorner:function(t,e){var i={x:t.originX,y:t.originY};return\"ml\"===e||\"tl\"===e||\"bl\"===e?i.x=\"right\":\"mr\"!==e&&\"tr\"!==e&&\"br\"!==e||(i.x=\"left\"),\"tl\"===e||\"mt\"===e||\"tr\"===e?i.y=\"bottom\":\"bl\"!==e&&\"mb\"!==e&&\"br\"!==e||(i.y=\"top\"),i},_getActionFromCorner:function(t,e,i){if(!e)return\"drag\";switch(e){case\"mtr\":return\"rotate\";case\"ml\":case\"mr\":return i[this.altActionKey]?\"skewY\":\"scaleX\";case\"mt\":case\"mb\":return i[this.altActionKey]?\"skewX\":\"scaleY\";default:return\"scale\"}},_setupCurrentTransform:function(t,e){if(e){var i=this.getPointer(t),r=e._findTargetCorner(this.getPointer(t,!0)),n=this._getActionFromCorner(e,r,t),s=this._getOriginFromCorner(e,r);this._currentTransform={target:e,action:n,corner:r,scaleX:e.scaleX,scaleY:e.scaleY,skewX:e.skewX,skewY:e.skewY,offsetX:i.x-e.left,offsetY:i.y-e.top,originX:s.x,originY:s.y,ex:i.x,ey:i.y,lastX:i.x,lastY:i.y,theta:o(e.angle),width:e.width*e.scaleX,mouseXSign:1,mouseYSign:1,shiftKey:t.shiftKey,altKey:t[this.centeredKey],original:fabric.util.saveObjectTransform(e)},this._currentTransform.original.originX=s.x,this._currentTransform.original.originY=s.y,this._resetCurrentTransform(),this._beforeTransform(t)}},_translateObject:function(t,e){var i=this._currentTransform,r=i.target,n=t-i.offsetX,s=e-i.offsetY,o=!r.get(\"lockMovementX\")&&r.left!==n,a=!r.get(\"lockMovementY\")&&r.top!==s;return o&&r.set(\"left\",n),a&&r.set(\"top\",s),o||a},_changeSkewTransformOrigin:function(t,e,i){var r=\"originX\",n={0:\"center\"},s=e.target.skewX,o=\"left\",a=\"right\",h=\"mt\"===e.corner||\"ml\"===e.corner?1:-1,c=1;t=0<t?1:-1,\"y\"===i&&(s=e.target.skewY,o=\"top\",a=\"bottom\",r=\"originY\"),n[-1]=o,n[1]=a,e.target.flipX&&(c*=-1),e.target.flipY&&(c*=-1),0===s?(e.skewSign=-h*t*c,e[r]=n[-t]):(s=0<s?1:-1,e.skewSign=s,e[r]=n[s*h*c])},_skewObject:function(t,e,i){var r,n=this._currentTransform,s=n.target,o=s.get(\"lockSkewingX\"),a=s.get(\"lockSkewingY\");if(o&&\"x\"===i||a&&\"y\"===i)return!1;var h,c,l=s.getCenterPoint(),u=s.toLocalPoint(new fabric.Point(t,e),\"center\",\"center\")[i],f=s.toLocalPoint(new fabric.Point(n.lastX,n.lastY),\"center\",\"center\")[i],d=s._getTransformedDimensions();return this._changeSkewTransformOrigin(u-f,n,i),h=s.toLocalPoint(new fabric.Point(t,e),n.originX,n.originY)[i],c=s.translateToOriginPoint(l,n.originX,n.originY),r=this._setObjectSkew(h,n,i,d),n.lastX=t,n.lastY=e,s.setPositionByOrigin(c,n.originX,n.originY),r},_setObjectSkew:function(t,e,i,r){var n,s,o,a,h,c,l,u,f,d,g=e.target,p=e.skewSign;return\"x\"===i?(h=\"y\",c=\"Y\",l=\"X\",f=0,d=g.skewY):(h=\"x\",c=\"X\",l=\"Y\",f=g.skewX,d=0),a=g._getTransformedDimensions(f,d),(u=2*Math.abs(t)-a[i])<=2?n=0:(n=p*Math.atan(u/g[\"scale\"+l]/(a[h]/g[\"scale\"+c])),n=fabric.util.radiansToDegrees(n)),s=g[\"skew\"+l]!==n,g.set(\"skew\"+l,n),0!==g[\"skew\"+c]&&(o=g._getTransformedDimensions(),n=r[h]/o[h]*g[\"scale\"+c],g.set(\"scale\"+c,n)),s},_scaleObject:function(t,e,i){var r=this._currentTransform,n=r.target,s=n.lockScalingX,o=n.lockScalingY,a=n.lockScalingFlip;if(s&&o)return!1;var h,c=n.translateToOriginPoint(n.getCenterPoint(),r.originX,r.originY),l=n.toLocalPoint(new fabric.Point(t,e),r.originX,r.originY),u=n._getTransformedDimensions();return this._setLocalMouse(l,r),h=this._setObjectScale(l,r,s,o,i,a,u),n.setPositionByOrigin(c,r.originX,r.originY),h},_setObjectScale:function(t,e,i,r,n,s,o){var a,h,c,l,u=e.target,f=!1,d=!1,g=!1;return c=t.x*u.scaleX/o.x,l=t.y*u.scaleY/o.y,a=u.scaleX!==c,h=u.scaleY!==l,s&&c<=0&&c<u.scaleX&&(f=!0,t.x=0),s&&l<=0&&l<u.scaleY&&(d=!0,t.y=0),\"equally\"!==n||i||r?n?\"x\"!==n||u.get(\"lockUniScaling\")?\"y\"!==n||u.get(\"lockUniScaling\")||d||r||u.set(\"scaleY\",l)&&(g=g||h):f||i||u.set(\"scaleX\",c)&&(g=g||a):(f||i||u.set(\"scaleX\",c)&&(g=g||a),d||r||u.set(\"scaleY\",l)&&(g=g||h)):g=this._scaleObjectEqually(t,u,e,o),e.newScaleX=c,e.newScaleY=l,f||d||this._flipObject(e,n),g},_scaleObjectEqually:function(t,e,i,r){var n,s=t.y+t.x,o=r.y*i.original.scaleY/e.scaleY+r.x*i.original.scaleX/e.scaleX,a=t.x<0?-1:1,h=t.y<0?-1:1;return i.newScaleX=a*Math.abs(i.original.scaleX*s/o),i.newScaleY=h*Math.abs(i.original.scaleY*s/o),n=i.newScaleX!==e.scaleX||i.newScaleY!==e.scaleY,e.set(\"scaleX\",i.newScaleX),e.set(\"scaleY\",i.newScaleY),n},_flipObject:function(t,e){t.newScaleX<0&&\"y\"!==e&&(\"left\"===t.originX?t.originX=\"right\":\"right\"===t.originX&&(t.originX=\"left\")),t.newScaleY<0&&\"x\"!==e&&(\"top\"===t.originY?t.originY=\"bottom\":\"bottom\"===t.originY&&(t.originY=\"top\"))},_setLocalMouse:function(t,e){var i=e.target,r=this.getZoom(),n=i.padding/r;\"right\"===e.originX?t.x*=-1:\"center\"===e.originX&&(t.x*=2*e.mouseXSign,t.x<0&&(e.mouseXSign=-e.mouseXSign)),\"bottom\"===e.originY?t.y*=-1:\"center\"===e.originY&&(t.y*=2*e.mouseYSign,t.y<0&&(e.mouseYSign=-e.mouseYSign)),c(t.x)>n?t.x<0?t.x+=n:t.x-=n:t.x=0,c(t.y)>n?t.y<0?t.y+=n:t.y-=n:t.y=0},_rotateObject:function(t,e){var i=this._currentTransform,r=i.target,n=r.translateToOriginPoint(r.getCenterPoint(),i.originX,i.originY);if(r.lockRotation)return!1;var s=g(i.ey-n.y,i.ex-n.x),o=g(e-n.y,t-n.x),a=d(o-s+i.theta),h=!0;if(0<r.snapAngle){var c=r.snapAngle,l=r.snapThreshold||c,u=Math.ceil(a/c)*c,f=Math.floor(a/c)*c;Math.abs(a-f)<l?a=f:Math.abs(a-u)<l&&(a=u)}return a<0&&(a=360+a),a%=360,r.angle===a?h=!1:(r.angle=a,r.setPositionByOrigin(n,i.originX,i.originY)),h},setCursor:function(t){this.upperCanvasEl.style.cursor=t},_drawSelection:function(t){var e=this._groupSelector,i=e.left,r=e.top,n=c(i),s=c(r);if(this.selectionColor&&(t.fillStyle=this.selectionColor,t.fillRect(e.ex-(0<i?0:-i),e.ey-(0<r?0:-r),n,s)),this.selectionLineWidth&&this.selectionBorderColor)if(t.lineWidth=this.selectionLineWidth,t.strokeStyle=this.selectionBorderColor,1<this.selectionDashArray.length&&!l){var o=e.ex+.5-(0<i?0:n),a=e.ey+.5-(0<r?0:s);t.beginPath(),fabric.util.drawDashedLine(t,o,a,o+n,a,this.selectionDashArray),fabric.util.drawDashedLine(t,o,a+s-1,o+n,a+s-1,this.selectionDashArray),fabric.util.drawDashedLine(t,o,a,o,a+s,this.selectionDashArray),fabric.util.drawDashedLine(t,o+n-1,a,o+n-1,a+s,this.selectionDashArray),t.closePath(),t.stroke()}else fabric.Object.prototype._setLineDash.call(this,t,this.selectionDashArray),t.strokeRect(e.ex+.5-(0<i?0:n),e.ey+.5-(0<r?0:s),n,s)},findTarget:function(t,e){if(!this.skipTargetFind){var i,r,n=this.getPointer(t,!0),s=this._activeObject,o=this.getActiveObjects();if(this.targets=[],1<o.length&&!e&&s===this._searchPossibleTargets([s],n))return s;if(1===o.length&&s._findTargetCorner(n))return s;if(1===o.length&&s===this._searchPossibleTargets([s],n)){if(!this.preserveObjectStacking)return s;i=s,r=this.targets,this.targets=[]}var a=this._searchPossibleTargets(this._objects,n);return t[this.altSelectionKey]&&a&&i&&a!==i&&(a=i,this.targets=r),a}},_checkTarget:function(t,e){if(e&&e.visible&&e.evented&&this.containsPoint(null,e,t)){if(!this.perPixelTargetFind&&!e.perPixelTargetFind||e.isEditing)return!0;if(!this.isTargetTransparent(e,t.x,t.y))return!0}},_searchPossibleTargets:function(t,e){for(var i,r,n,s=t.length;s--;)if(this._checkTarget(e,t[s])){(i=t[s]).subTargetCheck&&i instanceof fabric.Group&&(r=this._normalizePointer(i,e),(n=this._searchPossibleTargets(i._objects,r))&&this.targets.push(n));break}return i},restorePointerVpt:function(t){return fabric.util.transformPoint(t,fabric.util.invertTransform(this.viewportTransform))},getPointer:function(t,e){if(this._absolutePointer&&!e)return this._absolutePointer;if(this._pointer&&e)return this._pointer;var i,r=h(t),n=this.upperCanvasEl,s=n.getBoundingClientRect(),o=s.width||0,a=s.height||0;return o&&a||(\"top\"in s&&\"bottom\"in s&&(a=Math.abs(s.top-s.bottom)),\"right\"in s&&\"left\"in s&&(o=Math.abs(s.right-s.left))),this.calcOffset(),r.x=r.x-this._offset.left,r.y=r.y-this._offset.top,e||(r=this.restorePointerVpt(r)),i=0===o||0===a?{width:1,height:1}:{width:n.width/o,height:n.height/a},{x:r.x*i.width,y:r.y*i.height}},_createUpperCanvas:function(){var t=this.lowerCanvasEl.className.replace(/\\s*lower-canvas\\s*/,\"\");this.upperCanvasEl?this.upperCanvasEl.className=\"\":this.upperCanvasEl=this._createCanvasElement(),fabric.util.addClass(this.upperCanvasEl,\"upper-canvas \"+t),this.wrapperEl.appendChild(this.upperCanvasEl),this._copyCanvasStyle(this.lowerCanvasEl,this.upperCanvasEl),this._applyCanvasStyle(this.upperCanvasEl),this.contextTop=this.upperCanvasEl.getContext(\"2d\")},_createCacheCanvas:function(){this.cacheCanvasEl=this._createCanvasElement(),this.cacheCanvasEl.setAttribute(\"width\",this.width),this.cacheCanvasEl.setAttribute(\"height\",this.height),this.contextCache=this.cacheCanvasEl.getContext(\"2d\")},_initWrapperElement:function(){this.wrapperEl=fabric.util.wrapElement(this.lowerCanvasEl,\"div\",{class:this.containerClass}),fabric.util.setStyle(this.wrapperEl,{width:this.width+\"px\",height:this.height+\"px\",position:\"relative\"}),fabric.util.makeElementUnselectable(this.wrapperEl)},_applyCanvasStyle:function(t){var e=this.width||t.width,i=this.height||t.height;fabric.util.setStyle(t,{position:\"absolute\",width:e+\"px\",height:i+\"px\",left:0,top:0,\"touch-action\":this.allowTouchScrolling?\"manipulation\":\"none\"}),t.width=e,t.height=i,fabric.util.makeElementUnselectable(t)},_copyCanvasStyle:function(t,e){e.style.cssText=t.style.cssText},getSelectionContext:function(){return this.contextTop},getSelectionElement:function(){return this.upperCanvasEl},getActiveObject:function(){return this._activeObject},getActiveObjects:function(){var t=this._activeObject;return t?\"activeSelection\"===t.type&&t._objects?t._objects.slice(0):[t]:[]},_onObjectRemoved:function(t){t===this._activeObject&&(this.fire(\"before:selection:cleared\",{target:t}),this._discardActiveObject(),this.fire(\"selection:cleared\",{target:t}),t.fire(\"deselected\")),this._hoveredTarget===t&&(this._hoveredTarget=null),this.callSuper(\"_onObjectRemoved\",t)},_fireSelectionEvents:function(e,t){var i=!1,r=this.getActiveObjects(),n=[],s=[],o={e:t};e.forEach(function(t){-1===r.indexOf(t)&&(i=!0,t.fire(\"deselected\",o),s.push(t))}),r.forEach(function(t){-1===e.indexOf(t)&&(i=!0,t.fire(\"selected\",o),n.push(t))}),0<e.length&&0<r.length?(o.selected=n,o.deselected=s,o.updated=n[0]||s[0],o.target=this._activeObject,i&&this.fire(\"selection:updated\",o)):0<r.length?(1===r.length&&(o.target=n[0],this.fire(\"object:selected\",o)),o.selected=n,o.target=this._activeObject,this.fire(\"selection:created\",o)):0<e.length&&(o.deselected=s,this.fire(\"selection:cleared\",o))},setActiveObject:function(t,e){var i=this.getActiveObjects();return this._setActiveObject(t,e),this._fireSelectionEvents(i,e),this},_setActiveObject:function(t,e){return this._activeObject!==t&&(!!this._discardActiveObject(e,t)&&(!t.onSelect({e:e})&&(this._activeObject=t,!0)))},_discardActiveObject:function(t,e){var i=this._activeObject;if(i){if(i.onDeselect({e:t,object:e}))return!1;this._activeObject=null}return!0},discardActiveObject:function(t){var e=this.getActiveObjects();return e.length&&this.fire(\"before:selection:cleared\",{target:e[0],e:t}),this._discardActiveObject(t),this._fireSelectionEvents(e,t),this},dispose:function(){var t=this.wrapperEl;return this.removeListeners(),t.removeChild(this.upperCanvasEl),t.removeChild(this.lowerCanvasEl),this.contextCache=null,this.contextTop=null,[\"upperCanvasEl\",\"cacheCanvasEl\"].forEach(function(t){fabric.util.cleanUpJsdomNode(this[t]),this[t]=void 0}.bind(this)),t.parentNode&&t.parentNode.replaceChild(this.lowerCanvasEl,this.wrapperEl),delete this.wrapperEl,fabric.StaticCanvas.prototype.dispose.call(this),this},clear:function(){return this.discardActiveObject(),this.clearContext(this.contextTop),this.callSuper(\"clear\")},drawControls:function(t){var e=this._activeObject;e&&e._renderControls(t)},_toObject:function(t,e,i){var r=this._realizeGroupTransformOnObject(t),n=this.callSuper(\"_toObject\",t,e,i);return this._unwindGroupTransformOnObject(t,r),n},_realizeGroupTransformOnObject:function(e){if(e.group&&\"activeSelection\"===e.group.type&&this._activeObject===e.group){var i={};return[\"angle\",\"flipX\",\"flipY\",\"left\",\"scaleX\",\"scaleY\",\"skewX\",\"skewY\",\"top\"].forEach(function(t){i[t]=e[t]}),this._activeObject.realizeTransform(e),i}return null},_unwindGroupTransformOnObject:function(t,e){e&&t.set(e)},_setSVGObject:function(t,e,i){var r=this._realizeGroupTransformOnObject(e);this.callSuper(\"_setSVGObject\",t,e,i),this._unwindGroupTransformOnObject(e,r)},setViewportTransform:function(t){this.renderOnAddRemove&&this._activeObject&&this._activeObject.isEditing&&this._activeObject.clearContextTop(),fabric.StaticCanvas.prototype.setViewportTransform.call(this,t)}}),fabric.StaticCanvas)\"prototype\"!==t&&(fabric.Canvas[t]=fabric.StaticCanvas[t]);fabric.isTouchSupported&&(fabric.Canvas.prototype._setCursorFromEvent=function(){})}(),function(){var n={mt:0,tr:1,mr:2,br:3,mb:4,bl:5,ml:6,tl:7},i=fabric.util.addListener,r=fabric.util.removeListener,s={passive:!1};function o(t,e){return\"which\"in t?t.which===e:t.button===e-1}fabric.util.object.extend(fabric.Canvas.prototype,{cursorMap:[\"n-resize\",\"ne-resize\",\"e-resize\",\"se-resize\",\"s-resize\",\"sw-resize\",\"w-resize\",\"nw-resize\"],_initEventListeners:function(){this.removeListeners(),this._bindEvents(),this.addOrRemove(i,\"add\")},addOrRemove:function(t,e){t(fabric.window,\"resize\",this._onResize),t(this.upperCanvasEl,\"mousedown\",this._onMouseDown),t(this.upperCanvasEl,\"mousemove\",this._onMouseMove,s),t(this.upperCanvasEl,\"mouseout\",this._onMouseOut),t(this.upperCanvasEl,\"mouseenter\",this._onMouseEnter),t(this.upperCanvasEl,\"wheel\",this._onMouseWheel),t(this.upperCanvasEl,\"contextmenu\",this._onContextMenu),t(this.upperCanvasEl,\"dblclick\",this._onDoubleClick),t(this.upperCanvasEl,\"touchstart\",this._onMouseDown,s),t(this.upperCanvasEl,\"touchmove\",this._onMouseMove,s),t(this.upperCanvasEl,\"dragover\",this._onDragOver),t(this.upperCanvasEl,\"dragenter\",this._onDragEnter),t(this.upperCanvasEl,\"dragleave\",this._onDragLeave),t(this.upperCanvasEl,\"drop\",this._onDrop),\"undefined\"!=typeof eventjs&&e in eventjs&&(eventjs[e](this.upperCanvasEl,\"gesture\",this._onGesture),eventjs[e](this.upperCanvasEl,\"drag\",this._onDrag),eventjs[e](this.upperCanvasEl,\"orientation\",this._onOrientationChange),eventjs[e](this.upperCanvasEl,\"shake\",this._onShake),eventjs[e](this.upperCanvasEl,\"longpress\",this._onLongPress))},removeListeners:function(){this.addOrRemove(r,\"remove\"),r(fabric.document,\"mouseup\",this._onMouseUp),r(fabric.document,\"touchend\",this._onMouseUp,s),r(fabric.document,\"mousemove\",this._onMouseMove,s),r(fabric.document,\"touchmove\",this._onMouseMove,s)},_bindEvents:function(){this.eventsBound||(this._onMouseDown=this._onMouseDown.bind(this),this._onMouseMove=this._onMouseMove.bind(this),this._onMouseUp=this._onMouseUp.bind(this),this._onResize=this._onResize.bind(this),this._onGesture=this._onGesture.bind(this),this._onDrag=this._onDrag.bind(this),this._onShake=this._onShake.bind(this),this._onLongPress=this._onLongPress.bind(this),this._onOrientationChange=this._onOrientationChange.bind(this),this._onMouseWheel=this._onMouseWheel.bind(this),this._onMouseOut=this._onMouseOut.bind(this),this._onMouseEnter=this._onMouseEnter.bind(this),this._onContextMenu=this._onContextMenu.bind(this),this._onDoubleClick=this._onDoubleClick.bind(this),this._onDragOver=this._onDragOver.bind(this),this._onDragEnter=this._simpleEventHandler.bind(this,\"dragenter\"),this._onDragLeave=this._simpleEventHandler.bind(this,\"dragleave\"),this._onDrop=this._simpleEventHandler.bind(this,\"drop\"),this.eventsBound=!0)},_onGesture:function(t,e){this.__onTransformGesture&&this.__onTransformGesture(t,e)},_onDrag:function(t,e){this.__onDrag&&this.__onDrag(t,e)},_onMouseWheel:function(t){this.__onMouseWheel(t)},_onMouseOut:function(t){var e=this._hoveredTarget;this.fire(\"mouse:out\",{target:e,e:t}),this._hoveredTarget=null,e&&e.fire(\"mouseout\",{e:t}),this._iTextInstances&&this._iTextInstances.forEach(function(t){t.isEditing&&t.hiddenTextarea.focus()})},_onMouseEnter:function(t){this.findTarget(t)||(this.fire(\"mouse:over\",{target:null,e:t}),this._hoveredTarget=null)},_onOrientationChange:function(t,e){this.__onOrientationChange&&this.__onOrientationChange(t,e)},_onShake:function(t,e){this.__onShake&&this.__onShake(t,e)},_onLongPress:function(t,e){this.__onLongPress&&this.__onLongPress(t,e)},_onDragOver:function(t){t.preventDefault();var e=this._simpleEventHandler(\"dragover\",t);this._fireEnterLeaveEvents(e,t)},_onContextMenu:function(t){return this.stopContextMenu&&(t.stopPropagation(),t.preventDefault()),!1},_onDoubleClick:function(t){this._cacheTransformEventData(t),this._handleEvent(t,\"dblclick\"),this._resetTransformEventData(t)},_onMouseDown:function(t){this.__onMouseDown(t),this._resetTransformEventData(),i(fabric.document,\"touchend\",this._onMouseUp,s),i(fabric.document,\"touchmove\",this._onMouseMove,s),r(this.upperCanvasEl,\"mousemove\",this._onMouseMove,s),r(this.upperCanvasEl,\"touchmove\",this._onMouseMove,s),\"touchstart\"===t.type?r(this.upperCanvasEl,\"mousedown\",this._onMouseDown):(i(fabric.document,\"mouseup\",this._onMouseUp),i(fabric.document,\"mousemove\",this._onMouseMove,s))},_onMouseUp:function(t){if(this.__onMouseUp(t),this._resetTransformEventData(),r(fabric.document,\"mouseup\",this._onMouseUp),r(fabric.document,\"touchend\",this._onMouseUp,s),r(fabric.document,\"mousemove\",this._onMouseMove,s),r(fabric.document,\"touchmove\",this._onMouseMove,s),i(this.upperCanvasEl,\"mousemove\",this._onMouseMove,s),i(this.upperCanvasEl,\"touchmove\",this._onMouseMove,s),\"touchend\"===t.type){var e=this;setTimeout(function(){i(e.upperCanvasEl,\"mousedown\",e._onMouseDown)},400)}},_onMouseMove:function(t){!this.allowTouchScrolling&&t.preventDefault&&t.preventDefault(),this.__onMouseMove(t)},_onResize:function(){this.calcOffset()},_shouldRender:function(t,e){var i=this._activeObject;return(!i||!i.isEditing||t!==i)&&!!(t&&(t.isMoving||t!==i)||!t&&i||!t&&!i&&!this._groupSelector||e&&this._previousPointer&&this.selection&&(e.x!==this._previousPointer.x||e.y!==this._previousPointer.y))},__onMouseUp:function(t){var e,i=this._currentTransform,r=this._groupSelector,n=!r||0===r.left&&0===r.top;if(this._cacheTransformEventData(t),e=this._target,this._handleEvent(t,\"up:before\"),o(t,3))this.fireRightClick&&this._handleEvent(t,\"up\",3,n);else{if(o(t,2))return this.fireMiddleClick&&this._handleEvent(t,\"up\",2,n),void this._resetTransformEventData();if(this.isDrawingMode&&this._isCurrentlyDrawing)this._onMouseUpInDrawingMode(t);else{i&&this._finalizeCurrentTransform(t);var s=this._shouldRender(e,this._absolutePointer);!e&&n||this._maybeGroupObjects(t),e&&(e.isMoving=!1),this._setCursorFromEvent(t,e),this._handleEvent(t,\"up\",1,n),this._groupSelector=null,this._currentTransform=null,e&&(e.__corner=0),s&&this.requestRenderAll()}}},_simpleEventHandler:function(t,e){var i=this.findTarget(e),r=this.targets,n={e:e,target:i,subTargets:r};if(this.fire(t,n),i&&i.fire(t,n),!r)return i;for(var s=0;s<r.length;s++)r[s].fire(t,n);return i},_handleEvent:function(t,e,i,r){var n=this._target,s=this.targets||[],o={e:t,target:n,subTargets:s,button:i||1,isClick:r||!1,pointer:this._pointer,absolutePointer:this._absolutePointer,transform:this._currentTransform};this.fire(\"mouse:\"+e,o),n&&n.fire(\"mouse\"+e,o);for(var a=0;a<s.length;a++)s[a].fire(\"mouse\"+e,o)},_finalizeCurrentTransform:function(t){var e,i=this._currentTransform,r=i.target,n={e:t,target:r,transform:i};r._scaling&&(r._scaling=!1),r.setCoords(),(i.actionPerformed||this.stateful&&r.hasStateChanged())&&(i.actionPerformed&&(e=this._addEventOptions(n,i),this._fire(e,n)),this._fire(\"modified\",n))},_addEventOptions:function(t,e){var i,r;switch(e.action){case\"scaleX\":i=\"scaled\",r=\"x\";break;case\"scaleY\":i=\"scaled\",r=\"y\";break;case\"skewX\":i=\"skewed\",r=\"x\";break;case\"skewY\":i=\"skewed\",r=\"y\";break;case\"scale\":i=\"scaled\",r=\"equally\";break;case\"rotate\":i=\"rotated\";break;case\"drag\":i=\"moved\"}return t.by=r,i},_onMouseDownInDrawingMode:function(t){this._isCurrentlyDrawing=!0,this.getActiveObject()&&this.discardActiveObject(t).requestRenderAll(),this.clipTo&&fabric.util.clipContext(this,this.contextTop);var e=this.getPointer(t);this.freeDrawingBrush.onMouseDown(e),this._handleEvent(t,\"down\")},_onMouseMoveInDrawingMode:function(t){if(this._isCurrentlyDrawing){var e=this.getPointer(t);this.freeDrawingBrush.onMouseMove(e)}this.setCursor(this.freeDrawingCursor),this._handleEvent(t,\"move\")},_onMouseUpInDrawingMode:function(t){this._isCurrentlyDrawing=!1,this.clipTo&&this.contextTop.restore(),this.freeDrawingBrush.onMouseUp(),this._handleEvent(t,\"up\")},__onMouseDown:function(t){this._cacheTransformEventData(t),this._handleEvent(t,\"down:before\");var e=this._target;if(o(t,3))this.fireRightClick&&this._handleEvent(t,\"down\",3);else if(o(t,2))this.fireMiddleClick&&this._handleEvent(t,\"down\",2);else if(this.isDrawingMode)this._onMouseDownInDrawingMode(t);else if(!this._currentTransform){var i=this._pointer;this._previousPointer=i;var r=this._shouldRender(e,i),n=this._shouldGroup(t,e);this._shouldClearSelection(t,e)?this.discardActiveObject(t):n&&(this._handleGrouping(t,e),e=this._activeObject),!this.selection||e&&(e.selectable||e.isEditing||e===this._activeObject)||(this._groupSelector={ex:i.x,ey:i.y,top:0,left:0}),e&&(e.selectable&&this.setActiveObject(e,t),e!==this._activeObject||!e.__corner&&n||this._setupCurrentTransform(t,e)),this._handleEvent(t,\"down\"),r&&this.requestRenderAll()}},_resetTransformEventData:function(){this._target=null,this._pointer=null,this._absolutePointer=null},_cacheTransformEventData:function(t){this._resetTransformEventData(),this._pointer=this.getPointer(t,!0),this._absolutePointer=this.restorePointerVpt(this._pointer),this._target=this._currentTransform?this._currentTransform.target:this.findTarget(t)||null},_beforeTransform:function(t){var e=this._currentTransform;this.stateful&&e.target.saveState(),this.fire(\"before:transform\",{e:t,transform:e}),e.corner&&this.onBeforeScaleRotate(e.target)},__onMouseMove:function(t){var e,i;if(this._handleEvent(t,\"move:before\"),this._cacheTransformEventData(t),this.isDrawingMode)this._onMouseMoveInDrawingMode(t);else if(!(void 0!==t.touches&&1<t.touches.length)){var r=this._groupSelector;r?(i=this._pointer,r.left=i.x-r.ex,r.top=i.y-r.ey,this.renderTop()):this._currentTransform?this._transformObject(t):(e=this.findTarget(t)||null,this._setCursorFromEvent(t,e),this._fireOverOutEvents(e,t)),this._handleEvent(t,\"move\"),this._resetTransformEventData()}},_fireOverOutEvents:function(t,e){this.fireSynteticInOutEvents(t,e,{targetName:\"_hoveredTarget\",canvasEvtOut:\"mouse:out\",evtOut:\"mouseout\",canvasEvtIn:\"mouse:over\",evtIn:\"mouseover\"})},_fireEnterLeaveEvents:function(t,e){this.fireSynteticInOutEvents(t,e,{targetName:\"_draggedoverTarget\",evtOut:\"dragleave\",evtIn:\"dragenter\"})},fireSynteticInOutEvents:function(t,e,i){var r,n,s,o=this[i.targetName],a=o!==t,h=i.canvasEvtIn,c=i.canvasEvtOut;a&&(r={e:e,target:t,previousTarget:o},n={e:e,target:o,nextTarget:t},this[i.targetName]=t),s=t&&a,o&&a&&(c&&this.fire(c,n),o.fire(i.evtOut,n)),s&&(h&&this.fire(h,r),t.fire(i.evtIn,r))},__onMouseWheel:function(t){this._cacheTransformEventData(t),this._handleEvent(t,\"wheel\"),this._resetTransformEventData()},_transformObject:function(t){var e=this.getPointer(t),i=this._currentTransform;i.reset=!1,i.target.isMoving=!0,i.shiftKey=t.shiftKey,i.altKey=t[this.centeredKey],this._beforeScaleTransform(t,i),this._performTransformAction(t,i,e),i.actionPerformed&&this.requestRenderAll()},_performTransformAction:function(t,e,i){var r=i.x,n=i.y,s=e.action,o=!1,a={target:e.target,e:t,transform:e,pointer:i};\"rotate\"===s?(o=this._rotateObject(r,n))&&this._fire(\"rotating\",a):\"scale\"===s?(o=this._onScale(t,e,r,n))&&this._fire(\"scaling\",a):\"scaleX\"===s?(o=this._scaleObject(r,n,\"x\"))&&this._fire(\"scaling\",a):\"scaleY\"===s?(o=this._scaleObject(r,n,\"y\"))&&this._fire(\"scaling\",a):\"skewX\"===s?(o=this._skewObject(r,n,\"x\"))&&this._fire(\"skewing\",a):\"skewY\"===s?(o=this._skewObject(r,n,\"y\"))&&this._fire(\"skewing\",a):(o=this._translateObject(r,n))&&(this._fire(\"moving\",a),this.setCursor(a.target.moveCursor||this.moveCursor)),e.actionPerformed=e.actionPerformed||o},_fire:function(t,e){this.fire(\"object:\"+t,e),e.target.fire(t,e)},_beforeScaleTransform:function(t,e){if(\"scale\"===e.action||\"scaleX\"===e.action||\"scaleY\"===e.action){var i=this._shouldCenterTransform(e.target);(i&&(\"center\"!==e.originX||\"center\"!==e.originY)||!i&&\"center\"===e.originX&&\"center\"===e.originY)&&(this._resetCurrentTransform(),e.reset=!0)}},_onScale:function(t,e,i,r){return this._isUniscalePossible(t,e.target)?(e.currentAction=\"scale\",this._scaleObject(i,r)):(e.reset||\"scale\"!==e.currentAction||this._resetCurrentTransform(),e.currentAction=\"scaleEqually\",this._scaleObject(i,r,\"equally\"))},_isUniscalePossible:function(t,e){return(t[this.uniScaleKey]||this.uniScaleTransform)&&!e.get(\"lockUniScaling\")},_setCursorFromEvent:function(t,e){if(!e)return this.setCursor(this.defaultCursor),!1;var i=e.hoverCursor||this.hoverCursor,r=this._activeObject&&\"activeSelection\"===this._activeObject.type?this._activeObject:null,n=(!r||!r.contains(e))&&e._findTargetCorner(this.getPointer(t,!0));n?this.setCursor(this.getCornerCursor(n,e,t)):this.setCursor(i)},getCornerCursor:function(t,e,i){return this.actionIsDisabled(t,e,i)?this.notAllowedCursor:t in n?this._getRotatedCornerCursor(t,e,i):\"mtr\"===t&&e.hasRotatingPoint?this.rotationCursor:this.defaultCursor},actionIsDisabled:function(t,e,i){return\"mt\"===t||\"mb\"===t?i[this.altActionKey]?e.lockSkewingX:e.lockScalingY:\"ml\"===t||\"mr\"===t?i[this.altActionKey]?e.lockSkewingY:e.lockScalingX:\"mtr\"===t?e.lockRotation:this._isUniscalePossible(i,e)?e.lockScalingX&&e.lockScalingY:e.lockScalingX||e.lockScalingY},_getRotatedCornerCursor:function(t,e,i){var r=Math.round(e.angle%360/45);return r<0&&(r+=8),r+=n[t],i[this.altActionKey]&&n[t]%2==0&&(r+=2),r%=8,this.cursorMap[r]}})}(),function(){var u=Math.min,f=Math.max;fabric.util.object.extend(fabric.Canvas.prototype,{_shouldGroup:function(t,e){var i=this._activeObject;return i&&this._isSelectionKeyPressed(t)&&e&&e.selectable&&this.selection&&(i!==e||\"activeSelection\"===i.type)},_handleGrouping:function(t,e){var i=this._activeObject;i.__corner||(e!==i||(e=this.findTarget(t,!0)))&&(i&&\"activeSelection\"===i.type?this._updateActiveSelection(e,t):this._createActiveSelection(e,t))},_updateActiveSelection:function(t,e){var i=this._activeObject,r=i._objects.slice(0);i.contains(t)?(i.removeWithUpdate(t),this._hoveredTarget=t,1===i.size()&&this._setActiveObject(i.item(0),e)):(i.addWithUpdate(t),this._hoveredTarget=i),this._fireSelectionEvents(r,e)},_createActiveSelection:function(t,e){var i=this.getActiveObjects(),r=this._createGroup(t);this._hoveredTarget=r,this._setActiveObject(r,e),this._fireSelectionEvents(i,e)},_createGroup:function(t){var e=this._objects,i=e.indexOf(this._activeObject)<e.indexOf(t)?[this._activeObject,t]:[t,this._activeObject];return this._activeObject.isEditing&&this._activeObject.exitEditing(),new fabric.ActiveSelection(i,{canvas:this})},_groupSelectedObjects:function(t){var e,i=this._collectObjects();1===i.length?this.setActiveObject(i[0],t):1<i.length&&(e=new fabric.ActiveSelection(i.reverse(),{canvas:this}),this.setActiveObject(e,t))},_collectObjects:function(){for(var t,e=[],i=this._groupSelector.ex,r=this._groupSelector.ey,n=i+this._groupSelector.left,s=r+this._groupSelector.top,o=new fabric.Point(u(i,n),u(r,s)),a=new fabric.Point(f(i,n),f(r,s)),h=!this.selectionFullyContained,c=i===n&&r===s,l=this._objects.length;l--&&!((t=this._objects[l])&&t.selectable&&t.visible&&(h&&t.intersectsWithRect(o,a)||t.isContainedWithinRect(o,a)||h&&t.containsPoint(o)||h&&t.containsPoint(a))&&(e.push(t),c)););return e},_maybeGroupObjects:function(t){this.selection&&this._groupSelector&&this._groupSelectedObjects(t),this.setCursor(this.defaultCursor),this._groupSelector=null}})}(),function(){var r=fabric.StaticCanvas.supports(\"toDataURLWithQuality\");fabric.util.object.extend(fabric.StaticCanvas.prototype,{toDataURL:function(t){t||(t={});var e=t.format||\"png\",i=t.quality||1,r=(t.multiplier||1)*(t.enableRetinaScaling?1:1/this.getRetinaScaling()),n={left:t.left||0,top:t.top||0,width:t.width||0,height:t.height||0};return this.__toDataURLWithMultiplier(e,i,n,r)},__toDataURLWithMultiplier:function(t,e,i,r){var n=this.width,s=this.height,o=(i.width||this.width)*r,a=(i.height||this.height)*r,h=this.getZoom()*r,c=this.viewportTransform,l=[h,0,0,h,(c[4]-i.left)*r,(c[5]-i.top)*r],u=this.interactive,f=this.skipOffscreen,d=n!==o||s!==a;this.viewportTransform=l,this.skipOffscreen=!1,this.interactive=!1,d&&this.setDimensions({width:o,height:a},{backstoreOnly:!0}),this.renderAll();var g=this.__toDataURL(t,e,i);return this.interactive=u,this.skipOffscreen=f,this.viewportTransform=c,d&&this.setDimensions({width:n,height:s},{backstoreOnly:!0}),this.renderAll(),g},__toDataURL:function(t,e){var i=this.contextContainer.canvas;return\"jpg\"===t&&(t=\"jpeg\"),r?i.toDataURL(\"image/\"+t,e):i.toDataURL(\"image/\"+t)}})}(),fabric.util.object.extend(fabric.StaticCanvas.prototype,{loadFromDatalessJSON:function(t,e,i){return this.loadFromJSON(t,e,i)},loadFromJSON:function(t,e,i){if(t){var r=\"string\"==typeof t?JSON.parse(t):fabric.util.object.clone(t),n=this,s=this.renderOnAddRemove;return this.renderOnAddRemove=!1,this._enlivenObjects(r.objects,function(t){n.clear(),n._setBgOverlay(r,function(){t.forEach(function(t,e){n.insertAt(t,e)}),n.renderOnAddRemove=s,delete r.objects,delete r.backgroundImage,delete r.overlayImage,delete r.background,delete r.overlay,n._setOptions(r),n.renderAll(),e&&e()})},i),this}},_setBgOverlay:function(t,e){var i={backgroundColor:!1,overlayColor:!1,backgroundImage:!1,overlayImage:!1};if(t.backgroundImage||t.overlayImage||t.background||t.overlay){var r=function(){i.backgroundImage&&i.overlayImage&&i.backgroundColor&&i.overlayColor&&e&&e()};this.__setBgOverlay(\"backgroundImage\",t.backgroundImage,i,r),this.__setBgOverlay(\"overlayImage\",t.overlayImage,i,r),this.__setBgOverlay(\"backgroundColor\",t.background,i,r),this.__setBgOverlay(\"overlayColor\",t.overlay,i,r)}else e&&e()},__setBgOverlay:function(e,t,i,r){var n=this;if(!t)return i[e]=!0,void(r&&r());\"backgroundImage\"===e||\"overlayImage\"===e?fabric.util.enlivenObjects([t],function(t){n[e]=t[0],i[e]=!0,r&&r()}):this[\"set\"+fabric.util.string.capitalize(e,!0)](t,function(){i[e]=!0,r&&r()})},_enlivenObjects:function(t,e,i){t&&0!==t.length?fabric.util.enlivenObjects(t,function(t){e&&e(t)},null,i):e&&e([])},_toDataURL:function(e,i){this.clone(function(t){i(t.toDataURL(e))})},_toDataURLWithMultiplier:function(e,i,r){this.clone(function(t){r(t.toDataURLWithMultiplier(e,i))})},clone:function(e,t){var i=JSON.stringify(this.toJSON(t));this.cloneWithoutData(function(t){t.loadFromJSON(i,function(){e&&e(t)})})},cloneWithoutData:function(t){var e=fabric.util.createCanvasElement();e.width=this.width,e.height=this.height;var i=new fabric.Canvas(e);i.clipTo=this.clipTo,this.backgroundImage?(i.setBackgroundImage(this.backgroundImage.src,function(){i.renderAll(),t&&t(i)}),i.backgroundImageOpacity=this.backgroundImageOpacity,i.backgroundImageStretch=this.backgroundImageStretch):t&&t(i)}}),function(t){\"use strict\";var y=t.fabric||(t.fabric={}),e=y.util.object.extend,o=y.util.object.clone,r=y.util.toFixed,i=y.util.string.capitalize,a=y.util.degreesToRadians,n=y.StaticCanvas.supports(\"setLineDash\"),s=!y.isLikelyNode;y.Object||(y.Object=y.util.createClass(y.CommonMethods,{type:\"object\",originX:\"left\",originY:\"top\",top:0,left:0,width:0,height:0,scaleX:1,scaleY:1,flipX:!1,flipY:!1,opacity:1,angle:0,skewX:0,skewY:0,cornerSize:13,transparentCorners:!0,hoverCursor:null,moveCursor:null,padding:0,borderColor:\"rgba(102,153,255,0.75)\",borderDashArray:null,cornerColor:\"rgba(102,153,255,0.5)\",cornerStrokeColor:null,cornerStyle:\"rect\",cornerDashArray:null,centeredScaling:!1,centeredRotation:!0,fill:\"rgb(0,0,0)\",fillRule:\"nonzero\",globalCompositeOperation:\"source-over\",backgroundColor:\"\",selectionBackgroundColor:\"\",stroke:null,strokeWidth:1,strokeDashArray:null,strokeLineCap:\"butt\",strokeLineJoin:\"miter\",strokeMiterLimit:4,shadow:null,borderOpacityWhenMoving:.4,borderScaleFactor:1,transformMatrix:null,minScaleLimit:0,selectable:!0,evented:!0,visible:!0,hasControls:!0,hasBorders:!0,hasRotatingPoint:!0,rotatingPointOffset:40,perPixelTargetFind:!1,includeDefaultValues:!0,clipTo:null,lockMovementX:!1,lockMovementY:!1,lockRotation:!1,lockScalingX:!1,lockScalingY:!1,lockUniScaling:!1,lockSkewingX:!1,lockSkewingY:!1,lockScalingFlip:!1,excludeFromExport:!1,objectCaching:s,statefullCache:!1,noScaleCache:!0,dirty:!0,__corner:0,paintFirst:\"fill\",stateProperties:\"top left width height scaleX scaleY flipX flipY originX originY transformMatrix stroke strokeWidth strokeDashArray strokeLineCap strokeLineJoin strokeMiterLimit angle opacity fill globalCompositeOperation shadow clipTo visible backgroundColor skewX skewY fillRule paintFirst\".split(\" \"),cacheProperties:\"fill stroke strokeWidth strokeDashArray width height paintFirst strokeLineCap strokeLineJoin strokeMiterLimit backgroundColor\".split(\" \"),initialize:function(t){t&&this.setOptions(t)},_createCacheCanvas:function(){this._cacheProperties={},this._cacheCanvas=y.util.createCanvasElement(),this._cacheContext=this._cacheCanvas.getContext(\"2d\"),this._updateCacheCanvas(),this.dirty=!0},_limitCacheSize:function(t){var e=y.perfLimitSizeTotal,i=t.width,r=t.height,n=y.maxCacheSideLimit,s=y.minCacheSideLimit;if(i<=n&&r<=n&&i*r<=e)return i<s&&(t.width=s),r<s&&(t.height=s),t;var o=i/r,a=y.util.limitDimsByArea(o,e),h=y.util.capValue,c=h(s,a.x,n),l=h(s,a.y,n);return c<i&&(t.zoomX/=i/c,t.width=c,t.capped=!0),l<r&&(t.zoomY/=r/l,t.height=l,t.capped=!0),t},_getCacheCanvasDimensions:function(){var t=this.getTotalObjectScaling(),e=this._getNonTransformedDimensions(),i=t.scaleX,r=t.scaleY;return{width:e.x*i+2,height:e.y*r+2,zoomX:i,zoomY:r,x:e.x,y:e.y}},_updateCacheCanvas:function(){if(this.noScaleCache&&this.canvas&&this.canvas._currentTransform){var t=this.canvas._currentTransform.target,e=this.canvas._currentTransform.action;if(this===t&&e.slice&&\"scale\"===e.slice(0,5))return!1}var i,r,n=this._cacheCanvas,s=this._limitCacheSize(this._getCacheCanvasDimensions()),o=y.minCacheSideLimit,a=s.width,h=s.height,c=s.zoomX,l=s.zoomY,u=a!==this.cacheWidth||h!==this.cacheHeight,f=this.zoomX!==c||this.zoomY!==l,d=u||f,g=0,p=0,v=!1;if(u){var m=this._cacheCanvas.width,b=this._cacheCanvas.height,_=m<a||b<h;v=_||(a<.9*m||h<.9*b)&&o<m&&o<b,_&&!s.capped&&(o<a||o<h)&&(g=.1*a,p=.1*h)}return!!d&&(v?(n.width=Math.ceil(a+g),n.height=Math.ceil(h+p)):(this._cacheContext.setTransform(1,0,0,1,0,0),this._cacheContext.clearRect(0,0,n.width,n.height)),i=s.x*c/2,r=s.y*l/2,this.cacheTranslationX=Math.round(n.width/2-i)+i,this.cacheTranslationY=Math.round(n.height/2-r)+r,this.cacheWidth=a,this.cacheHeight=h,this._cacheContext.translate(this.cacheTranslationX,this.cacheTranslationY),this._cacheContext.scale(c,l),this.zoomX=c,this.zoomY=l,!0)},setOptions:function(t){this._setOptions(t),this._initGradient(t.fill,\"fill\"),this._initGradient(t.stroke,\"stroke\"),this._initClipping(t),this._initPattern(t.fill,\"fill\"),this._initPattern(t.stroke,\"stroke\")},transform:function(t){var e;e=this.group&&!this.group._transformDone?this.calcTransformMatrix():this.calcOwnMatrix(),t.transform(e[0],e[1],e[2],e[3],e[4],e[5])},toObject:function(t){var e=y.Object.NUM_FRACTION_DIGITS,i={type:this.type,version:y.version,originX:this.originX,originY:this.originY,left:r(this.left,e),top:r(this.top,e),width:r(this.width,e),height:r(this.height,e),fill:this.fill&&this.fill.toObject?this.fill.toObject():this.fill,stroke:this.stroke&&this.stroke.toObject?this.stroke.toObject():this.stroke,strokeWidth:r(this.strokeWidth,e),strokeDashArray:this.strokeDashArray?this.strokeDashArray.concat():this.strokeDashArray,strokeLineCap:this.strokeLineCap,strokeLineJoin:this.strokeLineJoin,strokeMiterLimit:r(this.strokeMiterLimit,e),scaleX:r(this.scaleX,e),scaleY:r(this.scaleY,e),angle:r(this.angle,e),flipX:this.flipX,flipY:this.flipY,opacity:r(this.opacity,e),shadow:this.shadow&&this.shadow.toObject?this.shadow.toObject():this.shadow,visible:this.visible,clipTo:this.clipTo&&String(this.clipTo),backgroundColor:this.backgroundColor,fillRule:this.fillRule,paintFirst:this.paintFirst,globalCompositeOperation:this.globalCompositeOperation,transformMatrix:this.transformMatrix?this.transformMatrix.concat():null,skewX:r(this.skewX,e),skewY:r(this.skewY,e)};return y.util.populateWithProperties(this,i,t),this.includeDefaultValues||(i=this._removeDefaultValues(i)),i},toDatalessObject:function(t){return this.toObject(t)},_removeDefaultValues:function(e){var i=y.util.getKlass(e.type).prototype;return i.stateProperties.forEach(function(t){e[t]===i[t]&&delete e[t],\"[object Array]\"===Object.prototype.toString.call(e[t])&&\"[object Array]\"===Object.prototype.toString.call(i[t])&&0===e[t].length&&0===i[t].length&&delete e[t]}),e},toString:function(){return\"#<fabric.\"+i(this.type)+\">\"},getObjectScaling:function(){var t=this.scaleX,e=this.scaleY;if(this.group){var i=this.group.getObjectScaling();t*=i.scaleX,e*=i.scaleY}return{scaleX:t,scaleY:e}},getTotalObjectScaling:function(){var t=this.getObjectScaling(),e=t.scaleX,i=t.scaleY;if(this.canvas){var r=this.canvas.getZoom(),n=this.canvas.getRetinaScaling();e*=r*n,i*=r*n}return{scaleX:e,scaleY:i}},getObjectOpacity:function(){var t=this.opacity;return this.group&&(t*=this.group.getObjectOpacity()),t},_set:function(t,e){var i=\"scaleX\"===t||\"scaleY\"===t,r=this[t]!==e,n=!1;return i&&(e=this._constrainScale(e)),\"scaleX\"===t&&e<0?(this.flipX=!this.flipX,e*=-1):\"scaleY\"===t&&e<0?(this.flipY=!this.flipY,e*=-1):\"shadow\"!==t||!e||e instanceof y.Shadow?\"dirty\"===t&&this.group&&this.group.set(\"dirty\",e):e=new y.Shadow(e),this[t]=e,r&&(n=this.group&&this.group.isOnACache(),-1<this.cacheProperties.indexOf(t)?(this.dirty=!0,n&&this.group.set(\"dirty\",!0)):n&&-1<this.stateProperties.indexOf(t)&&this.group.set(\"dirty\",!0)),this},setOnGroup:function(){},getViewportTransform:function(){return this.canvas&&this.canvas.viewportTransform?this.canvas.viewportTransform:y.iMatrix.concat()},isNotVisible:function(){return 0===this.opacity||0===this.width&&0===this.height||!this.visible},render:function(t){this.isNotVisible()||this.canvas&&this.canvas.skipOffscreen&&!this.group&&!this.isOnScreen()||(t.save(),this._setupCompositeOperation(t),this.drawSelectionBackground(t),this.transform(t),this._setOpacity(t),this._setShadow(t,this),this.transformMatrix&&t.transform.apply(t,this.transformMatrix),this.clipTo&&y.util.clipContext(this,t),this.shouldCache()?(this._cacheCanvas||this._createCacheCanvas(),this.isCacheDirty()&&(this.statefullCache&&this.saveState({propertySet:\"cacheProperties\"}),this.drawObject(this._cacheContext),this.dirty=!1),this.drawCacheOnCanvas(t)):(this._removeCacheCanvas(),this.dirty=!1,this.drawObject(t),this.objectCaching&&this.statefullCache&&this.saveState({propertySet:\"cacheProperties\"})),this.clipTo&&t.restore(),t.restore())},_removeCacheCanvas:function(){this._cacheCanvas=null,this.cacheWidth=0,this.cacheHeight=0},needsItsOwnCache:function(){return\"stroke\"===this.paintFirst&&\"object\"==typeof this.shadow},shouldCache:function(){return this.ownCaching=this.objectCaching&&(!this.group||this.needsItsOwnCache()||!this.group.isOnACache()),this.ownCaching},willDrawShadow:function(){return!!this.shadow&&(0!==this.shadow.offsetX||0!==this.shadow.offsetY)},drawObject:function(t){this._renderBackground(t),this._setStrokeStyles(t,this),this._setFillStyles(t,this),this._render(t)},drawCacheOnCanvas:function(t){t.scale(1/this.zoomX,1/this.zoomY),t.drawImage(this._cacheCanvas,-this.cacheTranslationX,-this.cacheTranslationY)},isCacheDirty:function(t){if(this.isNotVisible())return!1;if(this._cacheCanvas&&!t&&this._updateCacheCanvas())return!0;if(this.dirty||this.statefullCache&&this.hasStateChanged(\"cacheProperties\")){if(this._cacheCanvas&&!t){var e=this.cacheWidth/this.zoomX,i=this.cacheHeight/this.zoomY;this._cacheContext.clearRect(-e/2,-i/2,e,i)}return!0}return!1},_renderBackground:function(t){if(this.backgroundColor){var e=this._getNonTransformedDimensions();t.fillStyle=this.backgroundColor,t.fillRect(-e.x/2,-e.y/2,e.x,e.y),this._removeShadow(t)}},_setOpacity:function(t){this.group&&!this.group._transformDone?t.globalAlpha=this.getObjectOpacity():t.globalAlpha*=this.opacity},_setStrokeStyles:function(t,e){e.stroke&&(t.lineWidth=e.strokeWidth,t.lineCap=e.strokeLineCap,t.lineJoin=e.strokeLineJoin,t.miterLimit=e.strokeMiterLimit,t.strokeStyle=e.stroke.toLive?e.stroke.toLive(t,this):e.stroke)},_setFillStyles:function(t,e){e.fill&&(t.fillStyle=e.fill.toLive?e.fill.toLive(t,this):e.fill)},_setLineDash:function(t,e,i){e&&(1&e.length&&e.push.apply(e,e),n?t.setLineDash(e):i&&i(t))},_renderControls:function(t,e){var i,r,n,s=this.getViewportTransform(),o=this.calcTransformMatrix();r=void 0!==(e=e||{}).hasBorders?e.hasBorders:this.hasBorders,n=void 0!==e.hasControls?e.hasControls:this.hasControls,o=y.util.multiplyTransformMatrices(s,o),i=y.util.qrDecompose(o),t.save(),t.translate(i.translateX,i.translateY),t.lineWidth=1*this.borderScaleFactor,this.group||(t.globalAlpha=this.isMoving?this.borderOpacityWhenMoving:1),e.forActiveSelection?(t.rotate(a(i.angle)),r&&this.drawBordersInGroup(t,i,e)):(t.rotate(a(this.angle)),r&&this.drawBorders(t,e)),n&&this.drawControls(t,e),t.restore()},_setShadow:function(t){if(this.shadow){var e=this.canvas&&this.canvas.viewportTransform[0]||1,i=this.canvas&&this.canvas.viewportTransform[3]||1,r=this.getObjectScaling();this.canvas&&this.canvas._isRetinaScaling()&&(e*=y.devicePixelRatio,i*=y.devicePixelRatio),t.shadowColor=this.shadow.color,t.shadowBlur=this.shadow.blur*y.browserShadowBlurConstant*(e+i)*(r.scaleX+r.scaleY)/4,t.shadowOffsetX=this.shadow.offsetX*e*r.scaleX,t.shadowOffsetY=this.shadow.offsetY*i*r.scaleY}},_removeShadow:function(t){this.shadow&&(t.shadowColor=\"\",t.shadowBlur=t.shadowOffsetX=t.shadowOffsetY=0)},_applyPatternGradientTransform:function(t,e){if(!e||!e.toLive)return{offsetX:0,offsetY:0};var i=e.gradientTransform||e.patternTransform,r=-this.width/2+e.offsetX||0,n=-this.height/2+e.offsetY||0;return t.translate(r,n),i&&t.transform(i[0],i[1],i[2],i[3],i[4],i[5]),{offsetX:r,offsetY:n}},_renderPaintInOrder:function(t){\"stroke\"===this.paintFirst?(this._renderStroke(t),this._renderFill(t)):(this._renderFill(t),this._renderStroke(t))},_renderFill:function(t){this.fill&&(t.save(),this._applyPatternGradientTransform(t,this.fill),\"evenodd\"===this.fillRule?t.fill(\"evenodd\"):t.fill(),t.restore())},_renderStroke:function(t){this.stroke&&0!==this.strokeWidth&&(this.shadow&&!this.shadow.affectStroke&&this._removeShadow(t),t.save(),this._setLineDash(t,this.strokeDashArray,this._renderDashedStroke),this._applyPatternGradientTransform(t,this.stroke),t.stroke(),t.restore())},_findCenterFromElement:function(){return{x:this.left+this.width/2,y:this.top+this.height/2}},_assignTransformMatrixProps:function(){if(this.transformMatrix){var t=y.util.qrDecompose(this.transformMatrix);this.flipX=!1,this.flipY=!1,this.set(\"scaleX\",t.scaleX),this.set(\"scaleY\",t.scaleY),this.angle=t.angle,this.skewX=t.skewX,this.skewY=0}},_removeTransformMatrix:function(t){var e=this._findCenterFromElement();this.transformMatrix&&(this._assignTransformMatrixProps(),e=y.util.transformPoint(e,this.transformMatrix)),this.transformMatrix=null,t&&(this.scaleX*=t.scaleX,this.scaleY*=t.scaleY,this.cropX=t.cropX,this.cropY=t.cropY,e.x+=t.offsetLeft,e.y+=t.offsetTop,this.width=t.width,this.height=t.height),this.setPositionByOrigin(e,\"center\",\"center\")},clone:function(t,e){var i=this.toObject(e);this.constructor.fromObject?this.constructor.fromObject(i,t):y.Object._fromObject(\"Object\",i,t)},cloneAsImage:function(e,t){var i=this.toDataURL(t);return y.util.loadImage(i,function(t){e&&e(new y.Image(t))}),this},toDataURL:function(t){t||(t={});var e=y.util.saveObjectTransform(this);t.withoutTransform&&y.util.resetObjectTransform(this);var i=y.util.createCanvasElement(),r=this.getBoundingRect(!0,!0);i.width=r.width,i.height=r.height;var n=new y.StaticCanvas(i,{enableRetinaScaling:t.enableRetinaScaling,renderOnAddRemove:!1,skipOffscreen:!1});\"jpg\"===t.format&&(t.format=\"jpeg\"),\"jpeg\"===t.format&&(n.backgroundColor=\"#fff\"),this.setPositionByOrigin(new y.Point(n.width/2,n.height/2),\"center\",\"center\");var s=this.canvas;n.add(this);var o=n.toDataURL(t);return this.set(e).setCoords(),this.canvas=s,n._objects=[],n.dispose(),n=null,o},isType:function(t){return this.type===t},complexity:function(){return 1},toJSON:function(t){return this.toObject(t)},setGradient:function(t,e){e||(e={});var i={colorStops:[]};return i.type=e.type||(e.r1||e.r2?\"radial\":\"linear\"),i.coords={x1:e.x1,y1:e.y1,x2:e.x2,y2:e.y2},(e.r1||e.r2)&&(i.coords.r1=e.r1,i.coords.r2=e.r2),i.gradientTransform=e.gradientTransform,y.Gradient.prototype.addColorStop.call(i,e.colorStops),this.set(t,y.Gradient.forObject(this,i))},setPatternFill:function(t,e){return this.set(\"fill\",new y.Pattern(t,e))},setShadow:function(t){return this.set(\"shadow\",t?new y.Shadow(t):null)},setColor:function(t){return this.set(\"fill\",t),this},rotate:function(t){var e=(\"center\"!==this.originX||\"center\"!==this.originY)&&this.centeredRotation;return e&&this._setOriginToCenter(),this.set(\"angle\",t),e&&this._resetOrigin(),this},centerH:function(){return this.canvas&&this.canvas.centerObjectH(this),this},viewportCenterH:function(){return this.canvas&&this.canvas.viewportCenterObjectH(this),this},centerV:function(){return this.canvas&&this.canvas.centerObjectV(this),this},viewportCenterV:function(){return this.canvas&&this.canvas.viewportCenterObjectV(this),this},center:function(){return this.canvas&&this.canvas.centerObject(this),this},viewportCenter:function(){return this.canvas&&this.canvas.viewportCenterObject(this),this},getLocalPointer:function(t,e){e=e||this.canvas.getPointer(t);var i=new y.Point(e.x,e.y),r=this._getLeftTopCoords();return this.angle&&(i=y.util.rotatePoint(i,r,a(-this.angle))),{x:i.x-r.x,y:i.y-r.y}},_setupCompositeOperation:function(t){this.globalCompositeOperation&&(t.globalCompositeOperation=this.globalCompositeOperation)}}),y.util.createAccessors&&y.util.createAccessors(y.Object),e(y.Object.prototype,y.Observable),y.Object.NUM_FRACTION_DIGITS=2,y.Object._fromObject=function(t,i,r,n){var s=y[t];i=o(i,!0),y.util.enlivenPatterns([i.fill,i.stroke],function(t){void 0!==t[0]&&(i.fill=t[0]),void 0!==t[1]&&(i.stroke=t[1]);var e=n?new s(i[n],i):new s(i);r&&r(e)})},y.Object.__uid=0)}(\"undefined\"!=typeof exports?exports:this),function(){var a=fabric.util.degreesToRadians,l={left:-.5,center:0,right:.5},u={top:-.5,center:0,bottom:.5};fabric.util.object.extend(fabric.Object.prototype,{translateToGivenOrigin:function(t,e,i,r,n){var s,o,a,h=t.x,c=t.y;return\"string\"==typeof e?e=l[e]:e-=.5,\"string\"==typeof r?r=l[r]:r-=.5,\"string\"==typeof i?i=u[i]:i-=.5,\"string\"==typeof n?n=u[n]:n-=.5,o=n-i,((s=r-e)||o)&&(a=this._getTransformedDimensions(),h=t.x+s*a.x,c=t.y+o*a.y),new fabric.Point(h,c)},translateToCenterPoint:function(t,e,i){var r=this.translateToGivenOrigin(t,e,i,\"center\",\"center\");return this.angle?fabric.util.rotatePoint(r,t,a(this.angle)):r},translateToOriginPoint:function(t,e,i){var r=this.translateToGivenOrigin(t,\"center\",\"center\",e,i);return this.angle?fabric.util.rotatePoint(r,t,a(this.angle)):r},getCenterPoint:function(){var t=new fabric.Point(this.left,this.top);return this.translateToCenterPoint(t,this.originX,this.originY)},getPointByOrigin:function(t,e){var i=this.getCenterPoint();return this.translateToOriginPoint(i,t,e)},toLocalPoint:function(t,e,i){var r,n,s=this.getCenterPoint();return r=void 0!==e&&void 0!==i?this.translateToGivenOrigin(s,\"center\",\"center\",e,i):new fabric.Point(this.left,this.top),n=new fabric.Point(t.x,t.y),this.angle&&(n=fabric.util.rotatePoint(n,s,-a(this.angle))),n.subtractEquals(r)},setPositionByOrigin:function(t,e,i){var r=this.translateToCenterPoint(t,e,i),n=this.translateToOriginPoint(r,this.originX,this.originY);this.set(\"left\",n.x),this.set(\"top\",n.y)},adjustPosition:function(t){var e,i,r=a(this.angle),n=this.getScaledWidth(),s=fabric.util.cos(r)*n,o=fabric.util.sin(r)*n;e=\"string\"==typeof this.originX?l[this.originX]:this.originX-.5,i=\"string\"==typeof t?l[t]:t-.5,this.left+=s*(i-e),this.top+=o*(i-e),this.setCoords(),this.originX=t},_setOriginToCenter:function(){this._originalOriginX=this.originX,this._originalOriginY=this.originY;var t=this.getCenterPoint();this.originX=\"center\",this.originY=\"center\",this.left=t.x,this.top=t.y},_resetOrigin:function(){var t=this.translateToOriginPoint(this.getCenterPoint(),this._originalOriginX,this._originalOriginY);this.originX=this._originalOriginX,this.originY=this._originalOriginY,this.left=t.x,this.top=t.y,this._originalOriginX=null,this._originalOriginY=null},_getLeftTopCoords:function(){return this.translateToOriginPoint(this.getCenterPoint(),\"left\",\"top\")}})}(),function(){var k=fabric.util.degreesToRadians,E=fabric.util.multiplyTransformMatrices,D=fabric.util.transformPoint;fabric.util.object.extend(fabric.Object.prototype,{oCoords:null,aCoords:null,ownMatrixCache:null,matrixCache:null,getCoords:function(t,e){this.oCoords||this.setCoords();var i,r=t?this.aCoords:this.oCoords;return i=e?this.calcCoords(t):r,[new fabric.Point(i.tl.x,i.tl.y),new fabric.Point(i.tr.x,i.tr.y),new fabric.Point(i.br.x,i.br.y),new fabric.Point(i.bl.x,i.bl.y)]},intersectsWithRect:function(t,e,i,r){var n=this.getCoords(i,r);return\"Intersection\"===fabric.Intersection.intersectPolygonRectangle(n,t,e).status},intersectsWithObject:function(t,e,i){return\"Intersection\"===fabric.Intersection.intersectPolygonPolygon(this.getCoords(e,i),t.getCoords(e,i)).status||t.isContainedWithinObject(this,e,i)||this.isContainedWithinObject(t,e,i)},isContainedWithinObject:function(t,e,i){for(var r=this.getCoords(e,i),n=0,s=t._getImageLines(i?t.calcCoords(e):e?t.aCoords:t.oCoords);n<4;n++)if(!t.containsPoint(r[n],s))return!1;return!0},isContainedWithinRect:function(t,e,i,r){var n=this.getBoundingRect(i,r);return n.left>=t.x&&n.left+n.width<=e.x&&n.top>=t.y&&n.top+n.height<=e.y},containsPoint:function(t,e,i,r){e=e||this._getImageLines(r?this.calcCoords(i):i?this.aCoords:this.oCoords);var n=this._findCrossPoints(t,e);return 0!==n&&n%2==1},isOnScreen:function(t){if(!this.canvas)return!1;for(var e,i=this.canvas.vptCoords.tl,r=this.canvas.vptCoords.br,n=this.getCoords(!0,t),s=0;s<4;s++)if((e=n[s]).x<=r.x&&e.x>=i.x&&e.y<=r.y&&e.y>=i.y)return!0;return!!this.intersectsWithRect(i,r,!0,t)||this._containsCenterOfCanvas(i,r,t)},_containsCenterOfCanvas:function(t,e,i){var r={x:(t.x+e.x)/2,y:(t.y+e.y)/2};return!!this.containsPoint(r,null,!0,i)},isPartiallyOnScreen:function(t){if(!this.canvas)return!1;var e=this.canvas.vptCoords.tl,i=this.canvas.vptCoords.br;return!!this.intersectsWithRect(e,i,!0,t)||this._containsCenterOfCanvas(e,i,t)},_getImageLines:function(t){return{topline:{o:t.tl,d:t.tr},rightline:{o:t.tr,d:t.br},bottomline:{o:t.br,d:t.bl},leftline:{o:t.bl,d:t.tl}}},_findCrossPoints:function(t,e){var i,r,n,s=0;for(var o in e)if(!((n=e[o]).o.y<t.y&&n.d.y<t.y||n.o.y>=t.y&&n.d.y>=t.y||(n.o.x===n.d.x&&n.o.x>=t.x?r=n.o.x:(0,i=(n.d.y-n.o.y)/(n.d.x-n.o.x),r=-(t.y-0*t.x-(n.o.y-i*n.o.x))/(0-i)),r>=t.x&&(s+=1),2!==s)))break;return s},getBoundingRect:function(t,e){var i=this.getCoords(t,e);return fabric.util.makeBoundingBoxFromPoints(i)},getScaledWidth:function(){return this._getTransformedDimensions().x},getScaledHeight:function(){return this._getTransformedDimensions().y},_constrainScale:function(t){return Math.abs(t)<this.minScaleLimit?t<0?-this.minScaleLimit:this.minScaleLimit:0===t?1e-4:t},scale:function(t){return this._set(\"scaleX\",t),this._set(\"scaleY\",t),this.setCoords()},scaleToWidth:function(t,e){var i=this.getBoundingRect(e).width/this.getScaledWidth();return this.scale(t/this.width/i)},scaleToHeight:function(t,e){var i=this.getBoundingRect(e).height/this.getScaledHeight();return this.scale(t/this.height/i)},calcCoords:function(t){var e=this._calcRotateMatrix(),i=this._calcTranslateMatrix(),r=E(i,e),n=this.getViewportTransform(),s=t?r:E(n,r),o=this._getTransformedDimensions(),a=o.x/2,h=o.y/2,c=D({x:-a,y:-h},s),l=D({x:a,y:-h},s),u=D({x:-a,y:h},s),f=D({x:a,y:h},s);if(!t){var d=this.padding,g=k(this.angle),p=fabric.util.cos(g),v=fabric.util.sin(g),m=p*d,b=v*d,_=m+b,y=m-b;d&&(c.x-=y,c.y-=_,l.x+=_,l.y-=y,u.x-=_,u.y+=y,f.x+=y,f.y+=_);var x=new fabric.Point((c.x+u.x)/2,(c.y+u.y)/2),C=new fabric.Point((l.x+c.x)/2,(l.y+c.y)/2),S=new fabric.Point((f.x+l.x)/2,(f.y+l.y)/2),T=new fabric.Point((f.x+u.x)/2,(f.y+u.y)/2),w=new fabric.Point(C.x+v*this.rotatingPointOffset,C.y-p*this.rotatingPointOffset)}var O={tl:c,tr:l,br:f,bl:u};return t||(O.ml=x,O.mt=C,O.mr=S,O.mb=T,O.mtr=w),O},setCoords:function(t,e){return this.oCoords=this.calcCoords(t),e||(this.aCoords=this.calcCoords(!0)),t||this._setCornerCoords&&this._setCornerCoords(),this},_calcRotateMatrix:function(){if(this.angle){var t=k(this.angle),e=fabric.util.cos(t),i=fabric.util.sin(t);return[e,i,-i,e,0,0]}return fabric.iMatrix.concat()},_calcTranslateMatrix:function(){var t=this.getCenterPoint();return[1,0,0,1,t.x,t.y]},transformMatrixKey:function(t){var e=\"_\",i=\"\";return!t&&this.group&&(i=this.group.transformMatrixKey(t)+e),i+this.top+e+this.left+e+this.scaleX+e+this.scaleY+e+this.skewX+e+this.skewY+e+this.angle+e+this.originX+e+this.originY+e+this.width+e+this.height+e+this.strokeWidth+this.flipX+this.flipY},calcTransformMatrix:function(t){if(t)return this.calcOwnMatrix();var e=this.transformMatrixKey(),i=this.matrixCache||(this.matrixCache={});if(i.key===e)return i.value;var r=this.calcOwnMatrix();return this.group&&(r=E(this.group.calcTransformMatrix(),r)),i.key=e,i.value=r},calcOwnMatrix:function(){var t=this.transformMatrixKey(!0),e=this.ownMatrixCache||(this.ownMatrixCache={});if(e.key===t)return e.value;var i,r=this._calcTranslateMatrix(),n=this._calcDimensionsTransformMatrix(this.skewX,this.skewY,!0);return this.angle&&(i=this._calcRotateMatrix(),r=E(r,i)),r=E(r,n),e.key=t,e.value=r},_calcDimensionsTransformMatrix:function(t,e,i){var r,n=[this.scaleX*(i&&this.flipX?-1:1),0,0,this.scaleY*(i&&this.flipY?-1:1),0,0];return t&&(r=[1,0,Math.tan(k(t)),1],n=E(n,r,!0)),e&&(r=[1,Math.tan(k(e)),0,1],n=E(n,r,!0)),n},_getNonTransformedDimensions:function(){var t=this.strokeWidth;return{x:this.width+t,y:this.height+t}},_getTransformedDimensions:function(t,e){void 0===t&&(t=this.skewX),void 0===e&&(e=this.skewY);var i=this._getNonTransformedDimensions();if(0===t&&0===e)return{x:i.x*this.scaleX,y:i.y*this.scaleY};var r,n,s=i.x/2,o=i.y/2,a=[{x:-s,y:-o},{x:s,y:-o},{x:-s,y:o},{x:s,y:o}],h=this._calcDimensionsTransformMatrix(t,e,!1);for(r=0;r<a.length;r++)a[r]=fabric.util.transformPoint(a[r],h);return{x:(n=fabric.util.makeBoundingBoxFromPoints(a)).width,y:n.height}},_calculateCurrentDimensions:function(){var t=this.getViewportTransform(),e=this._getTransformedDimensions();return fabric.util.transformPoint(e,t,!0).scalarAdd(2*this.padding)}})}(),fabric.util.object.extend(fabric.Object.prototype,{sendToBack:function(){return this.group?fabric.StaticCanvas.prototype.sendToBack.call(this.group,this):this.canvas.sendToBack(this),this},bringToFront:function(){return this.group?fabric.StaticCanvas.prototype.bringToFront.call(this.group,this):this.canvas.bringToFront(this),this},sendBackwards:function(t){return this.group?fabric.StaticCanvas.prototype.sendBackwards.call(this.group,this,t):this.canvas.sendBackwards(this,t),this},bringForward:function(t){return this.group?fabric.StaticCanvas.prototype.bringForward.call(this.group,this,t):this.canvas.bringForward(this,t),this},moveTo:function(t){return this.group&&\"activeSelection\"!==this.group.type?fabric.StaticCanvas.prototype.moveTo.call(this.group,this,t):this.canvas.moveTo(this,t),this}}),function(){function u(t,e){if(e){if(e.toLive)return t+\": url(#SVGID_\"+e.id+\"); \";var i=new fabric.Color(e),r=t+\": \"+i.toRgb()+\"; \",n=i.getAlpha();return 1!==n&&(r+=t+\"-opacity: \"+n.toString()+\"; \"),r}return t+\": none; \"}var l=fabric.util.toFixed;fabric.util.object.extend(fabric.Object.prototype,{getSvgStyles:function(t){var e=this.fillRule,i=this.strokeWidth?this.strokeWidth:\"0\",r=this.strokeDashArray?this.strokeDashArray.join(\" \"):\"none\",n=this.strokeLineCap?this.strokeLineCap:\"butt\",s=this.strokeLineJoin?this.strokeLineJoin:\"miter\",o=this.strokeMiterLimit?this.strokeMiterLimit:\"4\",a=void 0!==this.opacity?this.opacity:\"1\",h=this.visible?\"\":\" visibility: hidden;\",c=t?\"\":this.getSvgFilter(),l=u(\"fill\",this.fill);return[u(\"stroke\",this.stroke),\"stroke-width: \",i,\"; \",\"stroke-dasharray: \",r,\"; \",\"stroke-linecap: \",n,\"; \",\"stroke-linejoin: \",s,\"; \",\"stroke-miterlimit: \",o,\"; \",l,\"fill-rule: \",e,\"; \",\"opacity: \",a,\";\",c,h].join(\"\")},getSvgSpanStyles:function(t,e){var i=\"; \",r=t.fontFamily?\"font-family: \"+(-1===t.fontFamily.indexOf(\"'\")&&-1===t.fontFamily.indexOf('\"')?\"'\"+t.fontFamily+\"'\":t.fontFamily)+i:\"\",n=t.strokeWidth?\"stroke-width: \"+t.strokeWidth+i:\"\",s=(r=r,t.fontSize?\"font-size: \"+t.fontSize+\"px\"+i:\"\"),o=t.fontStyle?\"font-style: \"+t.fontStyle+i:\"\",a=t.fontWeight?\"font-weight: \"+t.fontWeight+i:\"\",h=t.fill?u(\"fill\",t.fill):\"\",c=t.stroke?u(\"stroke\",t.stroke):\"\",l=this.getSvgTextDecoration(t);return l&&(l=\"text-decoration: \"+l+i),[c,n,r,s,o,a,l,h,t.deltaY?\"baseline-shift: \"+-t.deltaY+\"; \":\"\",e?\"white-space: pre; \":\"\"].join(\"\")},getSvgTextDecoration:function(t){return\"overline\"in t||\"underline\"in t||\"linethrough\"in t?(t.overline?\"overline \":\"\")+(t.underline?\"underline \":\"\")+(t.linethrough?\"line-through \":\"\"):\"\"},getSvgFilter:function(){return this.shadow?\"filter: url(#SVGID_\"+this.shadow.id+\");\":\"\"},getSvgId:function(){return this.id?'id=\"'+this.id+'\" ':\"\"},getSvgTransform:function(){var t=this.angle,e=this.skewX%360,i=this.skewY%360,r=this.getCenterPoint(),n=fabric.Object.NUM_FRACTION_DIGITS,s=\"translate(\"+l(r.x,n)+\" \"+l(r.y,n)+\")\",o=0!==t?\" rotate(\"+l(t,n)+\")\":\"\",a=1===this.scaleX&&1===this.scaleY?\"\":\" scale(\"+l(this.scaleX,n)+\" \"+l(this.scaleY,n)+\")\",h=0!==e?\" skewX(\"+l(e,n)+\")\":\"\",c=0!==i?\" skewY(\"+l(i,n)+\")\":\"\";return[s,o,a,this.flipX?\" matrix(-1 0 0 1 0 0) \":\"\",this.flipY?\" matrix(1 0 0 -1 0 0)\":\"\",h,c].join(\"\")},getSvgTransformMatrix:function(){return this.transformMatrix?\" matrix(\"+this.transformMatrix.join(\" \")+\") \":\"\"},_setSVGBg:function(t){if(this.backgroundColor){var e=fabric.Object.NUM_FRACTION_DIGITS;t.push(\"\\t\\t<rect \",this._getFillAttributes(this.backgroundColor),' x=\"',l(-this.width/2,e),'\" y=\"',l(-this.height/2,e),'\" width=\"',l(this.width,e),'\" height=\"',l(this.height,e),'\"></rect>\\n')}},_createBaseSVGMarkup:function(){var t=[];return this.fill&&this.fill.toLive&&t.push(this.fill.toSVG(this,!1)),this.stroke&&this.stroke.toLive&&t.push(this.stroke.toSVG(this,!1)),this.shadow&&t.push(this.shadow.toSVG(this)),t},addPaintOrder:function(){return\"fill\"!==this.paintFirst?' paint-order=\"'+this.paintFirst+'\" ':\"\"}})}(),function(){var n=fabric.util.object.extend,r=\"stateProperties\";function s(e,t,i){var r={};i.forEach(function(t){r[t]=e[t]}),n(e[t],r,!0)}fabric.util.object.extend(fabric.Object.prototype,{hasStateChanged:function(t){var e=\"_\"+(t=t||r);return Object.keys(this[e]).length<this[t].length||!function t(e,i,r){if(e===i)return!0;if(Array.isArray(e)){if(!Array.isArray(i)||e.length!==i.length)return!1;for(var n=0,s=e.length;n<s;n++)if(!t(e[n],i[n]))return!1;return!0}if(e&&\"object\"==typeof e){var o,a=Object.keys(e);if(!i||\"object\"!=typeof i||!r&&a.length!==Object.keys(i).length)return!1;for(n=0,s=a.length;n<s;n++)if(!t(e[o=a[n]],i[o]))return!1;return!0}}(this[e],this,!0)},saveState:function(t){var e=t&&t.propertySet||r,i=\"_\"+e;return this[i]?(s(this,i,this[e]),t&&t.stateProperties&&s(this,i,t.stateProperties),this):this.setupState(t)},setupState:function(t){var e=(t=t||{}).propertySet||r;return this[\"_\"+(t.propertySet=e)]={},this.saveState(t),this}})}(),function(){var h=fabric.util.degreesToRadians;fabric.util.object.extend(fabric.Object.prototype,{_controlsVisibility:null,_findTargetCorner:function(t){if(!this.hasControls||this.group||!this.canvas||this.canvas._activeObject!==this)return!1;var e,i,r=t.x,n=t.y;for(var s in this.__corner=0,this.oCoords)if(this.isControlVisible(s)&&(\"mtr\"!==s||this.hasRotatingPoint)&&(!this.get(\"lockUniScaling\")||\"mt\"!==s&&\"mr\"!==s&&\"mb\"!==s&&\"ml\"!==s)&&(i=this._getImageLines(this.oCoords[s].corner),0!==(e=this._findCrossPoints({x:r,y:n},i))&&e%2==1))return this.__corner=s;return!1},_setCornerCoords:function(){var t,e,i=this.oCoords,r=h(45-this.angle),n=.707106*this.cornerSize,s=n*fabric.util.cos(r),o=n*fabric.util.sin(r);for(var a in i)t=i[a].x,e=i[a].y,i[a].corner={tl:{x:t-o,y:e-s},tr:{x:t+s,y:e-o},bl:{x:t-s,y:e+o},br:{x:t+o,y:e+s}}},drawSelectionBackground:function(t){if(!this.selectionBackgroundColor||this.canvas&&!this.canvas.interactive||this.canvas&&this.canvas._activeObject!==this)return this;t.save();var e=this.getCenterPoint(),i=this._calculateCurrentDimensions(),r=this.canvas.viewportTransform;return t.translate(e.x,e.y),t.scale(1/r[0],1/r[3]),t.rotate(h(this.angle)),t.fillStyle=this.selectionBackgroundColor,t.fillRect(-i.x/2,-i.y/2,i.x,i.y),t.restore(),this},drawBorders:function(t,e){e=e||{};var i=this._calculateCurrentDimensions(),r=1/this.borderScaleFactor,n=i.x+r,s=i.y+r,o=void 0!==e.hasRotatingPoint?e.hasRotatingPoint:this.hasRotatingPoint,a=void 0!==e.hasControls?e.hasControls:this.hasControls,h=void 0!==e.rotatingPointOffset?e.rotatingPointOffset:this.rotatingPointOffset;if(t.save(),t.strokeStyle=e.borderColor||this.borderColor,this._setLineDash(t,e.borderDashArray||this.borderDashArray,null),t.strokeRect(-n/2,-s/2,n,s),o&&this.isControlVisible(\"mtr\")&&a){var c=-s/2;t.beginPath(),t.moveTo(0,c),t.lineTo(0,c-h),t.stroke()}return t.restore(),this},drawBordersInGroup:function(t,e,i){i=i||{};var r=this._getNonTransformedDimensions(),n=fabric.util.customTransformMatrix(e.scaleX,e.scaleY,e.skewX),s=fabric.util.transformPoint(r,n),o=1/this.borderScaleFactor,a=s.x+o,h=s.y+o;return t.save(),this._setLineDash(t,i.borderDashArray||this.borderDashArray,null),t.strokeStyle=i.borderColor||this.borderColor,t.strokeRect(-a/2,-h/2,a,h),t.restore(),this},drawControls:function(t,e){e=e||{};var i=this._calculateCurrentDimensions(),r=i.x,n=i.y,s=e.cornerSize||this.cornerSize,o=-(r+s)/2,a=-(n+s)/2,h=void 0!==e.transparentCorners?e.transparentCorners:this.transparentCorners,c=void 0!==e.hasRotatingPoint?e.hasRotatingPoint:this.hasRotatingPoint,l=h?\"stroke\":\"fill\";return t.save(),t.strokeStyle=t.fillStyle=e.cornerColor||this.cornerColor,this.transparentCorners||(t.strokeStyle=e.cornerStrokeColor||this.cornerStrokeColor),this._setLineDash(t,e.cornerDashArray||this.cornerDashArray,null),this._drawControl(\"tl\",t,l,o,a,e),this._drawControl(\"tr\",t,l,o+r,a,e),this._drawControl(\"bl\",t,l,o,a+n,e),this._drawControl(\"br\",t,l,o+r,a+n,e),this.get(\"lockUniScaling\")||(this._drawControl(\"mt\",t,l,o+r/2,a,e),this._drawControl(\"mb\",t,l,o+r/2,a+n,e),this._drawControl(\"mr\",t,l,o+r,a+n/2,e),this._drawControl(\"ml\",t,l,o,a+n/2,e)),c&&this._drawControl(\"mtr\",t,l,o+r/2,a-this.rotatingPointOffset,e),t.restore(),this},_drawControl:function(t,e,i,r,n,s){if(s=s||{},this.isControlVisible(t)){var o=this.cornerSize,a=!this.transparentCorners&&this.cornerStrokeColor;switch(s.cornerStyle||this.cornerStyle){case\"circle\":e.beginPath(),e.arc(r+o/2,n+o/2,o/2,0,2*Math.PI,!1),e[i](),a&&e.stroke();break;default:this.transparentCorners||e.clearRect(r,n,o,o),e[i+\"Rect\"](r,n,o,o),a&&e.strokeRect(r,n,o,o)}}},isControlVisible:function(t){return this._getControlsVisibility()[t]},setControlVisible:function(t,e){return this._getControlsVisibility()[t]=e,this},setControlsVisibility:function(t){for(var e in t||(t={}),t)this.setControlVisible(e,t[e]);return this},_getControlsVisibility:function(){return this._controlsVisibility||(this._controlsVisibility={tl:!0,tr:!0,br:!0,bl:!0,ml:!0,mt:!0,mr:!0,mb:!0,mtr:!0}),this._controlsVisibility},onDeselect:function(){},onSelect:function(){}})}(),fabric.util.object.extend(fabric.StaticCanvas.prototype,{FX_DURATION:500,fxCenterObjectH:function(e,t){var i=function(){},r=(t=t||{}).onComplete||i,n=t.onChange||i,s=this;return fabric.util.animate({startValue:e.left,endValue:this.getCenter().left,duration:this.FX_DURATION,onChange:function(t){e.set(\"left\",t),s.requestRenderAll(),n()},onComplete:function(){e.setCoords(),r()}}),this},fxCenterObjectV:function(e,t){var i=function(){},r=(t=t||{}).onComplete||i,n=t.onChange||i,s=this;return fabric.util.animate({startValue:e.top,endValue:this.getCenter().top,duration:this.FX_DURATION,onChange:function(t){e.set(\"top\",t),s.requestRenderAll(),n()},onComplete:function(){e.setCoords(),r()}}),this},fxRemove:function(e,t){var i=function(){},r=(t=t||{}).onComplete||i,n=t.onChange||i,s=this;return fabric.util.animate({startValue:e.opacity,endValue:0,duration:this.FX_DURATION,onChange:function(t){e.set(\"opacity\",t),s.requestRenderAll(),n()},onComplete:function(){s.remove(e),r()}}),this}}),fabric.util.object.extend(fabric.Object.prototype,{animate:function(){if(arguments[0]&&\"object\"==typeof arguments[0]){var t,e,i=[];for(t in arguments[0])i.push(t);for(var r=0,n=i.length;r<n;r++)t=i[r],e=r!==n-1,this._animate(t,arguments[0][t],arguments[1],e)}else this._animate.apply(this,arguments);return this},_animate:function(r,t,n,s){var o,a=this;t=t.toString(),n=n?fabric.util.object.clone(n):{},~r.indexOf(\".\")&&(o=r.split(\".\"));var e=o?this.get(o[0])[o[1]]:this.get(r);\"from\"in n||(n.from=e),t=~t.indexOf(\"=\")?e+parseFloat(t.replace(\"=\",\"\")):parseFloat(t),fabric.util.animate({startValue:n.from,endValue:t,byValue:n.by,easing:n.easing,duration:n.duration,abort:n.abort&&function(){return n.abort.call(a)},onChange:function(t,e,i){o?a[o[0]][o[1]]=t:a.set(r,t),s||n.onChange&&n.onChange(t,e,i)},onComplete:function(t,e,i){s||(a.setCoords(),n.onComplete&&n.onComplete(t,e,i))}})}}),function(t){\"use strict\";var s=t.fabric||(t.fabric={}),o=s.util.object.extend,r=s.util.object.clone,i={x1:1,x2:1,y1:1,y2:1},n=s.StaticCanvas.supports(\"setLineDash\");function e(t,e){var i=t.origin,r=t.axis1,n=t.axis2,s=t.dimension,o=e.nearest,a=e.center,h=e.farthest;return function(){switch(this.get(i)){case o:return Math.min(this.get(r),this.get(n));case a:return Math.min(this.get(r),this.get(n))+.5*this.get(s);case h:return Math.max(this.get(r),this.get(n))}}}s.Line?s.warn(\"fabric.Line is already defined\"):(s.Line=s.util.createClass(s.Object,{type:\"line\",x1:0,y1:0,x2:0,y2:0,cacheProperties:s.Object.prototype.cacheProperties.concat(\"x1\",\"x2\",\"y1\",\"y2\"),initialize:function(t,e){t||(t=[0,0,0,0]),this.callSuper(\"initialize\",e),this.set(\"x1\",t[0]),this.set(\"y1\",t[1]),this.set(\"x2\",t[2]),this.set(\"y2\",t[3]),this._setWidthHeight(e)},_setWidthHeight:function(t){t||(t={}),this.width=Math.abs(this.x2-this.x1),this.height=Math.abs(this.y2-this.y1),this.left=\"left\"in t?t.left:this._getLeftToOriginX(),this.top=\"top\"in t?t.top:this._getTopToOriginY()},_set:function(t,e){return this.callSuper(\"_set\",t,e),void 0!==i[t]&&this._setWidthHeight(),this},_getLeftToOriginX:e({origin:\"originX\",axis1:\"x1\",axis2:\"x2\",dimension:\"width\"},{nearest:\"left\",center:\"center\",farthest:\"right\"}),_getTopToOriginY:e({origin:\"originY\",axis1:\"y1\",axis2:\"y2\",dimension:\"height\"},{nearest:\"top\",center:\"center\",farthest:\"bottom\"}),_render:function(t){if(t.beginPath(),!this.strokeDashArray||this.strokeDashArray&&n){var e=this.calcLinePoints();t.moveTo(e.x1,e.y1),t.lineTo(e.x2,e.y2)}t.lineWidth=this.strokeWidth;var i=t.strokeStyle;t.strokeStyle=this.stroke||t.fillStyle,this.stroke&&this._renderStroke(t),t.strokeStyle=i},_renderDashedStroke:function(t){var e=this.calcLinePoints();t.beginPath(),s.util.drawDashedLine(t,e.x1,e.y1,e.x2,e.y2,this.strokeDashArray),t.closePath()},_findCenterFromElement:function(){return{x:(this.x1+this.x2)/2,y:(this.y1+this.y2)/2}},toObject:function(t){return o(this.callSuper(\"toObject\",t),this.calcLinePoints())},_getNonTransformedDimensions:function(){var t=this.callSuper(\"_getNonTransformedDimensions\");return\"butt\"===this.strokeLineCap&&(0===this.width&&(t.y-=this.strokeWidth),0===this.height&&(t.x-=this.strokeWidth)),t},calcLinePoints:function(){var t=this.x1<=this.x2?-1:1,e=this.y1<=this.y2?-1:1,i=t*this.width*.5,r=e*this.height*.5;return{x1:i,x2:t*this.width*-.5,y1:r,y2:e*this.height*-.5}},toSVG:function(t){var e=this._createBaseSVGMarkup(),i=this.calcLinePoints();return e.push(\"<line \",this.getSvgId(),'x1=\"',i.x1,'\" y1=\"',i.y1,'\" x2=\"',i.x2,'\" y2=\"',i.y2,'\" style=\"',this.getSvgStyles(),'\" transform=\"',this.getSvgTransform(),this.getSvgTransformMatrix(),'\"/>\\n'),t?t(e.join(\"\")):e.join(\"\")}}),s.Line.ATTRIBUTE_NAMES=s.SHARED_ATTRIBUTES.concat(\"x1 y1 x2 y2\".split(\" \")),s.Line.fromElement=function(t,e,i){i=i||{};var r=s.parseAttributes(t,s.Line.ATTRIBUTE_NAMES),n=[r.x1||0,r.y1||0,r.x2||0,r.y2||0];e(new s.Line(n,o(r,i)))},s.Line.fromObject=function(t,e){var i=r(t,!0);i.points=[t.x1,t.y1,t.x2,t.y2],s.Object._fromObject(\"Line\",i,function(t){delete t.points,e&&e(t)},\"points\")})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var h=t.fabric||(t.fabric={}),c=Math.PI;h.Circle?h.warn(\"fabric.Circle is already defined.\"):(h.Circle=h.util.createClass(h.Object,{type:\"circle\",radius:0,startAngle:0,endAngle:2*c,cacheProperties:h.Object.prototype.cacheProperties.concat(\"radius\",\"startAngle\",\"endAngle\"),_set:function(t,e){return this.callSuper(\"_set\",t,e),\"radius\"===t&&this.setRadius(e),this},toObject:function(t){return this.callSuper(\"toObject\",[\"radius\",\"startAngle\",\"endAngle\"].concat(t))},toSVG:function(t){var e=this._createBaseSVGMarkup(),i=(this.endAngle-this.startAngle)%(2*c);if(0===i)e.push(\"<circle \",this.getSvgId(),'cx=\"0\" cy=\"0\" ','r=\"',this.radius,'\" style=\"',this.getSvgStyles(),'\" transform=\"',this.getSvgTransform(),\" \",this.getSvgTransformMatrix(),'\"',this.addPaintOrder(),\"/>\\n\");else{var r=h.util.cos(this.startAngle)*this.radius,n=h.util.sin(this.startAngle)*this.radius,s=h.util.cos(this.endAngle)*this.radius,o=h.util.sin(this.endAngle)*this.radius,a=c<i?\"1\":\"0\";e.push('<path d=\"M '+r+\" \"+n,\" A \"+this.radius+\" \"+this.radius,\" 0 \",+a+\" 1\",\" \"+s+\" \"+o,'\" style=\"',this.getSvgStyles(),'\" transform=\"',this.getSvgTransform(),\" \",this.getSvgTransformMatrix(),'\"',this.addPaintOrder(),\"/>\\n\")}return t?t(e.join(\"\")):e.join(\"\")},_render:function(t){t.beginPath(),t.arc(0,0,this.radius,this.startAngle,this.endAngle,!1),this._renderPaintInOrder(t)},getRadiusX:function(){return this.get(\"radius\")*this.get(\"scaleX\")},getRadiusY:function(){return this.get(\"radius\")*this.get(\"scaleY\")},setRadius:function(t){return this.radius=t,this.set(\"width\",2*t).set(\"height\",2*t)}}),h.Circle.ATTRIBUTE_NAMES=h.SHARED_ATTRIBUTES.concat(\"cx cy r\".split(\" \")),h.Circle.fromElement=function(t,e){var i,r=h.parseAttributes(t,h.Circle.ATTRIBUTE_NAMES);if(!(\"radius\"in(i=r)&&0<=i.radius))throw new Error(\"value of `r` attribute is required and can not be negative\");r.left=(r.left||0)-r.radius,r.top=(r.top||0)-r.radius,e(new h.Circle(r))},h.Circle.fromObject=function(t,e){return h.Object._fromObject(\"Circle\",t,e)})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var r=t.fabric||(t.fabric={});r.Triangle?r.warn(\"fabric.Triangle is already defined\"):(r.Triangle=r.util.createClass(r.Object,{type:\"triangle\",width:100,height:100,_render:function(t){var e=this.width/2,i=this.height/2;t.beginPath(),t.moveTo(-e,i),t.lineTo(0,-i),t.lineTo(e,i),t.closePath(),this._renderPaintInOrder(t)},_renderDashedStroke:function(t){var e=this.width/2,i=this.height/2;t.beginPath(),r.util.drawDashedLine(t,-e,i,0,-i,this.strokeDashArray),r.util.drawDashedLine(t,0,-i,e,i,this.strokeDashArray),r.util.drawDashedLine(t,e,i,-e,i,this.strokeDashArray),t.closePath()},toSVG:function(t){var e=this._createBaseSVGMarkup(),i=this.width/2,r=this.height/2,n=[-i+\" \"+r,\"0 \"+-r,i+\" \"+r].join(\",\");return e.push(\"<polygon \",this.getSvgId(),'points=\"',n,'\" style=\"',this.getSvgStyles(),'\" transform=\"',this.getSvgTransform(),'\"',this.addPaintOrder(),\"/>\"),t?t(e.join(\"\")):e.join(\"\")}}),r.Triangle.fromObject=function(t,e){return r.Object._fromObject(\"Triangle\",t,e)})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var r=t.fabric||(t.fabric={}),e=2*Math.PI;r.Ellipse?r.warn(\"fabric.Ellipse is already defined.\"):(r.Ellipse=r.util.createClass(r.Object,{type:\"ellipse\",rx:0,ry:0,cacheProperties:r.Object.prototype.cacheProperties.concat(\"rx\",\"ry\"),initialize:function(t){this.callSuper(\"initialize\",t),this.set(\"rx\",t&&t.rx||0),this.set(\"ry\",t&&t.ry||0)},_set:function(t,e){switch(this.callSuper(\"_set\",t,e),t){case\"rx\":this.rx=e,this.set(\"width\",2*e);break;case\"ry\":this.ry=e,this.set(\"height\",2*e)}return this},getRx:function(){return this.get(\"rx\")*this.get(\"scaleX\")},getRy:function(){return this.get(\"ry\")*this.get(\"scaleY\")},toObject:function(t){return this.callSuper(\"toObject\",[\"rx\",\"ry\"].concat(t))},toSVG:function(t){var e=this._createBaseSVGMarkup();return e.push(\"<ellipse \",this.getSvgId(),'cx=\"0\" cy=\"0\" ','rx=\"',this.rx,'\" ry=\"',this.ry,'\" style=\"',this.getSvgStyles(),'\" transform=\"',this.getSvgTransform(),this.getSvgTransformMatrix(),'\"',this.addPaintOrder(),\"/>\\n\"),t?t(e.join(\"\")):e.join(\"\")},_render:function(t){t.beginPath(),t.save(),t.transform(1,0,0,this.ry/this.rx,0,0),t.arc(0,0,this.rx,0,e,!1),t.restore(),this._renderPaintInOrder(t)}}),r.Ellipse.ATTRIBUTE_NAMES=r.SHARED_ATTRIBUTES.concat(\"cx cy rx ry\".split(\" \")),r.Ellipse.fromElement=function(t,e){var i=r.parseAttributes(t,r.Ellipse.ATTRIBUTE_NAMES);i.left=(i.left||0)-i.rx,i.top=(i.top||0)-i.ry,e(new r.Ellipse(i))},r.Ellipse.fromObject=function(t,e){return r.Object._fromObject(\"Ellipse\",t,e)})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var s=t.fabric||(t.fabric={}),o=s.util.object.extend;s.Rect?s.warn(\"fabric.Rect is already defined\"):(s.Rect=s.util.createClass(s.Object,{stateProperties:s.Object.prototype.stateProperties.concat(\"rx\",\"ry\"),type:\"rect\",rx:0,ry:0,cacheProperties:s.Object.prototype.cacheProperties.concat(\"rx\",\"ry\"),initialize:function(t){this.callSuper(\"initialize\",t),this._initRxRy()},_initRxRy:function(){this.rx&&!this.ry?this.ry=this.rx:this.ry&&!this.rx&&(this.rx=this.ry)},_render:function(t){if(1!==this.width||1!==this.height){var e=this.rx?Math.min(this.rx,this.width/2):0,i=this.ry?Math.min(this.ry,this.height/2):0,r=this.width,n=this.height,s=-this.width/2,o=-this.height/2,a=0!==e||0!==i,h=.4477152502;t.beginPath(),t.moveTo(s+e,o),t.lineTo(s+r-e,o),a&&t.bezierCurveTo(s+r-h*e,o,s+r,o+h*i,s+r,o+i),t.lineTo(s+r,o+n-i),a&&t.bezierCurveTo(s+r,o+n-h*i,s+r-h*e,o+n,s+r-e,o+n),t.lineTo(s+e,o+n),a&&t.bezierCurveTo(s+h*e,o+n,s,o+n-h*i,s,o+n-i),t.lineTo(s,o+i),a&&t.bezierCurveTo(s,o+h*i,s+h*e,o,s+e,o),t.closePath(),this._renderPaintInOrder(t)}else t.fillRect(-.5,-.5,1,1)},_renderDashedStroke:function(t){var e=-this.width/2,i=-this.height/2,r=this.width,n=this.height;t.beginPath(),s.util.drawDashedLine(t,e,i,e+r,i,this.strokeDashArray),s.util.drawDashedLine(t,e+r,i,e+r,i+n,this.strokeDashArray),s.util.drawDashedLine(t,e+r,i+n,e,i+n,this.strokeDashArray),s.util.drawDashedLine(t,e,i+n,e,i,this.strokeDashArray),t.closePath()},toObject:function(t){return this.callSuper(\"toObject\",[\"rx\",\"ry\"].concat(t))},toSVG:function(t){var e=this._createBaseSVGMarkup(),i=-this.width/2,r=-this.height/2;return e.push(\"<rect \",this.getSvgId(),'x=\"',i,'\" y=\"',r,'\" rx=\"',this.get(\"rx\"),'\" ry=\"',this.get(\"ry\"),'\" width=\"',this.width,'\" height=\"',this.height,'\" style=\"',this.getSvgStyles(),'\" transform=\"',this.getSvgTransform(),this.getSvgTransformMatrix(),'\"',this.addPaintOrder(),\"/>\\n\"),t?t(e.join(\"\")):e.join(\"\")}}),s.Rect.ATTRIBUTE_NAMES=s.SHARED_ATTRIBUTES.concat(\"x y rx ry width height\".split(\" \")),s.Rect.fromElement=function(t,e,i){if(!t)return e(null);i=i||{};var r=s.parseAttributes(t,s.Rect.ATTRIBUTE_NAMES);r.left=r.left||0,r.top=r.top||0;var n=new s.Rect(o(i?s.util.object.clone(i):{},r));n.visible=n.visible&&0<n.width&&0<n.height,e(n)},s.Rect.fromObject=function(t,e){return s.Object._fromObject(\"Rect\",t,e)})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var h=t.fabric||(t.fabric={}),e=h.util.object.extend,r=h.util.array.min,n=h.util.array.max,c=h.util.toFixed;h.Polyline?h.warn(\"fabric.Polyline is already defined\"):(h.Polyline=h.util.createClass(h.Object,{type:\"polyline\",points:null,cacheProperties:h.Object.prototype.cacheProperties.concat(\"points\"),initialize:function(t,e){e=e||{},this.points=t||[],this.callSuper(\"initialize\",e);var i=this._calcDimensions();void 0===e.left&&(this.left=i.left),void 0===e.top&&(this.top=i.top),this.width=i.width,this.height=i.height,this.pathOffset={x:i.left+this.width/2,y:i.top+this.height/2}},_calcDimensions:function(){var t=this.points,e=r(t,\"x\")||0,i=r(t,\"y\")||0;return{left:e,top:i,width:(n(t,\"x\")||0)-e,height:(n(t,\"y\")||0)-i}},toObject:function(t){return e(this.callSuper(\"toObject\",t),{points:this.points.concat()})},toSVG:function(t){for(var e=[],i=this.pathOffset.x,r=this.pathOffset.y,n=this._createBaseSVGMarkup(),s=h.Object.NUM_FRACTION_DIGITS,o=0,a=this.points.length;o<a;o++)e.push(c(this.points[o].x-i,s),\",\",c(this.points[o].y-r,s),\" \");return n.push(\"<\",this.type,\" \",this.getSvgId(),'points=\"',e.join(\"\"),'\" style=\"',this.getSvgStyles(),'\" transform=\"',this.getSvgTransform(),\" \",this.getSvgTransformMatrix(),'\"',this.addPaintOrder(),\"/>\\n\"),t?t(n.join(\"\")):n.join(\"\")},commonRender:function(t){var e,i=this.points.length,r=this.pathOffset.x,n=this.pathOffset.y;if(!i||isNaN(this.points[i-1].y))return!1;t.beginPath(),t.moveTo(this.points[0].x-r,this.points[0].y-n);for(var s=0;s<i;s++)e=this.points[s],t.lineTo(e.x-r,e.y-n);return!0},_render:function(t){this.commonRender(t)&&this._renderPaintInOrder(t)},_renderDashedStroke:function(t){var e,i;t.beginPath();for(var r=0,n=this.points.length;r<n;r++)e=this.points[r],i=this.points[r+1]||e,h.util.drawDashedLine(t,e.x,e.y,i.x,i.y,this.strokeDashArray)},complexity:function(){return this.get(\"points\").length}}),h.Polyline.ATTRIBUTE_NAMES=h.SHARED_ATTRIBUTES.concat(),h.Polyline.fromElement=function(t,e,i){if(!t)return e(null);i||(i={});var r=h.parsePointsAttribute(t.getAttribute(\"points\")),n=h.parseAttributes(t,h.Polyline.ATTRIBUTE_NAMES);e(new h.Polyline(r,h.util.object.extend(n,i)))},h.Polyline.fromObject=function(t,e){return h.Object._fromObject(\"Polyline\",t,e,\"points\")})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var s=t.fabric||(t.fabric={}),o=s.util.object.extend;s.Polygon?s.warn(\"fabric.Polygon is already defined\"):(s.Polygon=s.util.createClass(s.Polyline,{type:\"polygon\",_render:function(t){this.commonRender(t)&&(t.closePath(),this._renderPaintInOrder(t))},_renderDashedStroke:function(t){this.callSuper(\"_renderDashedStroke\",t),t.closePath()}}),s.Polygon.ATTRIBUTE_NAMES=s.SHARED_ATTRIBUTES.concat(),s.Polygon.fromElement=function(t,e,i){if(!t)return e(null);i||(i={});var r=s.parsePointsAttribute(t.getAttribute(\"points\")),n=s.parseAttributes(t,s.Polygon.ATTRIBUTE_NAMES);e(new s.Polygon(r,o(n,i)))},s.Polygon.fromObject=function(t,e){return s.Object._fromObject(\"Polygon\",t,e,\"points\")})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var m=t.fabric||(t.fabric={}),b=m.util.array.min,_=m.util.array.max,n=m.util.object.extend,r=Object.prototype.toString,p=m.util.drawArc,y={m:2,l:2,h:1,v:1,c:6,s:4,q:4,t:2,a:7},x={m:\"l\",M:\"L\"};m.Path?m.warn(\"fabric.Path is already defined\"):(m.Path=m.util.createClass(m.Object,{type:\"path\",path:null,cacheProperties:m.Object.prototype.cacheProperties.concat(\"path\",\"fillRule\"),stateProperties:m.Object.prototype.stateProperties.concat(\"path\"),initialize:function(t,e){e=e||{},this.callSuper(\"initialize\",e),t||(t=[]);var i=\"[object Array]\"===r.call(t);this.path=i?t:t.match&&t.match(/[mzlhvcsqta][^mzlhvcsqta]*/gi),this.path&&(i||(this.path=this._parsePath()),this._setPositionDimensions(e))},_setPositionDimensions:function(t){var e=this._parseDimensions();this.width=e.width,this.height=e.height,void 0===t.left&&(this.left=e.left),void 0===t.top&&(this.top=e.top),this.pathOffset=this.pathOffset||{x:e.left+this.width/2,y:e.top+this.height/2}},_renderPathCommands:function(t){var e,i,r,n=null,s=0,o=0,a=0,h=0,c=0,l=0,u=-this.pathOffset.x,f=-this.pathOffset.y;t.beginPath();for(var d=0,g=this.path.length;d<g;++d){switch((e=this.path[d])[0]){case\"l\":a+=e[1],h+=e[2],t.lineTo(a+u,h+f);break;case\"L\":a=e[1],h=e[2],t.lineTo(a+u,h+f);break;case\"h\":a+=e[1],t.lineTo(a+u,h+f);break;case\"H\":a=e[1],t.lineTo(a+u,h+f);break;case\"v\":h+=e[1],t.lineTo(a+u,h+f);break;case\"V\":h=e[1],t.lineTo(a+u,h+f);break;case\"m\":s=a+=e[1],o=h+=e[2],t.moveTo(a+u,h+f);break;case\"M\":s=a=e[1],o=h=e[2],t.moveTo(a+u,h+f);break;case\"c\":i=a+e[5],r=h+e[6],c=a+e[3],l=h+e[4],t.bezierCurveTo(a+e[1]+u,h+e[2]+f,c+u,l+f,i+u,r+f),a=i,h=r;break;case\"C\":a=e[5],h=e[6],c=e[3],l=e[4],t.bezierCurveTo(e[1]+u,e[2]+f,c+u,l+f,a+u,h+f);break;case\"s\":i=a+e[3],r=h+e[4],null===n[0].match(/[CcSs]/)?(c=a,l=h):(c=2*a-c,l=2*h-l),t.bezierCurveTo(c+u,l+f,a+e[1]+u,h+e[2]+f,i+u,r+f),c=a+e[1],l=h+e[2],a=i,h=r;break;case\"S\":i=e[3],r=e[4],null===n[0].match(/[CcSs]/)?(c=a,l=h):(c=2*a-c,l=2*h-l),t.bezierCurveTo(c+u,l+f,e[1]+u,e[2]+f,i+u,r+f),a=i,h=r,c=e[1],l=e[2];break;case\"q\":i=a+e[3],r=h+e[4],c=a+e[1],l=h+e[2],t.quadraticCurveTo(c+u,l+f,i+u,r+f),a=i,h=r;break;case\"Q\":i=e[3],r=e[4],t.quadraticCurveTo(e[1]+u,e[2]+f,i+u,r+f),a=i,h=r,c=e[1],l=e[2];break;case\"t\":i=a+e[1],r=h+e[2],null===n[0].match(/[QqTt]/)?(c=a,l=h):(c=2*a-c,l=2*h-l),t.quadraticCurveTo(c+u,l+f,i+u,r+f),a=i,h=r;break;case\"T\":i=e[1],r=e[2],null===n[0].match(/[QqTt]/)?(c=a,l=h):(c=2*a-c,l=2*h-l),t.quadraticCurveTo(c+u,l+f,i+u,r+f),a=i,h=r;break;case\"a\":p(t,a+u,h+f,[e[1],e[2],e[3],e[4],e[5],e[6]+a+u,e[7]+h+f]),a+=e[6],h+=e[7];break;case\"A\":p(t,a+u,h+f,[e[1],e[2],e[3],e[4],e[5],e[6]+u,e[7]+f]),a=e[6],h=e[7];break;case\"z\":case\"Z\":a=s,h=o,t.closePath()}n=e}},_render:function(t){this._renderPathCommands(t),this._renderPaintInOrder(t)},toString:function(){return\"#<fabric.Path (\"+this.complexity()+'): { \"top\": '+this.top+', \"left\": '+this.left+\" }>\"},toObject:function(t){return n(this.callSuper(\"toObject\",t),{path:this.path.map(function(t){return t.slice()}),top:this.top,left:this.left})},toDatalessObject:function(t){var e=this.toObject([\"sourcePath\"].concat(t));return e.sourcePath&&delete e.path,e},toSVG:function(t){for(var e,i=[],r=this._createBaseSVGMarkup(),n=0,s=this.path.length;n<s;n++)i.push(this.path[n].join(\" \"));var o=i.join(\" \");return e=\" translate(\"+-this.pathOffset.x+\", \"+-this.pathOffset.y+\") \",r.push(\"<path \",this.getSvgId(),'d=\"',o,'\" style=\"',this.getSvgStyles(),'\" transform=\"',this.getSvgTransform(),e,this.getSvgTransformMatrix(),'\" stroke-linecap=\"round\" ',this.addPaintOrder(),\"/>\\n\"),t?t(r.join(\"\")):r.join(\"\")},complexity:function(){return this.path.length},_parsePath:function(){for(var t,e,i,r,n,s=[],o=[],a=/([-+]?((\\d+\\.\\d+)|((\\d+)|(\\.\\d+)))(?:e[-+]?\\d+)?)/gi,h=0,c=this.path.length;h<c;h++){for(r=(t=this.path[h]).slice(1).trim(),o.length=0;i=a.exec(r);)o.push(i[0]);n=[t.charAt(0)];for(var l=0,u=o.length;l<u;l++)e=parseFloat(o[l]),isNaN(e)||n.push(e);var f=n[0],d=y[f.toLowerCase()],g=x[f]||f;if(n.length-1>d)for(var p=1,v=n.length;p<v;p+=d)s.push([f].concat(n.slice(p,p+d))),f=g;else s.push(n)}return s},_parseDimensions:function(){for(var t,e,i,r,n=[],s=[],o=null,a=0,h=0,c=0,l=0,u=0,f=0,d=0,g=this.path.length;d<g;++d){switch((t=this.path[d])[0]){case\"l\":c+=t[1],l+=t[2],r=[];break;case\"L\":c=t[1],l=t[2],r=[];break;case\"h\":c+=t[1],r=[];break;case\"H\":c=t[1],r=[];break;case\"v\":l+=t[1],r=[];break;case\"V\":l=t[1],r=[];break;case\"m\":a=c+=t[1],h=l+=t[2],r=[];break;case\"M\":a=c=t[1],h=l=t[2],r=[];break;case\"c\":e=c+t[5],i=l+t[6],u=c+t[3],f=l+t[4],r=m.util.getBoundsOfCurve(c,l,c+t[1],l+t[2],u,f,e,i),c=e,l=i;break;case\"C\":u=t[3],f=t[4],r=m.util.getBoundsOfCurve(c,l,t[1],t[2],u,f,t[5],t[6]),c=t[5],l=t[6];break;case\"s\":e=c+t[3],i=l+t[4],null===o[0].match(/[CcSs]/)?(u=c,f=l):(u=2*c-u,f=2*l-f),r=m.util.getBoundsOfCurve(c,l,u,f,c+t[1],l+t[2],e,i),u=c+t[1],f=l+t[2],c=e,l=i;break;case\"S\":e=t[3],i=t[4],null===o[0].match(/[CcSs]/)?(u=c,f=l):(u=2*c-u,f=2*l-f),r=m.util.getBoundsOfCurve(c,l,u,f,t[1],t[2],e,i),c=e,l=i,u=t[1],f=t[2];break;case\"q\":e=c+t[3],i=l+t[4],u=c+t[1],f=l+t[2],r=m.util.getBoundsOfCurve(c,l,u,f,u,f,e,i),c=e,l=i;break;case\"Q\":u=t[1],f=t[2],r=m.util.getBoundsOfCurve(c,l,u,f,u,f,t[3],t[4]),c=t[3],l=t[4];break;case\"t\":e=c+t[1],i=l+t[2],null===o[0].match(/[QqTt]/)?(u=c,f=l):(u=2*c-u,f=2*l-f),r=m.util.getBoundsOfCurve(c,l,u,f,u,f,e,i),c=e,l=i;break;case\"T\":e=t[1],i=t[2],null===o[0].match(/[QqTt]/)?(u=c,f=l):(u=2*c-u,f=2*l-f),r=m.util.getBoundsOfCurve(c,l,u,f,u,f,e,i),c=e,l=i;break;case\"a\":r=m.util.getBoundsOfArc(c,l,t[1],t[2],t[3],t[4],t[5],t[6]+c,t[7]+l),c+=t[6],l+=t[7];break;case\"A\":r=m.util.getBoundsOfArc(c,l,t[1],t[2],t[3],t[4],t[5],t[6],t[7]),c=t[6],l=t[7];break;case\"z\":case\"Z\":c=a,l=h}o=t,r.forEach(function(t){n.push(t.x),s.push(t.y)}),n.push(c),s.push(l)}var p=b(n)||0,v=b(s)||0;return{left:p,top:v,width:(_(n)||0)-p,height:(_(s)||0)-v}}}),m.Path.fromObject=function(i,r){if(\"string\"==typeof i.sourcePath){var t=i.sourcePath;m.loadSVGFromURL(t,function(t){var e=t[0];e.setOptions(i),r&&r(e)})}else m.Object._fromObject(\"Path\",i,r,\"path\")},m.Path.ATTRIBUTE_NAMES=m.SHARED_ATTRIBUTES.concat([\"d\"]),m.Path.fromElement=function(t,e,i){var r=m.parseAttributes(t,m.Path.ATTRIBUTE_NAMES);e(new m.Path(r.d,n(r,i)))})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var c=t.fabric||(t.fabric={}),l=c.util.array.min,u=c.util.array.max;c.Group||(c.Group=c.util.createClass(c.Object,c.Collection,{type:\"group\",strokeWidth:0,subTargetCheck:!1,cacheProperties:[],useSetOnGroup:!1,initialize:function(t,e,i){e=e||{},this._objects=[],i&&this.callSuper(\"initialize\",e),this._objects=t||[];for(var r=this._objects.length;r--;)this._objects[r].group=this;if(i)this._updateObjectsACoords();else{var n=e&&e.centerPoint;void 0!==e.originX&&(this.originX=e.originX),void 0!==e.originY&&(this.originY=e.originY),n||this._calcBounds(),this._updateObjectsCoords(n),delete e.centerPoint,this.callSuper(\"initialize\",e)}this.setCoords()},_updateObjectsACoords:function(){for(var t=this._objects.length;t--;)this._objects[t].setCoords(!0,!0)},_updateObjectsCoords:function(t){t=t||this.getCenterPoint();for(var e=this._objects.length;e--;)this._updateObjectCoords(this._objects[e],t)},_updateObjectCoords:function(t,e){var i=t.left,r=t.top;t.set({left:i-e.x,top:r-e.y}),t.group=this,t.setCoords(!0,!0)},toString:function(){return\"#<fabric.Group: (\"+this.complexity()+\")>\"},addWithUpdate:function(t){return this._restoreObjectsState(),c.util.resetObjectTransform(this),t&&(this._objects.push(t),t.group=this,t._set(\"canvas\",this.canvas)),this._calcBounds(),this._updateObjectsCoords(),this.setCoords(),this.dirty=!0,this},removeWithUpdate:function(t){return this._restoreObjectsState(),c.util.resetObjectTransform(this),this.remove(t),this._calcBounds(),this._updateObjectsCoords(),this.setCoords(),this.dirty=!0,this},_onObjectAdded:function(t){this.dirty=!0,t.group=this,t._set(\"canvas\",this.canvas)},_onObjectRemoved:function(t){this.dirty=!0,delete t.group},_set:function(t,e){var i=this._objects.length;if(this.useSetOnGroup)for(;i--;)this._objects[i].setOnGroup(t,e);if(\"canvas\"===t)for(;i--;)this._objects[i]._set(t,e);c.Object.prototype._set.call(this,t,e)},toObject:function(r){var t=this._objects.map(function(t){var e=t.includeDefaultValues;t.includeDefaultValues=t.group.includeDefaultValues;var i=t.toObject(r);return t.includeDefaultValues=e,i}),e=c.Object.prototype.toObject.call(this,r);return e.objects=t,e},toDatalessObject:function(r){var t,e=this.sourcePath;t=e||this._objects.map(function(t){var e=t.includeDefaultValues;t.includeDefaultValues=t.group.includeDefaultValues;var i=t.toDatalessObject(r);return t.includeDefaultValues=e,i});var i=c.Object.prototype.toDatalessObject.call(this,r);return i.objects=t,i},render:function(t){this._transformDone=!0,this.callSuper(\"render\",t),this._transformDone=!1},shouldCache:function(){var t=this.objectCaching&&(!this.group||this.needsItsOwnCache()||!this.group.isOnACache());if(this.ownCaching=t)for(var e=0,i=this._objects.length;e<i;e++)if(this._objects[e].willDrawShadow())return this.ownCaching=!1;return t},willDrawShadow:function(){if(this.shadow)return c.Object.prototype.willDrawShadow.call(this);for(var t=0,e=this._objects.length;t<e;t++)if(this._objects[t].willDrawShadow())return!0;return!1},isOnACache:function(){return this.ownCaching||this.group&&this.group.isOnACache()},drawObject:function(t){for(var e=0,i=this._objects.length;e<i;e++)this._objects[e].render(t)},isCacheDirty:function(){if(this.callSuper(\"isCacheDirty\"))return!0;if(!this.statefullCache)return!1;for(var t=0,e=this._objects.length;t<e;t++)if(this._objects[t].isCacheDirty(!0)){if(this._cacheCanvas){var i=this.cacheWidth/this.zoomX,r=this.cacheHeight/this.zoomY;this._cacheContext.clearRect(-i/2,-r/2,i,r)}return!0}return!1},_restoreObjectsState:function(){return this._objects.forEach(this._restoreObjectState,this),this},realizeTransform:function(t){var e=t.calcTransformMatrix(),i=c.util.qrDecompose(e),r=new c.Point(i.translateX,i.translateY);return t.flipX=!1,t.flipY=!1,t.set(\"scaleX\",i.scaleX),t.set(\"scaleY\",i.scaleY),t.skewX=i.skewX,t.skewY=i.skewY,t.angle=i.angle,t.setPositionByOrigin(r,\"center\",\"center\"),t},_restoreObjectState:function(t){return this.realizeTransform(t),t.setCoords(),delete t.group,this},destroy:function(){return this._objects.forEach(function(t){t.set(\"dirty\",!0)}),this._restoreObjectsState()},toActiveSelection:function(){if(this.canvas){var t=this._objects,e=this.canvas;this._objects=[];var i=this.toObject();delete i.objects;var r=new c.ActiveSelection([]);return r.set(i),r.type=\"activeSelection\",e.remove(this),t.forEach(function(t){t.group=r,t.dirty=!0,e.add(t)}),r.canvas=e,r._objects=t,(e._activeObject=r).setCoords(),r}},ungroupOnCanvas:function(){return this._restoreObjectsState()},setObjectsCoords:function(){return this.forEachObject(function(t){t.setCoords(!0,!0)}),this},_calcBounds:function(t){for(var e,i,r,n=[],s=[],o=[\"tr\",\"br\",\"bl\",\"tl\"],a=0,h=this._objects.length,c=o.length;a<h;++a)for((e=this._objects[a]).setCoords(!0),r=0;r<c;r++)i=o[r],n.push(e.oCoords[i].x),s.push(e.oCoords[i].y);this._getBounds(n,s,t)},_getBounds:function(t,e,i){var r=new c.Point(l(t),l(e)),n=new c.Point(u(t),u(e)),s=r.y||0,o=r.x||0,a=n.x-r.x||0,h=n.y-r.y||0;this.width=a,this.height=h,i||this.setPositionByOrigin({x:o,y:s},\"left\",\"top\")},toSVG:function(t){var e=this._createBaseSVGMarkup();e.push(\"<g \",this.getSvgId(),'transform=\"',this.getSvgTransform(),this.getSvgTransformMatrix(),'\" style=\"',this.getSvgFilter(),'\">\\n');for(var i=0,r=this._objects.length;i<r;i++)e.push(\"\\t\",this._objects[i].toSVG(t));return e.push(\"</g>\\n\"),t?t(e.join(\"\")):e.join(\"\")}}),c.Group.fromObject=function(i,r){c.util.enlivenObjects(i.objects,function(t){var e=c.util.object.clone(i,!0);delete e.objects,r&&r(new c.Group(t,e,!0))})})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var n=t.fabric||(t.fabric={});n.ActiveSelection||(n.ActiveSelection=n.util.createClass(n.Group,{type:\"activeSelection\",initialize:function(t,e){e=e||{},this._objects=t||[];for(var i=this._objects.length;i--;)this._objects[i].group=this;e.originX&&(this.originX=e.originX),e.originY&&(this.originY=e.originY),this._calcBounds(),this._updateObjectsCoords(),n.Object.prototype.initialize.call(this,e),this.setCoords()},toGroup:function(){var t=this._objects.concat();this._objects=[];var e=n.Object.prototype.toObject.call(this),i=new n.Group([]);if(delete e.type,i.set(e),t.forEach(function(t){t.canvas.remove(t),t.group=i}),i._objects=t,!this.canvas)return i;var r=this.canvas;return r.add(i),(r._activeObject=i).setCoords(),i},onDeselect:function(){return this.destroy(),!1},toString:function(){return\"#<fabric.ActiveSelection: (\"+this.complexity()+\")>\"},shouldCache:function(){return!1},isOnACache:function(){return!1},_renderControls:function(t,e,i){t.save(),t.globalAlpha=this.isMoving?this.borderOpacityWhenMoving:1,this.callSuper(\"_renderControls\",t,e),void 0===(i=i||{}).hasControls&&(i.hasControls=!1),void 0===i.hasRotatingPoint&&(i.hasRotatingPoint=!1),i.forActiveSelection=!0;for(var r=0,n=this._objects.length;r<n;r++)this._objects[r]._renderControls(t,i);t.restore()}}),n.ActiveSelection.fromObject=function(e,i){n.util.enlivenObjects(e.objects,function(t){delete e.objects,i&&i(new n.ActiveSelection(t,e,!0))})})}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var n=fabric.util.object.extend;t.fabric||(t.fabric={}),t.fabric.Image?fabric.warn(\"fabric.Image is already defined.\"):(fabric.Image=fabric.util.createClass(fabric.Object,{type:\"image\",crossOrigin:\"\",strokeWidth:0,_lastScaleX:1,_lastScaleY:1,_filterScalingX:1,_filterScalingY:1,minimumScaleTrigger:.5,stateProperties:fabric.Object.prototype.stateProperties.concat(\"cropX\",\"cropY\"),objectCaching:!1,cacheKey:\"\",cropX:0,cropY:0,initialize:function(t,e){e||(e={}),this.filters=[],this.cacheKey=\"texture\"+fabric.Object.__uid++,this.callSuper(\"initialize\",e),this._initElement(t,e)},getElement:function(){return this._element||{}},setElement:function(t,e){return this.removeTexture(this.cacheKey),this.removeTexture(this.cacheKey+\"_filtered\"),this._element=t,this._originalElement=t,this._initConfig(e),this.resizeFilter&&this.applyResizeFilters(),0!==this.filters.length&&this.applyFilters(),this},removeTexture:function(t){var e=fabric.filterBackend;e&&e.evictCachesForKey&&e.evictCachesForKey(t)},dispose:function(){this.removeTexture(this.cacheKey),this.removeTexture(this.cacheKey+\"_filtered\"),this._cacheContext=void 0,[\"_originalElement\",\"_element\",\"_filteredEl\",\"_cacheCanvas\"].forEach(function(t){fabric.util.cleanUpJsdomNode(this[t]),this[t]=void 0}.bind(this))},setCrossOrigin:function(t){return this.crossOrigin=t,this._element.crossOrigin=t,this},getOriginalSize:function(){var t=this.getElement();return{width:t.naturalWidth||t.width,height:t.naturalHeight||t.height}},_stroke:function(t){if(this.stroke&&0!==this.strokeWidth){var e=this.width/2,i=this.height/2;t.beginPath(),t.moveTo(-e,-i),t.lineTo(e,-i),t.lineTo(e,i),t.lineTo(-e,i),t.lineTo(-e,-i),t.closePath()}},_renderDashedStroke:function(t){var e=-this.width/2,i=-this.height/2,r=this.width,n=this.height;t.save(),this._setStrokeStyles(t,this),t.beginPath(),fabric.util.drawDashedLine(t,e,i,e+r,i,this.strokeDashArray),fabric.util.drawDashedLine(t,e+r,i,e+r,i+n,this.strokeDashArray),fabric.util.drawDashedLine(t,e+r,i+n,e,i+n,this.strokeDashArray),fabric.util.drawDashedLine(t,e,i+n,e,i,this.strokeDashArray),t.closePath(),t.restore()},toObject:function(t){var e=[];this.filters.forEach(function(t){t&&e.push(t.toObject())});var i=n(this.callSuper(\"toObject\",[\"crossOrigin\",\"cropX\",\"cropY\"].concat(t)),{src:this.getSrc(),filters:e});return this.resizeFilter&&(i.resizeFilter=this.resizeFilter.toObject()),i},hasCrop:function(){return this.cropX||this.cropY||this.width<this._element.width||this.height<this._element.height},toSVG:function(t){var e=this._createBaseSVGMarkup(),i=-this.width/2,r=-this.height/2,n=\"\";if(this.hasCrop()){var s=fabric.Object.__uid++;e.push('<clipPath id=\"imageCrop_'+s+'\">\\n','\\t<rect x=\"'+i+'\" y=\"'+r+'\" width=\"'+this.width+'\" height=\"'+this.height+'\" />\\n',\"</clipPath>\\n\"),n=' clip-path=\"url(#imageCrop_'+s+')\" '}e.push('<g transform=\"',this.getSvgTransform(),this.getSvgTransformMatrix(),'\">\\n');var o=[\"\\t<image \",this.getSvgId(),'xlink:href=\"',this.getSvgSrc(!0),'\" x=\"',i-this.cropX,'\" y=\"',r-this.cropY,'\" style=\"',this.getSvgStyles(),'\" width=\"',this._element.width||this._element.naturalWidth,'\" height=\"',this._element.height||this._element.height,'\"',n,\"></image>\\n\"];if(\"fill\"===this.paintFirst&&Array.prototype.push.apply(e,o),this.stroke||this.strokeDashArray){var a=this.fill;this.fill=null,e.push(\"\\t<rect \",'x=\"',i,'\" y=\"',r,'\" width=\"',this.width,'\" height=\"',this.height,'\" style=\"',this.getSvgStyles(),'\"/>\\n'),this.fill=a}return\"fill\"!==this.paintFirst&&Array.prototype.push.apply(e,o),e.push(\"</g>\\n\"),t?t(e.join(\"\")):e.join(\"\")},getSrc:function(t){var e=t?this._element:this._originalElement;return e?e.toDataURL?e.toDataURL():e.src:this.src||\"\"},setSrc:function(t,e,i){return fabric.util.loadImage(t,function(t){this.setElement(t,i),this._setWidthHeight(),e(this)},this,i&&i.crossOrigin),this},toString:function(){return'#<fabric.Image: { src: \"'+this.getSrc()+'\" }>'},applyResizeFilters:function(){var t=this.resizeFilter,e=this.minimumScaleTrigger,i=this.getTotalObjectScaling(),r=i.scaleX,n=i.scaleY,s=this._filteredEl||this._originalElement;if(this.group&&this.set(\"dirty\",!0),!t||e<r&&e<n)return this._element=s,this._filterScalingX=1,this._filterScalingY=1,this._lastScaleX=r,void(this._lastScaleY=n);fabric.filterBackend||(fabric.filterBackend=fabric.initFilterBackend());var o=fabric.util.createCanvasElement(),a=this._filteredEl?this.cacheKey+\"_filtered\":this.cacheKey,h=s.width,c=s.height;o.width=h,o.height=c,this._element=o,this._lastScaleX=t.scaleX=r,this._lastScaleY=t.scaleY=n,fabric.filterBackend.applyFilters([t],s,h,c,this._element,a),this._filterScalingX=o.width/this._originalElement.width,this._filterScalingY=o.height/this._originalElement.height},applyFilters:function(t){if(t=(t=t||this.filters||[]).filter(function(t){return t&&!t.isNeutralState()}),this.group&&this.set(\"dirty\",!0),this.removeTexture(this.cacheKey+\"_filtered\"),0===t.length)return this._element=this._originalElement,this._filteredEl=null,this._filterScalingX=1,this._filterScalingY=1,this;var e=this._originalElement,i=e.naturalWidth||e.width,r=e.naturalHeight||e.height;if(this._element===this._originalElement){var n=fabric.util.createCanvasElement();n.width=i,n.height=r,this._element=n,this._filteredEl=n}else this._element=this._filteredEl,this._filteredEl.getContext(\"2d\").clearRect(0,0,i,r),this._lastScaleX=1,this._lastScaleY=1;return fabric.filterBackend||(fabric.filterBackend=fabric.initFilterBackend()),fabric.filterBackend.applyFilters(t,this._originalElement,i,r,this._element,this.cacheKey),this._originalElement.width===this._element.width&&this._originalElement.height===this._element.height||(this._filterScalingX=this._element.width/this._originalElement.width,this._filterScalingY=this._element.height/this._originalElement.height),this},_render:function(t){!0!==this.isMoving&&this.resizeFilter&&this._needsResize()&&this.applyResizeFilters(),this._stroke(t),this._renderPaintInOrder(t)},_renderFill:function(t){var e=this.width,i=this.height,r=e*this._filterScalingX,n=i*this._filterScalingY,s=-e/2,o=-i/2,a=this._element;a&&t.drawImage(a,this.cropX*this._filterScalingX,this.cropY*this._filterScalingY,r,n,s,o,e,i)},_needsResize:function(){var t=this.getTotalObjectScaling();return t.scaleX!==this._lastScaleX||t.scaleY!==this._lastScaleY},_resetWidthHeight:function(){this.set(this.getOriginalSize())},_initElement:function(t,e){this.setElement(fabric.util.getById(t),e),fabric.util.addClass(this.getElement(),fabric.Image.CSS_CANVAS)},_initConfig:function(t){t||(t={}),this.setOptions(t),this._setWidthHeight(t),this._element&&this.crossOrigin&&(this._element.crossOrigin=this.crossOrigin)},_initFilters:function(t,e){t&&t.length?fabric.util.enlivenObjects(t,function(t){e&&e(t)},\"fabric.Image.filters\"):e&&e()},_setWidthHeight:function(t){t||(t={});var e=this.getElement();this.width=t.width||e.naturalWidth||e.width||0,this.height=t.height||e.naturalHeight||e.height||0},parsePreserveAspectRatioAttribute:function(){var t,e=fabric.util.parsePreserveAspectRatioAttribute(this.preserveAspectRatio||\"\"),i=this._element.width,r=this._element.height,n=1,s=1,o=0,a=0,h=0,c=0,l=this.width,u=this.height,f={width:l,height:u};return!e||\"none\"===e.alignX&&\"none\"===e.alignY?(n=l/i,s=u/r):(\"meet\"===e.meetOrSlice&&(t=(l-i*(n=s=fabric.util.findScaleToFit(this._element,f)))/2,\"Min\"===e.alignX&&(o=-t),\"Max\"===e.alignX&&(o=t),t=(u-r*s)/2,\"Min\"===e.alignY&&(a=-t),\"Max\"===e.alignY&&(a=t)),\"slice\"===e.meetOrSlice&&(t=i-l/(n=s=fabric.util.findScaleToCover(this._element,f)),\"Mid\"===e.alignX&&(h=t/2),\"Max\"===e.alignX&&(h=t),t=r-u/s,\"Mid\"===e.alignY&&(c=t/2),\"Max\"===e.alignY&&(c=t),i=l/n,r=u/s)),{width:i,height:r,scaleX:n,scaleY:s,offsetLeft:o,offsetTop:a,cropX:h,cropY:c}}}),fabric.Image.CSS_CANVAS=\"canvas-img\",fabric.Image.prototype.getSvgSrc=fabric.Image.prototype.getSrc,fabric.Image.fromObject=function(t,r){var n=fabric.util.object.clone(t);fabric.util.loadImage(n.src,function(i,t){t?r&&r(null,t):fabric.Image.prototype._initFilters.call(n,n.filters,function(t){n.filters=t||[],fabric.Image.prototype._initFilters.call(n,[n.resizeFilter],function(t){n.resizeFilter=t[0];var e=new fabric.Image(i,n);r(e)})})},null,n.crossOrigin)},fabric.Image.fromURL=function(t,e,i){fabric.util.loadImage(t,function(t){e&&e(new fabric.Image(t,i))},null,i&&i.crossOrigin)},fabric.Image.ATTRIBUTE_NAMES=fabric.SHARED_ATTRIBUTES.concat(\"x y width height preserveAspectRatio xlink:href crossOrigin\".split(\" \")),fabric.Image.fromElement=function(t,e,i){var r=fabric.parseAttributes(t,fabric.Image.ATTRIBUTE_NAMES);fabric.Image.fromURL(r[\"xlink:href\"],e,n(i?fabric.util.object.clone(i):{},r))})}(\"undefined\"!=typeof exports?exports:this),fabric.util.object.extend(fabric.Object.prototype,{_getAngleValueForStraighten:function(){var t=this.angle%360;return 0<t?90*Math.round((t-1)/90):90*Math.round(t/90)},straighten:function(){return this.rotate(this._getAngleValueForStraighten()),this},fxStraighten:function(t){var e=function(){},i=(t=t||{}).onComplete||e,r=t.onChange||e,n=this;return fabric.util.animate({startValue:this.get(\"angle\"),endValue:this._getAngleValueForStraighten(),duration:this.FX_DURATION,onChange:function(t){n.rotate(t),r()},onComplete:function(){n.setCoords(),i()}}),this}}),fabric.util.object.extend(fabric.StaticCanvas.prototype,{straightenObject:function(t){return t.straighten(),this.requestRenderAll(),this},fxStraightenObject:function(t){return t.fxStraighten({onChange:this.requestRenderAllBound}),this}}),function(){\"use strict\";function t(t){t&&t.tileSize&&(this.tileSize=t.tileSize),this.setupGLContext(this.tileSize,this.tileSize),this.captureGPUInfo()}fabric.isWebglSupported=function(t){if(fabric.isLikelyNode)return!1;t=t||fabric.WebglFilterBackend.prototype.tileSize;var e,i,r,n=document.createElement(\"canvas\"),s=n.getContext(\"webgl\")||n.getContext(\"experimental-webgl\"),o=!1;if(s){fabric.maxTextureSize=s.getParameter(s.MAX_TEXTURE_SIZE),o=fabric.maxTextureSize>=t;for(var a=[\"highp\",\"mediump\",\"lowp\"],h=0;h<3;h++)if(void 0,i=\"precision \"+a[h]+\" float;\\nvoid main(){}\",r=(e=s).createShader(e.FRAGMENT_SHADER),e.shaderSource(r,i),e.compileShader(r),e.getShaderParameter(r,e.COMPILE_STATUS)){fabric.webGlPrecision=a[h];break}}return this.isSupported=o},(fabric.WebglFilterBackend=t).prototype={tileSize:2048,resources:{},setupGLContext:function(t,e){this.dispose(),this.createWebGLCanvas(t,e),this.aPosition=new Float32Array([0,0,0,1,1,0,1,1]),this.chooseFastestCopyGLTo2DMethod(t,e)},chooseFastestCopyGLTo2DMethod:function(t,e){var i,r=void 0!==window.performance;try{new ImageData(1,1),i=!0}catch(t){i=!1}var n=\"undefined\"!=typeof ArrayBuffer,s=\"undefined\"!=typeof Uint8ClampedArray;if(r&&i&&n&&s){var o,a,h=fabric.util.createCanvasElement(),c=new ArrayBuffer(t*e*4),l={imageBuffer:c,destinationWidth:t,destinationHeight:e,targetCanvas:h};h.width=t,h.height=e,o=window.performance.now(),copyGLTo2DDrawImage.call(l,this.gl,l),a=window.performance.now()-o,o=window.performance.now(),copyGLTo2DPutImageData.call(l,this.gl,l),window.performance.now()-o<a?(this.imageBuffer=c,this.copyGLTo2D=copyGLTo2DPutImageData):this.copyGLTo2D=copyGLTo2DDrawImage}},createWebGLCanvas:function(t,e){var i=fabric.util.createCanvasElement();i.width=t,i.height=e;var r={alpha:!0,premultipliedAlpha:!1,depth:!1,stencil:!1,antialias:!1},n=i.getContext(\"webgl\",r);n||(n=i.getContext(\"experimental-webgl\",r)),n&&(n.clearColor(0,0,0,0),this.canvas=i,this.gl=n)},applyFilters:function(t,e,i,r,n,s){var o,a=this.gl;s&&(o=this.getCachedTexture(s,e));var h={originalWidth:e.width||e.originalWidth,originalHeight:e.height||e.originalHeight,sourceWidth:i,sourceHeight:r,destinationWidth:i,destinationHeight:r,context:a,sourceTexture:this.createTexture(a,i,r,!o&&e),targetTexture:this.createTexture(a,i,r),originalTexture:o||this.createTexture(a,i,r,!o&&e),passes:t.length,webgl:!0,aPosition:this.aPosition,programCache:this.programCache,pass:0,filterBackend:this,targetCanvas:n},c=a.createFramebuffer();return a.bindFramebuffer(a.FRAMEBUFFER,c),t.forEach(function(t){t&&t.applyTo(h)}),resizeCanvasIfNeeded(h),this.copyGLTo2D(a,h),a.bindTexture(a.TEXTURE_2D,null),a.deleteTexture(h.sourceTexture),a.deleteTexture(h.targetTexture),a.deleteFramebuffer(c),n.getContext(\"2d\").setTransform(1,0,0,1,0,0),h},applyFiltersDebug:function(t,e,i,r,n,s){var o=this.gl,a=this.applyFilters(t,e,i,r,n,s),h=o.getError();if(h!==o.NO_ERROR){var c=this.glErrorToString(o,h),l=new Error(\"WebGL Error \"+c);throw l.glErrorCode=h,l}return a},glErrorToString:function(t,e){if(!t)return\"Context undefined for error code: \"+e;if(\"number\"!=typeof e)return\"Error code is not a number\";switch(e){case t.NO_ERROR:return\"NO_ERROR\";case t.INVALID_ENUM:return\"INVALID_ENUM\";case t.INVALID_VALUE:return\"INVALID_VALUE\";case t.INVALID_OPERATION:return\"INVALID_OPERATION\";case t.INVALID_FRAMEBUFFER_OPERATION:return\"INVALID_FRAMEBUFFER_OPERATION\";case t.OUT_OF_MEMORY:return\"OUT_OF_MEMORY\";case t.CONTEXT_LOST_WEBGL:return\"CONTEXT_LOST_WEBGL\";default:return\"UNKNOWN_ERROR\"}},dispose:function(){this.canvas&&(this.canvas=null,this.gl=null),this.clearWebGLCaches()},clearWebGLCaches:function(){this.programCache={},this.textureCache={}},createTexture:function(t,e,i,r){var n=t.createTexture();return t.bindTexture(t.TEXTURE_2D,n),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_MAG_FILTER,t.NEAREST),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_MIN_FILTER,t.NEAREST),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_WRAP_S,t.CLAMP_TO_EDGE),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_WRAP_T,t.CLAMP_TO_EDGE),r?t.texImage2D(t.TEXTURE_2D,0,t.RGBA,t.RGBA,t.UNSIGNED_BYTE,r):t.texImage2D(t.TEXTURE_2D,0,t.RGBA,e,i,0,t.RGBA,t.UNSIGNED_BYTE,null),n},getCachedTexture:function(t,e){if(this.textureCache[t])return this.textureCache[t];var i=this.createTexture(this.gl,e.width,e.height,e);return this.textureCache[t]=i},evictCachesForKey:function(t){this.textureCache[t]&&(this.gl.deleteTexture(this.textureCache[t]),delete this.textureCache[t])},copyGLTo2D:copyGLTo2DDrawImage,captureGPUInfo:function(){if(this.gpuInfo)return this.gpuInfo;var t=this.gl,e=t.getExtension(\"WEBGL_debug_renderer_info\"),i={renderer:\"\",vendor:\"\"};if(e){var r=t.getParameter(e.UNMASKED_RENDERER_WEBGL),n=t.getParameter(e.UNMASKED_VENDOR_WEBGL);r&&(i.renderer=r.toLowerCase()),n&&(i.vendor=n.toLowerCase())}return this.gpuInfo=i}}}(),function(){\"use strict\";var t=function(){};function e(){}(fabric.Canvas2dFilterBackend=e).prototype={evictCachesForKey:t,dispose:t,clearWebGLCaches:t,resources:{},applyFilters:function(t,e,i,r,n){var s=n.getContext(\"2d\");s.drawImage(e,0,0,i,r);var o={sourceWidth:i,sourceHeight:r,imageData:s.getImageData(0,0,i,r),originalEl:e,originalImageData:s.getImageData(0,0,i,r),canvasEl:n,ctx:s,filterBackend:this};return t.forEach(function(t){t.applyTo(o)}),o.imageData.width===i&&o.imageData.height===r||(n.width=o.imageData.width,n.height=o.imageData.height),s.putImageData(o.imageData,0,0),o}}}(),fabric.Image.filters=fabric.Image.filters||{},fabric.Image.filters.BaseFilter=fabric.util.createClass({type:\"BaseFilter\",vertexSource:\"attribute vec2 aPosition;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvTexCoord = aPosition;\\ngl_Position = vec4(aPosition * 2.0 - 1.0, 0.0, 1.0);\\n}\",fragmentSource:\"precision highp float;\\nvarying vec2 vTexCoord;\\nuniform sampler2D uTexture;\\nvoid main() {\\ngl_FragColor = texture2D(uTexture, vTexCoord);\\n}\",initialize:function(t){t&&this.setOptions(t)},setOptions:function(t){for(var e in t)this[e]=t[e]},createProgram:function(t,e,i){e=e||this.fragmentSource,i=i||this.vertexSource,\"highp\"!==fabric.webGlPrecision&&(e=e.replace(/precision highp float/g,\"precision \"+fabric.webGlPrecision+\" float\"));var r=t.createShader(t.VERTEX_SHADER);if(t.shaderSource(r,i),t.compileShader(r),!t.getShaderParameter(r,t.COMPILE_STATUS))throw new Error(\"Vertex shader compile error for \"+this.type+\": \"+t.getShaderInfoLog(r));var n=t.createShader(t.FRAGMENT_SHADER);if(t.shaderSource(n,e),t.compileShader(n),!t.getShaderParameter(n,t.COMPILE_STATUS))throw new Error(\"Fragment shader compile error for \"+this.type+\": \"+t.getShaderInfoLog(n));var s=t.createProgram();if(t.attachShader(s,r),t.attachShader(s,n),t.linkProgram(s),!t.getProgramParameter(s,t.LINK_STATUS))throw new Error('Shader link error for \"${this.type}\" '+t.getProgramInfoLog(s));var o=this.getAttributeLocations(t,s),a=this.getUniformLocations(t,s)||{};return a.uStepW=t.getUniformLocation(s,\"uStepW\"),a.uStepH=t.getUniformLocation(s,\"uStepH\"),{program:s,attributeLocations:o,uniformLocations:a}},getAttributeLocations:function(t,e){return{aPosition:t.getAttribLocation(e,\"aPosition\")}},getUniformLocations:function(){return{}},sendAttributeData:function(t,e,i){var r=e.aPosition,n=t.createBuffer();t.bindBuffer(t.ARRAY_BUFFER,n),t.enableVertexAttribArray(r),t.vertexAttribPointer(r,2,t.FLOAT,!1,0,0),t.bufferData(t.ARRAY_BUFFER,i,t.STATIC_DRAW)},_setupFrameBuffer:function(t){var e,i,r=t.context;1<t.passes?(e=t.destinationWidth,i=t.destinationHeight,t.sourceWidth===e&&t.sourceHeight===i||(r.deleteTexture(t.targetTexture),t.targetTexture=t.filterBackend.createTexture(r,e,i)),r.framebufferTexture2D(r.FRAMEBUFFER,r.COLOR_ATTACHMENT0,r.TEXTURE_2D,t.targetTexture,0)):(r.bindFramebuffer(r.FRAMEBUFFER,null),r.finish())},_swapTextures:function(t){t.passes--,t.pass++;var e=t.targetTexture;t.targetTexture=t.sourceTexture,t.sourceTexture=e},isNeutralState:function(){var t=this.mainParameter,e=fabric.Image.filters[this.type].prototype;if(t){if(Array.isArray(e[t])){for(var i=e[t].length;i--;)if(this[t][i]!==e[t][i])return!1;return!0}return e[t]===this[t]}return!1},applyTo:function(t){t.webgl?(this._setupFrameBuffer(t),this.applyToWebGL(t),this._swapTextures(t)):this.applyTo2d(t)},retrieveShader:function(t){return t.programCache.hasOwnProperty(this.type)||(t.programCache[this.type]=this.createProgram(t.context)),t.programCache[this.type]},applyToWebGL:function(t){var e=t.context,i=this.retrieveShader(t);0===t.pass&&t.originalTexture?e.bindTexture(e.TEXTURE_2D,t.originalTexture):e.bindTexture(e.TEXTURE_2D,t.sourceTexture),e.useProgram(i.program),this.sendAttributeData(e,i.attributeLocations,t.aPosition),e.uniform1f(i.uniformLocations.uStepW,1/t.sourceWidth),e.uniform1f(i.uniformLocations.uStepH,1/t.sourceHeight),this.sendUniformData(e,i.uniformLocations),e.viewport(0,0,t.destinationWidth,t.destinationHeight),e.drawArrays(e.TRIANGLE_STRIP,0,4)},bindAdditionalTexture:function(t,e,i){t.activeTexture(i),t.bindTexture(t.TEXTURE_2D,e),t.activeTexture(t.TEXTURE0)},unbindAdditionalTexture:function(t,e){t.activeTexture(e),t.bindTexture(t.TEXTURE_2D,null),t.activeTexture(t.TEXTURE0)},getMainParameter:function(){return this[this.mainParameter]},setMainParameter:function(t){this[this.mainParameter]=t},sendUniformData:function(){},createHelpLayer:function(t){if(!t.helpLayer){var e=document.createElement(\"canvas\");e.width=t.sourceWidth,e.height=t.sourceHeight,t.helpLayer=e}},toObject:function(){var t={type:this.type},e=this.mainParameter;return e&&(t[e]=this[e]),t},toJSON:function(){return this.toObject()}}),fabric.Image.filters.BaseFilter.fromObject=function(t,e){var i=new fabric.Image.filters[t.type](t);return e&&e(i),i},function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.Image.filters,r=e.util.createClass;i.ColorMatrix=r(i.BaseFilter,{type:\"ColorMatrix\",fragmentSource:\"precision highp float;\\nuniform sampler2D uTexture;\\nvarying vec2 vTexCoord;\\nuniform mat4 uColorMatrix;\\nuniform vec4 uConstants;\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\ncolor *= uColorMatrix;\\ncolor += uConstants;\\ngl_FragColor = color;\\n}\",matrix:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0],mainParameter:\"matrix\",colorsOnly:!0,initialize:function(t){this.callSuper(\"initialize\",t),this.matrix=this.matrix.slice(0)},applyTo2d:function(t){var e,i,r,n,s,o=t.imageData.data,a=o.length,h=this.matrix,c=this.colorsOnly;for(s=0;s<a;s+=4)e=o[s],i=o[s+1],r=o[s+2],c?(o[s]=e*h[0]+i*h[1]+r*h[2]+255*h[4],o[s+1]=e*h[5]+i*h[6]+r*h[7]+255*h[9],o[s+2]=e*h[10]+i*h[11]+r*h[12]+255*h[14]):(n=o[s+3],o[s]=e*h[0]+i*h[1]+r*h[2]+n*h[3]+255*h[4],o[s+1]=e*h[5]+i*h[6]+r*h[7]+n*h[8]+255*h[9],o[s+2]=e*h[10]+i*h[11]+r*h[12]+n*h[13]+255*h[14],o[s+3]=e*h[15]+i*h[16]+r*h[17]+n*h[18]+255*h[19])},getUniformLocations:function(t,e){return{uColorMatrix:t.getUniformLocation(e,\"uColorMatrix\"),uConstants:t.getUniformLocation(e,\"uConstants\")}},sendUniformData:function(t,e){var i=this.matrix,r=[i[0],i[1],i[2],i[3],i[5],i[6],i[7],i[8],i[10],i[11],i[12],i[13],i[15],i[16],i[17],i[18]],n=[i[4],i[9],i[14],i[19]];t.uniformMatrix4fv(e.uColorMatrix,!1,r),t.uniform4fv(e.uConstants,n)}}),e.Image.filters.ColorMatrix.fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.Image.filters,r=e.util.createClass;i.Brightness=r(i.BaseFilter,{type:\"Brightness\",fragmentSource:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uBrightness;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\ncolor.rgb += uBrightness;\\ngl_FragColor = color;\\n}\",brightness:0,mainParameter:\"brightness\",applyTo2d:function(t){if(0!==this.brightness){var e,i=t.imageData.data,r=i.length,n=Math.round(255*this.brightness);for(e=0;e<r;e+=4)i[e]=i[e]+n,i[e+1]=i[e+1]+n,i[e+2]=i[e+2]+n}},getUniformLocations:function(t,e){return{uBrightness:t.getUniformLocation(e,\"uBrightness\")}},sendUniformData:function(t,e){t.uniform1f(e.uBrightness,this.brightness)}}),e.Image.filters.Brightness.fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.util.object.extend,r=e.Image.filters,n=e.util.createClass;r.Convolute=n(r.BaseFilter,{type:\"Convolute\",opaque:!1,matrix:[0,0,0,0,1,0,0,0,0],fragmentSource:{Convolute_3_1:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uMatrix[9];\\nuniform float uStepW;\\nuniform float uStepH;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = vec4(0, 0, 0, 0);\\nfor (float h = 0.0; h < 3.0; h+=1.0) {\\nfor (float w = 0.0; w < 3.0; w+=1.0) {\\nvec2 matrixPos = vec2(uStepW * (w - 1), uStepH * (h - 1));\\ncolor += texture2D(uTexture, vTexCoord + matrixPos) * uMatrix[int(h * 3.0 + w)];\\n}\\n}\\ngl_FragColor = color;\\n}\",Convolute_3_0:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uMatrix[9];\\nuniform float uStepW;\\nuniform float uStepH;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = vec4(0, 0, 0, 1);\\nfor (float h = 0.0; h < 3.0; h+=1.0) {\\nfor (float w = 0.0; w < 3.0; w+=1.0) {\\nvec2 matrixPos = vec2(uStepW * (w - 1.0), uStepH * (h - 1.0));\\ncolor.rgb += texture2D(uTexture, vTexCoord + matrixPos).rgb * uMatrix[int(h * 3.0 + w)];\\n}\\n}\\nfloat alpha = texture2D(uTexture, vTexCoord).a;\\ngl_FragColor = color;\\ngl_FragColor.a = alpha;\\n}\",Convolute_5_1:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uMatrix[25];\\nuniform float uStepW;\\nuniform float uStepH;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = vec4(0, 0, 0, 0);\\nfor (float h = 0.0; h < 5.0; h+=1.0) {\\nfor (float w = 0.0; w < 5.0; w+=1.0) {\\nvec2 matrixPos = vec2(uStepW * (w - 2.0), uStepH * (h - 2.0));\\ncolor += texture2D(uTexture, vTexCoord + matrixPos) * uMatrix[int(h * 5.0 + w)];\\n}\\n}\\ngl_FragColor = color;\\n}\",Convolute_5_0:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uMatrix[25];\\nuniform float uStepW;\\nuniform float uStepH;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = vec4(0, 0, 0, 1);\\nfor (float h = 0.0; h < 5.0; h+=1.0) {\\nfor (float w = 0.0; w < 5.0; w+=1.0) {\\nvec2 matrixPos = vec2(uStepW * (w - 2.0), uStepH * (h - 2.0));\\ncolor.rgb += texture2D(uTexture, vTexCoord + matrixPos).rgb * uMatrix[int(h * 5.0 + w)];\\n}\\n}\\nfloat alpha = texture2D(uTexture, vTexCoord).a;\\ngl_FragColor = color;\\ngl_FragColor.a = alpha;\\n}\",Convolute_7_1:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uMatrix[49];\\nuniform float uStepW;\\nuniform float uStepH;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = vec4(0, 0, 0, 0);\\nfor (float h = 0.0; h < 7.0; h+=1.0) {\\nfor (float w = 0.0; w < 7.0; w+=1.0) {\\nvec2 matrixPos = vec2(uStepW * (w - 3.0), uStepH * (h - 3.0));\\ncolor += texture2D(uTexture, vTexCoord + matrixPos) * uMatrix[int(h * 7.0 + w)];\\n}\\n}\\ngl_FragColor = color;\\n}\",Convolute_7_0:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uMatrix[49];\\nuniform float uStepW;\\nuniform float uStepH;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = vec4(0, 0, 0, 1);\\nfor (float h = 0.0; h < 7.0; h+=1.0) {\\nfor (float w = 0.0; w < 7.0; w+=1.0) {\\nvec2 matrixPos = vec2(uStepW * (w - 3.0), uStepH * (h - 3.0));\\ncolor.rgb += texture2D(uTexture, vTexCoord + matrixPos).rgb * uMatrix[int(h * 7.0 + w)];\\n}\\n}\\nfloat alpha = texture2D(uTexture, vTexCoord).a;\\ngl_FragColor = color;\\ngl_FragColor.a = alpha;\\n}\",Convolute_9_1:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uMatrix[81];\\nuniform float uStepW;\\nuniform float uStepH;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = vec4(0, 0, 0, 0);\\nfor (float h = 0.0; h < 9.0; h+=1.0) {\\nfor (float w = 0.0; w < 9.0; w+=1.0) {\\nvec2 matrixPos = vec2(uStepW * (w - 4.0), uStepH * (h - 4.0));\\ncolor += texture2D(uTexture, vTexCoord + matrixPos) * uMatrix[int(h * 9.0 + w)];\\n}\\n}\\ngl_FragColor = color;\\n}\",Convolute_9_0:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uMatrix[81];\\nuniform float uStepW;\\nuniform float uStepH;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = vec4(0, 0, 0, 1);\\nfor (float h = 0.0; h < 9.0; h+=1.0) {\\nfor (float w = 0.0; w < 9.0; w+=1.0) {\\nvec2 matrixPos = vec2(uStepW * (w - 4.0), uStepH * (h - 4.0));\\ncolor.rgb += texture2D(uTexture, vTexCoord + matrixPos).rgb * uMatrix[int(h * 9.0 + w)];\\n}\\n}\\nfloat alpha = texture2D(uTexture, vTexCoord).a;\\ngl_FragColor = color;\\ngl_FragColor.a = alpha;\\n}\"},retrieveShader:function(t){var e=Math.sqrt(this.matrix.length),i=this.type+\"_\"+e+\"_\"+(this.opaque?1:0),r=this.fragmentSource[i];return t.programCache.hasOwnProperty(i)||(t.programCache[i]=this.createProgram(t.context,r)),t.programCache[i]},applyTo2d:function(t){var e,i,r,n,s,o,a,h,c,l,u,f,d,g=t.imageData,p=g.data,v=this.matrix,m=Math.round(Math.sqrt(v.length)),b=Math.floor(m/2),_=g.width,y=g.height,x=t.ctx.createImageData(_,y),C=x.data,S=this.opaque?1:0;for(u=0;u<y;u++)for(l=0;l<_;l++){for(s=4*(u*_+l),d=n=r=i=e=0;d<m;d++)for(f=0;f<m;f++)o=l+f-b,(a=u+d-b)<0||y<a||o<0||_<o||(h=4*(a*_+o),c=v[d*m+f],e+=p[h]*c,i+=p[h+1]*c,r+=p[h+2]*c,S||(n+=p[h+3]*c));C[s]=e,C[s+1]=i,C[s+2]=r,C[s+3]=S?p[s+3]:n}t.imageData=x},getUniformLocations:function(t,e){return{uMatrix:t.getUniformLocation(e,\"uMatrix\"),uOpaque:t.getUniformLocation(e,\"uOpaque\"),uHalfSize:t.getUniformLocation(e,\"uHalfSize\"),uSize:t.getUniformLocation(e,\"uSize\")}},sendUniformData:function(t,e){t.uniform1fv(e.uMatrix,this.matrix)},toObject:function(){return i(this.callSuper(\"toObject\"),{opaque:this.opaque,matrix:this.matrix})}}),e.Image.filters.Convolute.fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.Image.filters,r=e.util.createClass;i.Grayscale=r(i.BaseFilter,{type:\"Grayscale\",fragmentSource:{average:\"precision highp float;\\nuniform sampler2D uTexture;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\nfloat average = (color.r + color.b + color.g) / 3.0;\\ngl_FragColor = vec4(average, average, average, color.a);\\n}\",lightness:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform int uMode;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 col = texture2D(uTexture, vTexCoord);\\nfloat average = (max(max(col.r, col.g),col.b) + min(min(col.r, col.g),col.b)) / 2.0;\\ngl_FragColor = vec4(average, average, average, col.a);\\n}\",luminosity:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform int uMode;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 col = texture2D(uTexture, vTexCoord);\\nfloat average = 0.21 * col.r + 0.72 * col.g + 0.07 * col.b;\\ngl_FragColor = vec4(average, average, average, col.a);\\n}\"},mode:\"average\",mainParameter:\"mode\",applyTo2d:function(t){var e,i,r=t.imageData.data,n=r.length,s=this.mode;for(e=0;e<n;e+=4)\"average\"===s?i=(r[e]+r[e+1]+r[e+2])/3:\"lightness\"===s?i=(Math.min(r[e],r[e+1],r[e+2])+Math.max(r[e],r[e+1],r[e+2]))/2:\"luminosity\"===s&&(i=.21*r[e]+.72*r[e+1]+.07*r[e+2]),r[e]=i,r[e+1]=i,r[e+2]=i},retrieveShader:function(t){var e=this.type+\"_\"+this.mode;if(!t.programCache.hasOwnProperty(e)){var i=this.fragmentSource[this.mode];t.programCache[e]=this.createProgram(t.context,i)}return t.programCache[e]},getUniformLocations:function(t,e){return{uMode:t.getUniformLocation(e,\"uMode\")}},sendUniformData:function(t,e){t.uniform1i(e.uMode,1)},isNeutralState:function(){return!1}}),e.Image.filters.Grayscale.fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.Image.filters,r=e.util.createClass;i.Invert=r(i.BaseFilter,{type:\"Invert\",fragmentSource:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform int uInvert;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\nif (uInvert == 1) {\\ngl_FragColor = vec4(1.0 - color.r,1.0 -color.g,1.0 -color.b,color.a);\\n} else {\\ngl_FragColor = color;\\n}\\n}\",invert:!0,mainParameter:\"invert\",applyTo2d:function(t){var e,i=t.imageData.data,r=i.length;for(e=0;e<r;e+=4)i[e]=255-i[e],i[e+1]=255-i[e+1],i[e+2]=255-i[e+2]},isNeutralState:function(){return!this.invert},getUniformLocations:function(t,e){return{uInvert:t.getUniformLocation(e,\"uInvert\")}},sendUniformData:function(t,e){t.uniform1i(e.uInvert,this.invert)}}),e.Image.filters.Invert.fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.util.object.extend,r=e.Image.filters,n=e.util.createClass;r.Noise=n(r.BaseFilter,{type:\"Noise\",fragmentSource:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uStepH;\\nuniform float uNoise;\\nuniform float uSeed;\\nvarying vec2 vTexCoord;\\nfloat rand(vec2 co, float seed, float vScale) {\\nreturn fract(sin(dot(co.xy * vScale ,vec2(12.9898 , 78.233))) * 43758.5453 * (seed + 0.01) / 2.0);\\n}\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\ncolor.rgb += (0.5 - rand(vTexCoord, uSeed, 0.1 / uStepH)) * uNoise;\\ngl_FragColor = color;\\n}\",mainParameter:\"noise\",noise:0,applyTo2d:function(t){if(0!==this.noise){var e,i,r=t.imageData.data,n=r.length,s=this.noise;for(e=0,n=r.length;e<n;e+=4)i=(.5-Math.random())*s,r[e]+=i,r[e+1]+=i,r[e+2]+=i}},getUniformLocations:function(t,e){return{uNoise:t.getUniformLocation(e,\"uNoise\"),uSeed:t.getUniformLocation(e,\"uSeed\")}},sendUniformData:function(t,e){t.uniform1f(e.uNoise,this.noise/255),t.uniform1f(e.uSeed,Math.random())},toObject:function(){return i(this.callSuper(\"toObject\"),{noise:this.noise})}}),e.Image.filters.Noise.fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.Image.filters,r=e.util.createClass;i.Pixelate=r(i.BaseFilter,{type:\"Pixelate\",blocksize:4,mainParameter:\"blocksize\",fragmentSource:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uBlocksize;\\nuniform float uStepW;\\nuniform float uStepH;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nfloat blockW = uBlocksize * uStepW;\\nfloat blockH = uBlocksize * uStepW;\\nint posX = int(vTexCoord.x / blockW);\\nint posY = int(vTexCoord.y / blockH);\\nfloat fposX = float(posX);\\nfloat fposY = float(posY);\\nvec2 squareCoords = vec2(fposX * blockW, fposY * blockH);\\nvec4 color = texture2D(uTexture, squareCoords);\\ngl_FragColor = color;\\n}\",applyTo2d:function(t){var e,i,r,n,s,o,a,h,c,l,u,f=t.imageData,d=f.data,g=f.height,p=f.width;for(i=0;i<g;i+=this.blocksize)for(r=0;r<p;r+=this.blocksize)for(n=d[e=4*i*p+4*r],s=d[e+1],o=d[e+2],a=d[e+3],l=Math.min(i+this.blocksize,g),u=Math.min(r+this.blocksize,p),h=i;h<l;h++)for(c=r;c<u;c++)d[e=4*h*p+4*c]=n,d[e+1]=s,d[e+2]=o,d[e+3]=a},isNeutralState:function(){return 1===this.blocksize},getUniformLocations:function(t,e){return{uBlocksize:t.getUniformLocation(e,\"uBlocksize\"),uStepW:t.getUniformLocation(e,\"uStepW\"),uStepH:t.getUniformLocation(e,\"uStepH\")}},sendUniformData:function(t,e){t.uniform1f(e.uBlocksize,this.blocksize)}}),e.Image.filters.Pixelate.fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var l=t.fabric||(t.fabric={}),e=l.util.object.extend,i=l.Image.filters,r=l.util.createClass;i.RemoveColor=r(i.BaseFilter,{type:\"RemoveColor\",color:\"#FFFFFF\",fragmentSource:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform vec4 uLow;\\nuniform vec4 uHigh;\\nvarying vec2 vTexCoord;\\nvoid main() {\\ngl_FragColor = texture2D(uTexture, vTexCoord);\\nif(all(greaterThan(gl_FragColor.rgb,uLow.rgb)) && all(greaterThan(uHigh.rgb,gl_FragColor.rgb))) {\\ngl_FragColor.a = 0.0;\\n}\\n}\",distance:.02,useAlpha:!1,applyTo2d:function(t){var e,i,r,n,s=t.imageData.data,o=255*this.distance,a=new l.Color(this.color).getSource(),h=[a[0]-o,a[1]-o,a[2]-o],c=[a[0]+o,a[1]+o,a[2]+o];for(e=0;e<s.length;e+=4)i=s[e],r=s[e+1],n=s[e+2],h[0]<i&&h[1]<r&&h[2]<n&&i<c[0]&&r<c[1]&&n<c[2]&&(s[e+3]=0)},getUniformLocations:function(t,e){return{uLow:t.getUniformLocation(e,\"uLow\"),uHigh:t.getUniformLocation(e,\"uHigh\")}},sendUniformData:function(t,e){var i=new l.Color(this.color).getSource(),r=parseFloat(this.distance),n=[0+i[0]/255-r,0+i[1]/255-r,0+i[2]/255-r,1],s=[i[0]/255+r,i[1]/255+r,i[2]/255+r,1];t.uniform4fv(e.uLow,n),t.uniform4fv(e.uHigh,s)},toObject:function(){return e(this.callSuper(\"toObject\"),{color:this.color,distance:this.distance})}}),l.Image.filters.RemoveColor.fromObject=l.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.Image.filters,r=e.util.createClass,n={Brownie:[.5997,.34553,-.27082,0,.186,-.0377,.86095,.15059,0,-.1449,.24113,-.07441,.44972,0,-.02965,0,0,0,1,0],Vintage:[.62793,.32021,-.03965,0,.03784,.02578,.64411,.03259,0,.02926,.0466,-.08512,.52416,0,.02023,0,0,0,1,0],Kodachrome:[1.12855,-.39673,-.03992,0,.24991,-.16404,1.08352,-.05498,0,.09698,-.16786,-.56034,1.60148,0,.13972,0,0,0,1,0],Technicolor:[1.91252,-.85453,-.09155,0,.04624,-.30878,1.76589,-.10601,0,-.27589,-.2311,-.75018,1.84759,0,.12137,0,0,0,1,0],Polaroid:[1.438,-.062,-.062,0,0,-.122,1.378,-.122,0,0,-.016,-.016,1.483,0,0,0,0,0,1,0],Sepia:[.393,.769,.189,0,0,.349,.686,.168,0,0,.272,.534,.131,0,0,0,0,0,1,0],BlackWhite:[1.5,1.5,1.5,0,-1,1.5,1.5,1.5,0,-1,1.5,1.5,1.5,0,-1,0,0,0,1,0]};for(var s in n)i[s]=r(i.ColorMatrix,{type:s,matrix:n[s],mainParameter:!1,colorsOnly:!0}),e.Image.filters[s].fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var f=t.fabric,e=f.Image.filters,i=f.util.createClass;e.BlendColor=i(e.BaseFilter,{type:\"BlendColor\",color:\"#F95C63\",mode:\"multiply\",alpha:1,fragmentSource:{multiply:\"gl_FragColor.rgb *= uColor.rgb;\\n\",screen:\"gl_FragColor.rgb = 1.0 - (1.0 - gl_FragColor.rgb) * (1.0 - uColor.rgb);\\n\",add:\"gl_FragColor.rgb += uColor.rgb;\\n\",diff:\"gl_FragColor.rgb = abs(gl_FragColor.rgb - uColor.rgb);\\n\",subtract:\"gl_FragColor.rgb -= uColor.rgb;\\n\",lighten:\"gl_FragColor.rgb = max(gl_FragColor.rgb, uColor.rgb);\\n\",darken:\"gl_FragColor.rgb = min(gl_FragColor.rgb, uColor.rgb);\\n\",exclusion:\"gl_FragColor.rgb += uColor.rgb - 2.0 * (uColor.rgb * gl_FragColor.rgb);\\n\",overlay:\"if (uColor.r < 0.5) {\\ngl_FragColor.r *= 2.0 * uColor.r;\\n} else {\\ngl_FragColor.r = 1.0 - 2.0 * (1.0 - gl_FragColor.r) * (1.0 - uColor.r);\\n}\\nif (uColor.g < 0.5) {\\ngl_FragColor.g *= 2.0 * uColor.g;\\n} else {\\ngl_FragColor.g = 1.0 - 2.0 * (1.0 - gl_FragColor.g) * (1.0 - uColor.g);\\n}\\nif (uColor.b < 0.5) {\\ngl_FragColor.b *= 2.0 * uColor.b;\\n} else {\\ngl_FragColor.b = 1.0 - 2.0 * (1.0 - gl_FragColor.b) * (1.0 - uColor.b);\\n}\\n\",tint:\"gl_FragColor.rgb *= (1.0 - uColor.a);\\ngl_FragColor.rgb += uColor.rgb;\\n\"},buildSource:function(t){return\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform vec4 uColor;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\ngl_FragColor = color;\\nif (color.a > 0.0) {\\n\"+this.fragmentSource[t]+\"}\\n}\"},retrieveShader:function(t){var e,i=this.type+\"_\"+this.mode;return t.programCache.hasOwnProperty(i)||(e=this.buildSource(this.mode),t.programCache[i]=this.createProgram(t.context,e)),t.programCache[i]},applyTo2d:function(t){var e,i,r,n,s,o,a,h=t.imageData.data,c=h.length,l=1-this.alpha;e=(a=new f.Color(this.color).getSource())[0]*this.alpha,i=a[1]*this.alpha,r=a[2]*this.alpha;for(var u=0;u<c;u+=4)switch(n=h[u],s=h[u+1],o=h[u+2],this.mode){case\"multiply\":h[u]=n*e/255,h[u+1]=s*i/255,h[u+2]=o*r/255;break;case\"screen\":h[u]=255-(255-n)*(255-e)/255,h[u+1]=255-(255-s)*(255-i)/255,h[u+2]=255-(255-o)*(255-r)/255;break;case\"add\":h[u]=n+e,h[u+1]=s+i,h[u+2]=o+r;break;case\"diff\":case\"difference\":h[u]=Math.abs(n-e),h[u+1]=Math.abs(s-i),h[u+2]=Math.abs(o-r);break;case\"subtract\":h[u]=n-e,h[u+1]=s-i,h[u+2]=o-r;break;case\"darken\":h[u]=Math.min(n,e),h[u+1]=Math.min(s,i),h[u+2]=Math.min(o,r);break;case\"lighten\":h[u]=Math.max(n,e),h[u+1]=Math.max(s,i),h[u+2]=Math.max(o,r);break;case\"overlay\":h[u]=e<128?2*n*e/255:255-2*(255-n)*(255-e)/255,h[u+1]=i<128?2*s*i/255:255-2*(255-s)*(255-i)/255,h[u+2]=r<128?2*o*r/255:255-2*(255-o)*(255-r)/255;break;case\"exclusion\":h[u]=e+n-2*e*n/255,h[u+1]=i+s-2*i*s/255,h[u+2]=r+o-2*r*o/255;break;case\"tint\":h[u]=e+n*l,h[u+1]=i+s*l,h[u+2]=r+o*l}},getUniformLocations:function(t,e){return{uColor:t.getUniformLocation(e,\"uColor\")}},sendUniformData:function(t,e){var i=new f.Color(this.color).getSource();i[0]=this.alpha*i[0]/255,i[1]=this.alpha*i[1]/255,i[2]=this.alpha*i[2]/255,i[3]=this.alpha,t.uniform4fv(e.uColor,i)},toObject:function(){return{type:this.type,color:this.color,mode:this.mode,alpha:this.alpha}}}),f.Image.filters.BlendColor.fromObject=f.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var y=t.fabric,e=y.Image.filters,i=y.util.createClass;e.BlendImage=i(e.BaseFilter,{type:\"BlendImage\",image:null,mode:\"multiply\",alpha:1,vertexSource:\"attribute vec2 aPosition;\\nvarying vec2 vTexCoord;\\nvarying vec2 vTexCoord2;\\nuniform mat3 uTransformMatrix;\\nvoid main() {\\nvTexCoord = aPosition;\\nvTexCoord2 = (uTransformMatrix * vec3(aPosition, 1.0)).xy;\\ngl_Position = vec4(aPosition * 2.0 - 1.0, 0.0, 1.0);\\n}\",fragmentSource:{multiply:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform sampler2D uImage;\\nuniform vec4 uColor;\\nvarying vec2 vTexCoord;\\nvarying vec2 vTexCoord2;\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\nvec4 color2 = texture2D(uImage, vTexCoord2);\\ncolor.rgba *= color2.rgba;\\ngl_FragColor = color;\\n}\",mask:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform sampler2D uImage;\\nuniform vec4 uColor;\\nvarying vec2 vTexCoord;\\nvarying vec2 vTexCoord2;\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\nvec4 color2 = texture2D(uImage, vTexCoord2);\\ncolor.a = color2.a;\\ngl_FragColor = color;\\n}\"},retrieveShader:function(t){var e=this.type+\"_\"+this.mode,i=this.fragmentSource[this.mode];return t.programCache.hasOwnProperty(e)||(t.programCache[e]=this.createProgram(t.context,i)),t.programCache[e]},applyToWebGL:function(t){var e=t.context,i=this.createTexture(t.filterBackend,this.image);this.bindAdditionalTexture(e,i,e.TEXTURE1),this.callSuper(\"applyToWebGL\",t),this.unbindAdditionalTexture(e,e.TEXTURE1)},createTexture:function(t,e){return t.getCachedTexture(e.cacheKey,e._element)},calculateMatrix:function(){var t=this.image,e=t._element.width,i=t._element.height;return[1/t.scaleX,0,0,0,1/t.scaleY,0,-t.left/e,-t.top/i,1]},applyTo2d:function(t){var e,i,r,n,s,o,a,h,c,l,u,f=t.imageData,d=t.filterBackend.resources,g=f.data,p=g.length,v=f.width,m=f.height,b=this.image;d.blendImage||(d.blendImage=y.util.createCanvasElement()),l=(c=d.blendImage).getContext(\"2d\"),c.width!==v||c.height!==m?(c.width=v,c.height=m):l.clearRect(0,0,v,m),l.setTransform(b.scaleX,0,0,b.scaleY,b.left,b.top),l.drawImage(b._element,0,0,v,m),u=l.getImageData(0,0,v,m).data;for(var _=0;_<p;_+=4)switch(s=g[_],o=g[_+1],a=g[_+2],h=g[_+3],e=u[_],i=u[_+1],r=u[_+2],n=u[_+3],this.mode){case\"multiply\":g[_]=s*e/255,g[_+1]=o*i/255,g[_+2]=a*r/255,g[_+3]=h*n/255;break;case\"mask\":g[_+3]=n}},getUniformLocations:function(t,e){return{uTransformMatrix:t.getUniformLocation(e,\"uTransformMatrix\"),uImage:t.getUniformLocation(e,\"uImage\")}},sendUniformData:function(t,e){var i=this.calculateMatrix();t.uniform1i(e.uImage,1),t.uniformMatrix3fv(e.uTransformMatrix,!1,i)},toObject:function(){return{type:this.type,image:this.image&&this.image.toObject(),mode:this.mode,alpha:this.alpha}}}),y.Image.filters.BlendImage.fromObject=function(i,r){y.Image.fromObject(i.image,function(t){var e=y.util.object.clone(i);e.image=t,r(new y.Image.filters.BlendImage(e))})}}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var m=t.fabric||(t.fabric={}),A=Math.pow,P=Math.floor,F=Math.sqrt,M=Math.abs,c=Math.round,r=Math.sin,I=Math.ceil,e=m.Image.filters,i=m.util.createClass;e.Resize=i(e.BaseFilter,{type:\"Resize\",resizeType:\"hermite\",scaleX:1,scaleY:1,lanczosLobes:3,getUniformLocations:function(t,e){return{uDelta:t.getUniformLocation(e,\"uDelta\"),uTaps:t.getUniformLocation(e,\"uTaps\")}},sendUniformData:function(t,e){t.uniform2fv(e.uDelta,this.horizontal?[1/this.width,0]:[0,1/this.height]),t.uniform1fv(e.uTaps,this.taps)},retrieveShader:function(t){var e=this.getFilterWindow(),i=this.type+\"_\"+e;if(!t.programCache.hasOwnProperty(i)){var r=this.generateShader(e);t.programCache[i]=this.createProgram(t.context,r)}return t.programCache[i]},getFilterWindow:function(){var t=this.tempScale;return Math.ceil(this.lanczosLobes/t)},getTaps:function(){for(var t=this.lanczosCreate(this.lanczosLobes),e=this.tempScale,i=this.getFilterWindow(),r=new Array(i),n=1;n<=i;n++)r[n-1]=t(n*e);return r},generateShader:function(t){for(var e=new Array(t),i=this.fragmentSourceTOP,r=1;r<=t;r++)e[r-1]=r+\".0 * uDelta\";return i+=\"uniform float uTaps[\"+t+\"];\\n\",i+=\"void main() {\\n\",i+=\"  vec4 color = texture2D(uTexture, vTexCoord);\\n\",i+=\"  float sum = 1.0;\\n\",e.forEach(function(t,e){i+=\"  color += texture2D(uTexture, vTexCoord + \"+t+\") * uTaps[\"+e+\"];\\n\",i+=\"  color += texture2D(uTexture, vTexCoord - \"+t+\") * uTaps[\"+e+\"];\\n\",i+=\"  sum += 2.0 * uTaps[\"+e+\"];\\n\"}),i+=\"  gl_FragColor = color / sum;\\n\",i+=\"}\"},fragmentSourceTOP:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform vec2 uDelta;\\nvarying vec2 vTexCoord;\\n\",applyTo:function(t){t.webgl?(t.passes++,this.width=t.sourceWidth,this.horizontal=!0,this.dW=Math.round(this.width*this.scaleX),this.dH=t.sourceHeight,this.tempScale=this.dW/this.width,this.taps=this.getTaps(),t.destinationWidth=this.dW,this._setupFrameBuffer(t),this.applyToWebGL(t),this._swapTextures(t),t.sourceWidth=t.destinationWidth,this.height=t.sourceHeight,this.horizontal=!1,this.dH=Math.round(this.height*this.scaleY),this.tempScale=this.dH/this.height,this.taps=this.getTaps(),t.destinationHeight=this.dH,this._setupFrameBuffer(t),this.applyToWebGL(t),this._swapTextures(t),t.sourceHeight=t.destinationHeight):this.applyTo2d(t)},isNeutralState:function(){return 1===this.scaleX&&1===this.scaleY},lanczosCreate:function(i){return function(t){if(i<=t||t<=-i)return 0;if(t<1.1920929e-7&&-1.1920929e-7<t)return 1;var e=(t*=Math.PI)/i;return r(t)/t*r(e)/e}},applyTo2d:function(t){var e=t.imageData,i=this.scaleX,r=this.scaleY;this.rcpScaleX=1/i,this.rcpScaleY=1/r;var n,s=e.width,o=e.height,a=c(s*i),h=c(o*r);\"sliceHack\"===this.resizeType?n=this.sliceByTwo(t,s,o,a,h):\"hermite\"===this.resizeType?n=this.hermiteFastResize(t,s,o,a,h):\"bilinear\"===this.resizeType?n=this.bilinearFiltering(t,s,o,a,h):\"lanczos\"===this.resizeType&&(n=this.lanczosResize(t,s,o,a,h)),t.imageData=n},sliceByTwo:function(t,e,i,r,n){var s,o,a=t.imageData,h=!1,c=!1,l=.5*e,u=.5*i,f=m.filterBackend.resources,d=0,g=0,p=e,v=0;for(f.sliceByTwo||(f.sliceByTwo=document.createElement(\"canvas\")),((s=f.sliceByTwo).width<1.5*e||s.height<i)&&(s.width=1.5*e,s.height=i),(o=s.getContext(\"2d\")).clearRect(0,0,1.5*e,i),o.putImageData(a,0,0),r=P(r),n=P(n);!h||!c;)i=u,r<P(.5*(e=l))?l=P(.5*l):(l=r,h=!0),n<P(.5*u)?u=P(.5*u):(u=n,c=!0),o.drawImage(s,d,g,e,i,p,v,l,u),d=p,g=v,v+=u;return o.getImageData(d,g,r,n)},lanczosResize:function(t,g,p,v,m){var b=t.imageData.data,_=t.ctx.createImageData(v,m),y=_.data,x=this.lanczosCreate(this.lanczosLobes),C=this.rcpScaleX,S=this.rcpScaleY,T=2/this.rcpScaleX,w=2/this.rcpScaleY,O=I(C*this.lanczosLobes/2),k=I(S*this.lanczosLobes/2),E={},D={},j={};return function t(e){var i,r,n,s,o,a,h,c,l,u,f;for(D.x=(e+.5)*C,j.x=P(D.x),i=0;i<m;i++){for(D.y=(i+.5)*S,j.y=P(D.y),l=c=h=a=o=0,r=j.x-O;r<=j.x+O;r++)if(!(r<0||g<=r)){u=P(1e3*M(r-D.x)),E[u]||(E[u]={});for(var d=j.y-k;d<=j.y+k;d++)d<0||p<=d||(f=P(1e3*M(d-D.y)),E[u][f]||(E[u][f]=x(F(A(u*T,2)+A(f*w,2))/1e3)),0<(n=E[u][f])&&(o+=n,a+=n*b[s=4*(d*g+r)],h+=n*b[s+1],c+=n*b[s+2],l+=n*b[s+3]))}y[s=4*(i*v+e)]=a/o,y[s+1]=h/o,y[s+2]=c/o,y[s+3]=l/o}return++e<v?t(e):_}(0)},bilinearFiltering:function(t,e,i,r,n){var s,o,a,h,c,l,u,f,d,g=0,p=this.rcpScaleX,v=this.rcpScaleY,m=4*(e-1),b=t.imageData.data,_=t.ctx.createImageData(r,n),y=_.data;for(a=0;a<n;a++)for(h=0;h<r;h++)for(c=p*h-(s=P(p*h)),l=v*a-(o=P(v*a)),d=4*(o*e+s),u=0;u<4;u++)f=b[d+u]*(1-c)*(1-l)+b[d+4+u]*c*(1-l)+b[d+m+u]*l*(1-c)+b[d+m+4+u]*c*l,y[g++]=f;return _},hermiteFastResize:function(t,e,i,r,n){for(var s=this.rcpScaleX,o=this.rcpScaleY,a=I(s/2),h=I(o/2),c=t.imageData.data,l=t.ctx.createImageData(r,n),u=l.data,f=0;f<n;f++)for(var d=0;d<r;d++){for(var g=4*(d+f*r),p=0,v=0,m=0,b=0,_=0,y=0,x=0,C=(f+.5)*o,S=P(f*o);S<(f+1)*o;S++)for(var T=M(C-(S+.5))/h,w=(d+.5)*s,O=T*T,k=P(d*s);k<(d+1)*s;k++){var E=M(w-(k+.5))/a,D=F(O+E*E);1<D&&D<-1||0<(p=2*D*D*D-3*D*D+1)&&(x+=p*c[(E=4*(k+S*e))+3],m+=p,c[E+3]<255&&(p=p*c[E+3]/250),b+=p*c[E],_+=p*c[E+1],y+=p*c[E+2],v+=p)}u[g]=b/v,u[g+1]=_/v,u[g+2]=y/v,u[g+3]=x/m}return l},toObject:function(){return{type:this.type,scaleX:this.scaleX,scaleY:this.scaleY,resizeType:this.resizeType,lanczosLobes:this.lanczosLobes}}}),m.Image.filters.Resize.fromObject=m.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.Image.filters,r=e.util.createClass;i.Contrast=r(i.BaseFilter,{type:\"Contrast\",fragmentSource:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uContrast;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\nfloat contrastF = 1.015 * (uContrast + 1.0) / (1.0 * (1.015 - uContrast));\\ncolor.rgb = contrastF * (color.rgb - 0.5) + 0.5;\\ngl_FragColor = color;\\n}\",contrast:0,mainParameter:\"contrast\",applyTo2d:function(t){if(0!==this.contrast){var e,i=t.imageData.data,r=i.length,n=Math.floor(255*this.contrast),s=259*(n+255)/(255*(259-n));for(e=0;e<r;e+=4)i[e]=s*(i[e]-128)+128,i[e+1]=s*(i[e+1]-128)+128,i[e+2]=s*(i[e+2]-128)+128}},getUniformLocations:function(t,e){return{uContrast:t.getUniformLocation(e,\"uContrast\")}},sendUniformData:function(t,e){t.uniform1f(e.uContrast,this.contrast)}}),e.Image.filters.Contrast.fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.Image.filters,r=e.util.createClass;i.Saturation=r(i.BaseFilter,{type:\"Saturation\",fragmentSource:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform float uSaturation;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\nfloat rgMax = max(color.r, color.g);\\nfloat rgbMax = max(rgMax, color.b);\\ncolor.r += rgbMax != color.r ? (rgbMax - color.r) * uSaturation : 0.00;\\ncolor.g += rgbMax != color.g ? (rgbMax - color.g) * uSaturation : 0.00;\\ncolor.b += rgbMax != color.b ? (rgbMax - color.b) * uSaturation : 0.00;\\ngl_FragColor = color;\\n}\",saturation:0,mainParameter:\"saturation\",applyTo2d:function(t){if(0!==this.saturation){var e,i,r=t.imageData.data,n=r.length,s=-this.saturation;for(e=0;e<n;e+=4)i=Math.max(r[e],r[e+1],r[e+2]),r[e]+=i!==r[e]?(i-r[e])*s:0,r[e+1]+=i!==r[e+1]?(i-r[e+1])*s:0,r[e+2]+=i!==r[e+2]?(i-r[e+2])*s:0}},getUniformLocations:function(t,e){return{uSaturation:t.getUniformLocation(e,\"uSaturation\")}},sendUniformData:function(t,e){t.uniform1f(e.uSaturation,-this.saturation)}}),e.Image.filters.Saturation.fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var g=t.fabric||(t.fabric={}),e=g.Image.filters,i=g.util.createClass;e.Blur=i(e.BaseFilter,{type:\"Blur\",fragmentSource:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform vec2 uDelta;\\nvarying vec2 vTexCoord;\\nconst float nSamples = 15.0;\\nvec3 v3offset = vec3(12.9898, 78.233, 151.7182);\\nfloat random(vec3 scale) {\\nreturn fract(sin(dot(gl_FragCoord.xyz, scale)) * 43758.5453);\\n}\\nvoid main() {\\nvec4 color = vec4(0.0);\\nfloat total = 0.0;\\nfloat offset = random(v3offset);\\nfor (float t = -nSamples; t <= nSamples; t++) {\\nfloat percent = (t + offset - 0.5) / nSamples;\\nfloat weight = 1.0 - abs(percent);\\ncolor += texture2D(uTexture, vTexCoord + uDelta * percent) * weight;\\ntotal += weight;\\n}\\ngl_FragColor = color / total;\\n}\",blur:0,mainParameter:\"blur\",applyTo:function(t){t.webgl?(this.aspectRatio=t.sourceWidth/t.sourceHeight,t.passes++,this._setupFrameBuffer(t),this.horizontal=!0,this.applyToWebGL(t),this._swapTextures(t),this._setupFrameBuffer(t),this.horizontal=!1,this.applyToWebGL(t),this._swapTextures(t)):this.applyTo2d(t)},applyTo2d:function(t){t.imageData=this.simpleBlur(t)},simpleBlur:function(t){var e,i,r=t.filterBackend.resources,n=t.imageData.width,s=t.imageData.height;r.blurLayer1||(r.blurLayer1=g.util.createCanvasElement(),r.blurLayer2=g.util.createCanvasElement()),e=r.blurLayer1,i=r.blurLayer2,e.width===n&&e.height===s||(i.width=e.width=n,i.height=e.height=s);var o,a,h,c,l=e.getContext(\"2d\"),u=i.getContext(\"2d\"),f=.06*this.blur*.5;for(l.putImageData(t.imageData,0,0),u.clearRect(0,0,n,s),c=-15;c<=15;c++)h=f*(a=c/15)*n+(o=(Math.random()-.5)/4),u.globalAlpha=1-Math.abs(a),u.drawImage(e,h,o),l.drawImage(i,0,0),u.globalAlpha=1,u.clearRect(0,0,i.width,i.height);for(c=-15;c<=15;c++)h=f*(a=c/15)*s+(o=(Math.random()-.5)/4),u.globalAlpha=1-Math.abs(a),u.drawImage(e,o,h),l.drawImage(i,0,0),u.globalAlpha=1,u.clearRect(0,0,i.width,i.height);t.ctx.drawImage(e,0,0);var d=t.ctx.getImageData(0,0,e.width,e.height);return l.globalAlpha=1,l.clearRect(0,0,e.width,e.height),d},getUniformLocations:function(t,e){return{delta:t.getUniformLocation(e,\"uDelta\")}},sendUniformData:function(t,e){var i=this.chooseRightDelta();t.uniform2fv(e.delta,i)},chooseRightDelta:function(){var t,e=1,i=[0,0];return this.horizontal?1<this.aspectRatio&&(e=1/this.aspectRatio):this.aspectRatio<1&&(e=this.aspectRatio),t=e*this.blur*.12,this.horizontal?i[0]=t:i[1]=t,i}}),e.Blur.fromObject=g.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var e=t.fabric||(t.fabric={}),i=e.Image.filters,r=e.util.createClass;i.Gamma=r(i.BaseFilter,{type:\"Gamma\",fragmentSource:\"precision highp float;\\nuniform sampler2D uTexture;\\nuniform vec3 uGamma;\\nvarying vec2 vTexCoord;\\nvoid main() {\\nvec4 color = texture2D(uTexture, vTexCoord);\\nvec3 correction = (1.0 / uGamma);\\ncolor.r = pow(color.r, correction.r);\\ncolor.g = pow(color.g, correction.g);\\ncolor.b = pow(color.b, correction.b);\\ngl_FragColor = color;\\ngl_FragColor.rgb *= color.a;\\n}\",gamma:[1,1,1],mainParameter:\"gamma\",initialize:function(t){this.gamma=[1,1,1],i.BaseFilter.prototype.initialize.call(this,t)},applyTo2d:function(t){var e,i=t.imageData.data,r=this.gamma,n=i.length,s=1/r[0],o=1/r[1],a=1/r[2];for(this.rVals||(this.rVals=new Uint8Array(256),this.gVals=new Uint8Array(256),this.bVals=new Uint8Array(256)),e=0,n=256;e<n;e++)this.rVals[e]=255*Math.pow(e/255,s),this.gVals[e]=255*Math.pow(e/255,o),this.bVals[e]=255*Math.pow(e/255,a);for(e=0,n=i.length;e<n;e+=4)i[e]=this.rVals[i[e]],i[e+1]=this.gVals[i[e+1]],i[e+2]=this.bVals[i[e+2]]},getUniformLocations:function(t,e){return{uGamma:t.getUniformLocation(e,\"uGamma\")}},sendUniformData:function(t,e){t.uniform3fv(e.uGamma,this.gamma)}}),e.Image.filters.Gamma.fromObject=e.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var n=t.fabric||(t.fabric={}),e=n.Image.filters,i=n.util.createClass;e.Composed=i(e.BaseFilter,{type:\"Composed\",subFilters:[],initialize:function(t){this.callSuper(\"initialize\",t),this.subFilters=this.subFilters.slice(0)},applyTo:function(e){e.passes+=this.subFilters.length-1,this.subFilters.forEach(function(t){t.applyTo(e)})},toObject:function(){return n.util.object.extend(this.callSuper(\"toObject\"),{subFilters:this.subFilters.map(function(t){return t.toObject()})})},isNeutralState:function(){return!this.subFilters.some(function(t){return!t.isNeutralState()})}}),n.Image.filters.Composed.fromObject=function(t,e){var i=(t.subFilters||[]).map(function(t){return new n.Image.filters[t.type](t)}),r=new n.Image.filters.Composed({subFilters:i});return e&&e(r),r}}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var s=t.fabric||(t.fabric={}),e=s.Image.filters,i=s.util.createClass;e.HueRotation=i(e.ColorMatrix,{type:\"HueRotation\",rotation:0,mainParameter:\"rotation\",calculateMatrix:function(){var t=this.rotation*Math.PI,e=s.util.cos(t),i=s.util.sin(t),r=Math.sqrt(1/3)*i,n=1-e;this.matrix=[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0],this.matrix[0]=e+n/3,this.matrix[1]=1/3*n-r,this.matrix[2]=1/3*n+r,this.matrix[5]=1/3*n+r,this.matrix[6]=e+1/3*n,this.matrix[7]=1/3*n-r,this.matrix[10]=1/3*n-r,this.matrix[11]=1/3*n+r,this.matrix[12]=e+1/3*n},isNeutralState:function(t){return this.calculateMatrix(),e.BaseFilter.prototype.isNeutralState.call(this,t)},applyTo:function(t){this.calculateMatrix(),e.BaseFilter.prototype.applyTo.call(this,t)}}),s.Image.filters.HueRotation.fromObject=s.Image.filters.BaseFilter.fromObject}(\"undefined\"!=typeof exports?exports:this),function(t){\"use strict\";var d=t.fabric||(t.fabric={}),g=d.util.object.clone;d.Text?d.warn(\"fabric.Text is already defined\"):(d.Text=d.util.createClass(d.Object,{_dimensionAffectingProps:[\"fontSize\",\"fontWeight\",\"fontFamily\",\"fontStyle\",\"lineHeight\",\"text\",\"charSpacing\",\"textAlign\",\"styles\"],_reNewline:/\\r?\\n/,_reSpacesAndTabs:/[ \\t\\r]/g,_reSpaceAndTab:/[ \\t\\r]/,_reWords:/\\S+/g,type:\"text\",fontSize:40,fontWeight:\"normal\",fontFamily:\"Times New Roman\",underline:!1,overline:!1,linethrough:!1,textAlign:\"left\",fontStyle:\"normal\",lineHeight:1.16,superscript:{size:.6,baseline:-.35},subscript:{size:.6,baseline:.11},textBackgroundColor:\"\",stateProperties:d.Object.prototype.stateProperties.concat(\"fontFamily\",\"fontWeight\",\"fontSize\",\"text\",\"underline\",\"overline\",\"linethrough\",\"textAlign\",\"fontStyle\",\"lineHeight\",\"textBackgroundColor\",\"charSpacing\",\"styles\"),cacheProperties:d.Object.prototype.cacheProperties.concat(\"fontFamily\",\"fontWeight\",\"fontSize\",\"text\",\"underline\",\"overline\",\"linethrough\",\"textAlign\",\"fontStyle\",\"lineHeight\",\"textBackgroundColor\",\"charSpacing\",\"styles\"),stroke:null,shadow:null,_fontSizeFraction:.222,offsets:{underline:.1,linethrough:-.315,overline:-.88},_fontSizeMult:1.13,charSpacing:0,styles:null,_measuringContext:null,deltaY:0,_styleProperties:[\"stroke\",\"strokeWidth\",\"fill\",\"fontFamily\",\"fontSize\",\"fontWeight\",\"fontStyle\",\"underline\",\"overline\",\"linethrough\",\"deltaY\",\"textBackgroundColor\"],__charBounds:[],CACHE_FONT_SIZE:400,MIN_TEXT_WIDTH:2,initialize:function(t,e){this.styles=e&&e.styles||{},this.text=t,this.__skipDimension=!0,this.callSuper(\"initialize\",e),this.__skipDimension=!1,this.initDimensions(),this.setCoords(),this.setupState({propertySet:\"_dimensionAffectingProps\"})},getMeasuringContext:function(){return d._measuringContext||(d._measuringContext=this.canvas&&this.canvas.contextCache||d.util.createCanvasElement().getContext(\"2d\")),d._measuringContext},_splitText:function(){var t=this._splitTextIntoLines(this.text);return this.textLines=t.lines,this._textLines=t.graphemeLines,this._unwrappedTextLines=t._unwrappedLines,this._text=t.graphemeText,t},initDimensions:function(){this.__skipDimension||(this._splitText(),this._clearCache(),this.width=this.calcTextWidth()||this.cursorWidth||this.MIN_TEXT_WIDTH,-1!==this.textAlign.indexOf(\"justify\")&&this.enlargeSpaces(),this.height=this.calcTextHeight(),this.saveState({propertySet:\"_dimensionAffectingProps\"}))},enlargeSpaces:function(){for(var t,e,i,r,n,s,o,a=0,h=this._textLines.length;a<h;a++)if((\"justify\"===this.textAlign||a!==h-1&&!this.isEndOfWrapping(a))&&(r=0,n=this._textLines[a],(e=this.getLineWidth(a))<this.width&&(o=this.textLines[a].match(this._reSpacesAndTabs)))){i=o.length,t=(this.width-e)/i;for(var c=0,l=n.length;c<=l;c++)s=this.__charBounds[a][c],this._reSpaceAndTab.test(n[c])?(s.width+=t,s.kernedWidth+=t,s.left+=r,r+=t):s.left+=r}},isEndOfWrapping:function(t){return t===this._textLines.length-1},toString:function(){return\"#<fabric.Text (\"+this.complexity()+'): { \"text\": \"'+this.text+'\", \"fontFamily\": \"'+this.fontFamily+'\" }>'},_getCacheCanvasDimensions:function(){var t=this.callSuper(\"_getCacheCanvasDimensions\"),e=this.fontSize;return t.width+=e*t.zoomX,t.height+=e*t.zoomY,t},_render:function(t){this._setTextStyles(t),this._renderTextLinesBackground(t),this._renderTextDecoration(t,\"underline\"),this._renderText(t),this._renderTextDecoration(t,\"overline\"),this._renderTextDecoration(t,\"linethrough\")},_renderText:function(t){\"stroke\"===this.paintFirst?(this._renderTextStroke(t),this._renderTextFill(t)):(this._renderTextFill(t),this._renderTextStroke(t))},_setTextStyles:function(t,e,i){t.textBaseline=\"alphabetic\",t.font=this._getFontDeclaration(e,i)},calcTextWidth:function(){for(var t=this.getLineWidth(0),e=1,i=this._textLines.length;e<i;e++){var r=this.getLineWidth(e);t<r&&(t=r)}return t},_renderTextLine:function(t,e,i,r,n,s){this._renderChars(t,e,i,r,n,s)},_renderTextLinesBackground:function(t){if(this.textBackgroundColor||this.styleHas(\"textBackgroundColor\")){for(var e,i,r,n,s,o,a=0,h=t.fillStyle,c=this._getLeftOffset(),l=this._getTopOffset(),u=0,f=0,d=0,g=this._textLines.length;d<g;d++)if(e=this.getHeightOfLine(d),this.textBackgroundColor||this.styleHas(\"textBackgroundColor\",d)){r=this._textLines[d],i=this._getLineLeftOffset(d),u=f=0,n=this.getValueOfPropertyAt(d,0,\"textBackgroundColor\");for(var p=0,v=r.length;p<v;p++)s=this.__charBounds[d][p],(o=this.getValueOfPropertyAt(d,p,\"textBackgroundColor\"))!==n?((t.fillStyle=n)&&t.fillRect(c+i+u,l+a,f,e/this.lineHeight),u=s.left,f=s.width,n=o):f+=s.kernedWidth;o&&(t.fillStyle=o,t.fillRect(c+i+u,l+a,f,e/this.lineHeight)),a+=e}else a+=e;t.fillStyle=h,this._removeShadow(t)}},getFontCache:function(t){var e=t.fontFamily.toLowerCase();d.charWidthsCache[e]||(d.charWidthsCache[e]={});var i=d.charWidthsCache[e],r=t.fontStyle.toLowerCase()+\"_\"+(t.fontWeight+\"\").toLowerCase();return i[r]||(i[r]={}),i[r]},_applyCharStyles:function(t,e,i,r,n){this._setFillStyles(e,n),this._setStrokeStyles(e,n),e.font=this._getFontDeclaration(n)},_measureChar:function(t,e,i,r){var n,s,o,a,h=this.getFontCache(e),c=i+t,l=this._getFontDeclaration(e)===this._getFontDeclaration(r),u=e.fontSize/this.CACHE_FONT_SIZE;if(i&&void 0!==h[i]&&(o=h[i]),void 0!==h[t]&&(a=n=h[t]),l&&void 0!==h[c]&&(a=(s=h[c])-o),void 0===n||void 0===o||void 0===s){var f=this.getMeasuringContext();this._setTextStyles(f,e,!0)}return void 0===n&&(a=n=f.measureText(t).width,h[t]=n),void 0===o&&l&&i&&(o=f.measureText(i).width,h[i]=o),l&&void 0===s&&(s=f.measureText(c).width,a=(h[c]=s)-o),{width:n*u,kernedWidth:a*u}},getHeightOfChar:function(t,e){return this.getValueOfPropertyAt(t,e,\"fontSize\")},measureLine:function(t){var e=this._measureLine(t);return 0!==this.charSpacing&&(e.width-=this._getWidthOfCharSpacing()),e.width<0&&(e.width=0),e},_measureLine:function(t){var e,i,r,n,s=0,o=this._textLines[t],a=new Array(o.length);for(this.__charBounds[t]=a,e=0;e<o.length;e++)i=o[e],n=this._getGraphemeBox(i,t,e,r),s+=(a[e]=n).kernedWidth,r=i;return a[e]={left:n?n.left+n.width:0,width:0,kernedWidth:0,height:this.fontSize},{width:s,numOfSpaces:0}},_getGraphemeBox:function(t,e,i,r,n){var s,o=this.getCompleteStyleDeclaration(e,i),a=r?this.getCompleteStyleDeclaration(e,i-1):{},h=this._measureChar(t,o,r,a),c=h.kernedWidth,l=h.width;0!==this.charSpacing&&(l+=s=this._getWidthOfCharSpacing(),c+=s);var u={width:l,left:0,height:o.fontSize,kernedWidth:c,deltaY:o.deltaY};if(0<i&&!n){var f=this.__charBounds[e][i-1];u.left=f.left+f.width+h.kernedWidth-h.width}return u},getHeightOfLine:function(t){if(this.__lineHeights[t])return this.__lineHeights[t];for(var e=this._textLines[t],i=this.getHeightOfChar(t,0),r=1,n=e.length;r<n;r++)i=Math.max(this.getHeightOfChar(t,r),i);return this.__lineHeights[t]=i*this.lineHeight*this._fontSizeMult},calcTextHeight:function(){for(var t,e=0,i=0,r=this._textLines.length;i<r;i++)t=this.getHeightOfLine(i),e+=i===r-1?t/this.lineHeight:t;return e},_getLeftOffset:function(){return-this.width/2},_getTopOffset:function(){return-this.height/2},_renderTextCommon:function(t,e){t.save();for(var i=0,r=this._getLeftOffset(),n=this._getTopOffset(),s=this._applyPatternGradientTransform(t,\"fillText\"===e?this.fill:this.stroke),o=0,a=this._textLines.length;o<a;o++){var h=this.getHeightOfLine(o),c=h/this.lineHeight,l=this._getLineLeftOffset(o);this._renderTextLine(e,t,this._textLines[o],r+l-s.offsetX,n+i+c-s.offsetY,o),i+=h}t.restore()},_renderTextFill:function(t){(this.fill||this.styleHas(\"fill\"))&&this._renderTextCommon(t,\"fillText\")},_renderTextStroke:function(t){(this.stroke&&0!==this.strokeWidth||!this.isEmptyStyles())&&(this.shadow&&!this.shadow.affectStroke&&this._removeShadow(t),t.save(),this._setLineDash(t,this.strokeDashArray),t.beginPath(),this._renderTextCommon(t,\"strokeText\"),t.closePath(),t.restore())},_renderChars:function(t,e,i,r,n,s){var o,a,h,c,l=this.getHeightOfLine(s),u=-1!==this.textAlign.indexOf(\"justify\"),f=\"\",d=0,g=!u&&0===this.charSpacing&&this.isEmptyStyles(s);if(e.save(),n-=l*this._fontSizeFraction/this.lineHeight,g)return this._renderChar(t,e,s,0,this.textLines[s],r,n,l),void e.restore();for(var p=0,v=i.length-1;p<=v;p++)c=p===v||this.charSpacing,f+=i[p],h=this.__charBounds[s][p],0===d?(r+=h.kernedWidth-h.width,d+=h.width):d+=h.kernedWidth,u&&!c&&this._reSpaceAndTab.test(i[p])&&(c=!0),c||(o=o||this.getCompleteStyleDeclaration(s,p),a=this.getCompleteStyleDeclaration(s,p+1),c=this._hasStyleChanged(o,a)),c&&(this._renderChar(t,e,s,p,f,r,n,l),f=\"\",o=a,r+=d,d=0);e.restore()},_renderChar:function(t,e,i,r,n,s,o){var a=this._getStyleDeclaration(i,r),h=this.getCompleteStyleDeclaration(i,r),c=\"fillText\"===t&&h.fill,l=\"strokeText\"===t&&h.stroke&&h.strokeWidth;(l||c)&&(a&&e.save(),this._applyCharStyles(t,e,i,r,h),a&&a.textBackgroundColor&&this._removeShadow(e),a&&a.deltaY&&(o+=a.deltaY),c&&e.fillText(n,s,o),l&&e.strokeText(n,s,o),a&&e.restore())},setSuperscript:function(t,e){return this._setScript(t,e,this.superscript)},setSubscript:function(t,e){return this._setScript(t,e,this.subscript)},_setScript:function(t,e,i){var r=this.get2DCursorLocation(t,!0),n=this.getValueOfPropertyAt(r.lineIndex,r.charIndex,\"fontSize\"),s=this.getValueOfPropertyAt(r.lineIndex,r.charIndex,\"deltaY\"),o={fontSize:n*i.size,deltaY:s+n*i.baseline};return this.setSelectionStyles(o,t,e),this},_hasStyleChanged:function(t,e){return t.fill!==e.fill||t.stroke!==e.stroke||t.strokeWidth!==e.strokeWidth||t.fontSize!==e.fontSize||t.fontFamily!==e.fontFamily||t.fontWeight!==e.fontWeight||t.fontStyle!==e.fontStyle||t.deltaY!==e.deltaY},_hasStyleChangedForSvg:function(t,e){return this._hasStyleChanged(t,e)||t.overline!==e.overline||t.underline!==e.underline||t.linethrough!==e.linethrough},_getLineLeftOffset:function(t){var e=this.getLineWidth(t);return\"center\"===this.textAlign?(this.width-e)/2:\"right\"===this.textAlign?this.width-e:\"justify-center\"===this.textAlign&&this.isEndOfWrapping(t)?(this.width-e)/2:\"justify-right\"===this.textAlign&&this.isEndOfWrapping(t)?this.width-e:0},_clearCache:function(){this.__lineWidths=[],this.__lineHeights=[],this.__charBounds=[]},_shouldClearDimensionCache:function(){var t=this._forceClearCache;return t||(t=this.hasStateChanged(\"_dimensionAffectingProps\")),t&&(this.dirty=!0,this._forceClearCache=!1),t},getLineWidth:function(t){return this.__lineWidths[t]?this.__lineWidths[t]:(e=\"\"===this._textLines[t]?0:this.measureLine(t).width,this.__lineWidths[t]=e);var e},_getWidthOfCharSpacing:function(){return 0!==this.charSpacing?this.fontSize*this.charSpacing/1e3:0},getValueOfPropertyAt:function(t,e,i){var r=this._getStyleDeclaration(t,e);return r&&void 0!==r[i]?r[i]:this[i]},_renderTextDecoration:function(t,e){if(this[e]||this.styleHas(e)){for(var i,r,n,s,o,a,h,c,l,u,f,d,g,p,v,m,b=this._getLeftOffset(),_=this._getTopOffset(),y=this._getWidthOfCharSpacing(),x=0,C=this._textLines.length;x<C;x++)if(i=this.getHeightOfLine(x),this[e]||this.styleHas(e,x)){h=this._textLines[x],p=i/this.lineHeight,s=this._getLineLeftOffset(x),f=u=0,c=this.getValueOfPropertyAt(x,0,e),m=this.getValueOfPropertyAt(x,0,\"fill\"),l=_+p*(1-this._fontSizeFraction),r=this.getHeightOfChar(x,0),o=this.getValueOfPropertyAt(x,0,\"deltaY\");for(var S=0,T=h.length;S<T;S++)d=this.__charBounds[x][S],g=this.getValueOfPropertyAt(x,S,e),v=this.getValueOfPropertyAt(x,S,\"fill\"),n=this.getHeightOfChar(x,S),a=this.getValueOfPropertyAt(x,S,\"deltaY\"),(g!==c||v!==m||n!==r||a!==o)&&0<f?(t.fillStyle=m,c&&m&&t.fillRect(b+s+u,l+this.offsets[e]*r+o,f,this.fontSize/15),u=d.left,f=d.width,c=g,m=v,r=n,o=a):f+=d.kernedWidth;t.fillStyle=v,g&&v&&t.fillRect(b+s+u,l+this.offsets[e]*r+o,f-y,this.fontSize/15),_+=i}else _+=i;this._removeShadow(t)}},_getFontDeclaration:function(t,e){var i=t||this,r=this.fontFamily,n=-1<d.Text.genericFonts.indexOf(r.toLowerCase()),s=void 0===r||-1<r.indexOf(\"'\")||-1<r.indexOf('\"')||n?i.fontFamily:'\"'+i.fontFamily+'\"';return[d.isLikelyNode?i.fontWeight:i.fontStyle,d.isLikelyNode?i.fontStyle:i.fontWeight,e?this.CACHE_FONT_SIZE+\"px\":i.fontSize+\"px\",s].join(\" \")},render:function(t){this.visible&&(this.canvas&&this.canvas.skipOffscreen&&!this.group&&!this.isOnScreen()||(this._shouldClearDimensionCache()&&this.initDimensions(),this.callSuper(\"render\",t)))},_splitTextIntoLines:function(t){for(var e=t.split(this._reNewline),i=new Array(e.length),r=[\"\\n\"],n=[],s=0;s<e.length;s++)i[s]=d.util.string.graphemeSplit(e[s]),n=n.concat(i[s],r);return n.pop(),{_unwrappedLines:i,lines:e,graphemeText:n,graphemeLines:i}},toObject:function(t){var e=[\"text\",\"fontSize\",\"fontWeight\",\"fontFamily\",\"fontStyle\",\"lineHeight\",\"underline\",\"overline\",\"linethrough\",\"textAlign\",\"textBackgroundColor\",\"charSpacing\"].concat(t),i=this.callSuper(\"toObject\",e);return i.styles=g(this.styles,!0),i},set:function(t,e){this.callSuper(\"set\",t,e);var i=!1;if(\"object\"==typeof t)for(var r in t)i=i||-1!==this._dimensionAffectingProps.indexOf(r);else i=-1!==this._dimensionAffectingProps.indexOf(t);return i&&(this.initDimensions(),this.setCoords()),this},complexity:function(){return 1}}),d.Text.ATTRIBUTE_NAMES=d.SHARED_ATTRIBUTES.concat(\"x y dx dy font-family font-style font-weight font-size letter-spacing text-decoration text-anchor\".split(\" \")),d.Text.DEFAULT_SVG_FONT_SIZE=16,d.Text.fromElement=function(t,e,i){if(!t)return e(null);var r=d.parseAttributes(t,d.Text.ATTRIBUTE_NAMES),n=r.textAnchor||\"left\";if((i=d.util.object.extend(i?g(i):{},r)).top=i.top||0,i.left=i.left||0,r.textDecoration){var s=r.textDecoration;-1!==s.indexOf(\"underline\")&&(i.underline=!0),-1!==s.indexOf(\"overline\")&&(i.overline=!0),-1!==s.indexOf(\"line-through\")&&(i.linethrough=!0),delete i.textDecoration}\"dx\"in r&&(i.left+=r.dx),\"dy\"in r&&(i.top+=r.dy),\"fontSize\"in i||(i.fontSize=d.Text.DEFAULT_SVG_FONT_SIZE);var o=\"\";\"textContent\"in t?o=t.textContent:\"firstChild\"in t&&null!==t.firstChild&&\"data\"in t.firstChild&&null!==t.firstChild.data&&(o=t.firstChild.data),o=o.replace(/^\\s+|\\s+$|\\n+/g,\"\").replace(/\\s+/g,\" \");var a=i.strokeWidth;i.strokeWidth=0;var h=new d.Text(o,i),c=h.getScaledHeight()/h.height,l=((h.height+h.strokeWidth)*h.lineHeight-h.height)*c,u=h.getScaledHeight()+l,f=0;\"center\"===n&&(f=h.getScaledWidth()/2),\"right\"===n&&(f=h.getScaledWidth()),h.set({left:h.left-f,top:h.top-(u-h.fontSize*(.07+h._fontSizeFraction))/h.lineHeight,strokeWidth:void 0!==a?a:1}),e(h)},d.Text.fromObject=function(t,e){return d.Object._fromObject(\"Text\",t,e,\"text\")},d.Text.genericFonts=[\"sans-serif\",\"serif\",\"cursive\",\"fantasy\",\"monospace\"],d.util.createAccessors&&d.util.createAccessors(d.Text))}(\"undefined\"!=typeof exports?exports:this),fabric.util.object.extend(fabric.Text.prototype,{isEmptyStyles:function(t){if(!this.styles)return!0;if(void 0!==t&&!this.styles[t])return!0;var e=void 0===t?this.styles:{line:this.styles[t]};for(var i in e)for(var r in e[i])for(var n in e[i][r])return!1;return!0},styleHas:function(t,e){if(!this.styles||!t||\"\"===t)return!1;if(void 0!==e&&!this.styles[e])return!1;var i=void 0===e?this.styles:{line:this.styles[e]};for(var r in i)for(var n in i[r])if(void 0!==i[r][n][t])return!0;return!1},cleanStyle:function(t){if(!this.styles||!t||\"\"===t)return!1;var e,i,r=this.styles,n=0,s=!0,o=0;for(var a in r){for(var h in e=0,r[a]){var c;n++,(c=r[a][h]).hasOwnProperty(t)?(i?c[t]!==i&&(s=!1):i=c[t],c[t]===this[t]&&delete c[t]):s=!1,0!==Object.keys(c).length?e++:delete r[a][h]}0===e&&delete r[a]}for(var l=0;l<this._textLines.length;l++)o+=this._textLines[l].length;s&&n===o&&(this[t]=i,this.removeStyle(t))},removeStyle:function(t){if(this.styles&&t&&\"\"!==t){var e,i,r,n=this.styles;for(i in n){for(r in e=n[i])delete e[r][t],0===Object.keys(e[r]).length&&delete e[r];0===Object.keys(e).length&&delete n[i]}}},_extendStyles:function(t,e){var i=this.get2DCursorLocation(t);this._getLineStyle(i.lineIndex)||this._setLineStyle(i.lineIndex,{}),this._getStyleDeclaration(i.lineIndex,i.charIndex)||this._setStyleDeclaration(i.lineIndex,i.charIndex,{}),fabric.util.object.extend(this._getStyleDeclaration(i.lineIndex,i.charIndex),e)},get2DCursorLocation:function(t,e){void 0===t&&(t=this.selectionStart);for(var i=e?this._unwrappedTextLines:this._textLines,r=i.length,n=0;n<r;n++){if(t<=i[n].length)return{lineIndex:n,charIndex:t};t-=i[n].length+1}return{lineIndex:n-1,charIndex:i[n-1].length<t?i[n-1].length:t}},getSelectionStyles:function(t,e,i){void 0===t&&(t=this.selectionStart||0),void 0===e&&(e=this.selectionEnd||t);for(var r=[],n=t;n<e;n++)r.push(this.getStyleAtPosition(n,i));return r},getStyleAtPosition:function(t,e){var i=this.get2DCursorLocation(t);return(e?this.getCompleteStyleDeclaration(i.lineIndex,i.charIndex):this._getStyleDeclaration(i.lineIndex,i.charIndex))||{}},setSelectionStyles:function(t,e,i){void 0===e&&(e=this.selectionStart||0),void 0===i&&(i=this.selectionEnd||e);for(var r=e;r<i;r++)this._extendStyles(r,t);return this._forceClearCache=!0,this},_getStyleDeclaration:function(t,e){var i=this.styles&&this.styles[t];return i?i[e]:null},getCompleteStyleDeclaration:function(t,e){for(var i,r=this._getStyleDeclaration(t,e)||{},n={},s=0;s<this._styleProperties.length;s++)n[i=this._styleProperties[s]]=void 0===r[i]?this[i]:r[i];return n},_setStyleDeclaration:function(t,e,i){this.styles[t][e]=i},_deleteStyleDeclaration:function(t,e){delete this.styles[t][e]},_getLineStyle:function(t){return this.styles[t]},_setLineStyle:function(t,e){this.styles[t]=e},_deleteLineStyle:function(t){delete this.styles[t]}}),function(){function n(t){t.textDecoration&&(-1<t.textDecoration.indexOf(\"underline\")&&(t.underline=!0),-1<t.textDecoration.indexOf(\"line-through\")&&(t.linethrough=!0),-1<t.textDecoration.indexOf(\"overline\")&&(t.overline=!0),delete t.textDecoration)}fabric.IText=fabric.util.createClass(fabric.Text,fabric.Observable,{type:\"i-text\",selectionStart:0,selectionEnd:0,selectionColor:\"rgba(17,119,255,0.3)\",isEditing:!1,editable:!0,editingBorderColor:\"rgba(102,153,255,0.25)\",cursorWidth:2,cursorColor:\"#333\",cursorDelay:1e3,cursorDuration:600,caching:!0,_reSpace:/\\s|\\n/,_currentCursorOpacity:0,_selectionDirection:null,_abortCursorAnimation:!1,__widthOfSpace:[],inCompositionMode:!1,initialize:function(t,e){this.callSuper(\"initialize\",t,e),this.initBehavior()},setSelectionStart:function(t){t=Math.max(t,0),this._updateAndFire(\"selectionStart\",t)},setSelectionEnd:function(t){t=Math.min(t,this.text.length),this._updateAndFire(\"selectionEnd\",t)},_updateAndFire:function(t,e){this[t]!==e&&(this._fireSelectionChanged(),this[t]=e),this._updateTextarea()},_fireSelectionChanged:function(){this.fire(\"selection:changed\"),this.canvas&&this.canvas.fire(\"text:selection:changed\",{target:this})},initDimensions:function(){this.isEditing&&this.initDelayedCursor(),this.clearContextTop(),this.callSuper(\"initDimensions\")},render:function(t){this.clearContextTop(),this.callSuper(\"render\",t),this.cursorOffsetCache={},this.renderCursorOrSelection()},_render:function(t){this.callSuper(\"_render\",t)},clearContextTop:function(t){if(this.isEditing&&this.canvas&&this.canvas.contextTop){var e=this.canvas.contextTop,i=this.canvas.viewportTransform;e.save(),e.transform(i[0],i[1],i[2],i[3],i[4],i[5]),this.transform(e),this.transformMatrix&&e.transform.apply(e,this.transformMatrix),this._clearTextArea(e),t||e.restore()}},renderCursorOrSelection:function(){if(this.isEditing&&this.canvas){var t,e=this._getCursorBoundaries();this.canvas&&this.canvas.contextTop?(t=this.canvas.contextTop,this.clearContextTop(!0)):(t=this.canvas.contextContainer).save(),this.selectionStart===this.selectionEnd?this.renderCursor(e,t):this.renderSelection(e,t),t.restore()}},_clearTextArea:function(t){var e=this.width+4,i=this.height+4;t.clearRect(-e/2,-i/2,e,i)},_getCursorBoundaries:function(t){void 0===t&&(t=this.selectionStart);var e=this._getLeftOffset(),i=this._getTopOffset(),r=this._getCursorBoundariesOffsets(t);return{left:e,top:i,leftOffset:r.left,topOffset:r.top}},_getCursorBoundariesOffsets:function(t){if(this.cursorOffsetCache&&\"top\"in this.cursorOffsetCache)return this.cursorOffsetCache;var e,i,r,n,s=0,o=0,a=this.get2DCursorLocation(t);r=a.charIndex,i=a.lineIndex;for(var h=0;h<i;h++)s+=this.getHeightOfLine(h);e=this._getLineLeftOffset(i);var c=this.__charBounds[i][r];return c&&(o=c.left),0!==this.charSpacing&&r===this._textLines[i].length&&(o-=this._getWidthOfCharSpacing()),n={top:s,left:e+(0<o?o:0)},this.cursorOffsetCache=n,this.cursorOffsetCache},renderCursor:function(t,e){var i=this.get2DCursorLocation(),r=i.lineIndex,n=0<i.charIndex?i.charIndex-1:0,s=this.getValueOfPropertyAt(r,n,\"fontSize\"),o=this.scaleX*this.canvas.getZoom(),a=this.cursorWidth/o,h=t.topOffset,c=this.getValueOfPropertyAt(r,n,\"deltaY\");h+=(1-this._fontSizeFraction)*this.getHeightOfLine(r)/this.lineHeight-s*(1-this._fontSizeFraction),this.inCompositionMode&&this.renderSelection(t,e),e.fillStyle=this.getValueOfPropertyAt(r,n,\"fill\"),e.globalAlpha=this.__isMousedown?1:this._currentCursorOpacity,e.fillRect(t.left+t.leftOffset-a/2,h+t.top+c,a,s)},renderSelection:function(t,e){for(var i=this.inCompositionMode?this.hiddenTextarea.selectionStart:this.selectionStart,r=this.inCompositionMode?this.hiddenTextarea.selectionEnd:this.selectionEnd,n=-1!==this.textAlign.indexOf(\"justify\"),s=this.get2DCursorLocation(i),o=this.get2DCursorLocation(r),a=s.lineIndex,h=o.lineIndex,c=s.charIndex<0?0:s.charIndex,l=o.charIndex<0?0:o.charIndex,u=a;u<=h;u++){var f,d=this._getLineLeftOffset(u)||0,g=this.getHeightOfLine(u),p=0,v=0;if(u===a&&(p=this.__charBounds[a][c].left),a<=u&&u<h)v=n&&!this.isEndOfWrapping(u)?this.width:this.getLineWidth(u)||5;else if(u===h)if(0===l)v=this.__charBounds[h][l].left;else{var m=this._getWidthOfCharSpacing();v=this.__charBounds[h][l-1].left+this.__charBounds[h][l-1].width-m}f=g,(this.lineHeight<1||u===h&&1<this.lineHeight)&&(g/=this.lineHeight),this.inCompositionMode?(e.fillStyle=this.compositionColor||\"black\",e.fillRect(t.left+d+p,t.top+t.topOffset+g,v-p,1)):(e.fillStyle=this.selectionColor,e.fillRect(t.left+d+p,t.top+t.topOffset,v-p,g)),t.topOffset+=f}},getCurrentCharFontSize:function(){var t=this._getCurrentCharIndex();return this.getValueOfPropertyAt(t.l,t.c,\"fontSize\")},getCurrentCharColor:function(){var t=this._getCurrentCharIndex();return this.getValueOfPropertyAt(t.l,t.c,\"fill\")},_getCurrentCharIndex:function(){var t=this.get2DCursorLocation(this.selectionStart,!0),e=0<t.charIndex?t.charIndex-1:0;return{l:t.lineIndex,c:e}}}),fabric.IText.fromObject=function(t,e){if(n(t),t.styles)for(var i in t.styles)for(var r in t.styles[i])n(t.styles[i][r]);fabric.Object._fromObject(\"IText\",t,e,\"text\")}}(),function(){var c=fabric.util.object.clone;fabric.util.object.extend(fabric.IText.prototype,{initBehavior:function(){this.initAddedHandler(),this.initRemovedHandler(),this.initCursorSelectionHandlers(),this.initDoubleClickSimulation(),this.mouseMoveHandler=this.mouseMoveHandler.bind(this)},onDeselect:function(){this.isEditing&&this.exitEditing(),this.selected=!1},initAddedHandler:function(){var e=this;this.on(\"added\",function(){var t=e.canvas;t&&(t._hasITextHandlers||(t._hasITextHandlers=!0,e._initCanvasHandlers(t)),t._iTextInstances=t._iTextInstances||[],t._iTextInstances.push(e))})},initRemovedHandler:function(){var e=this;this.on(\"removed\",function(){var t=e.canvas;t&&(t._iTextInstances=t._iTextInstances||[],fabric.util.removeFromArray(t._iTextInstances,e),0===t._iTextInstances.length&&(t._hasITextHandlers=!1,e._removeCanvasHandlers(t)))})},_initCanvasHandlers:function(t){t._mouseUpITextHandler=function(){t._iTextInstances&&t._iTextInstances.forEach(function(t){t.__isMousedown=!1})},t.on(\"mouse:up\",t._mouseUpITextHandler)},_removeCanvasHandlers:function(t){t.off(\"mouse:up\",t._mouseUpITextHandler)},_tick:function(){this._currentTickState=this._animateCursor(this,1,this.cursorDuration,\"_onTickComplete\")},_animateCursor:function(t,e,i,r){var n;return n={isAborted:!1,abort:function(){this.isAborted=!0}},t.animate(\"_currentCursorOpacity\",e,{duration:i,onComplete:function(){n.isAborted||t[r]()},onChange:function(){t.canvas&&t.selectionStart===t.selectionEnd&&t.renderCursorOrSelection()},abort:function(){return n.isAborted}}),n},_onTickComplete:function(){var t=this;this._cursorTimeout1&&clearTimeout(this._cursorTimeout1),this._cursorTimeout1=setTimeout(function(){t._currentTickCompleteState=t._animateCursor(t,0,this.cursorDuration/2,\"_tick\")},100)},initDelayedCursor:function(t){var e=this,i=t?0:this.cursorDelay;this.abortCursorAnimation(),this._currentCursorOpacity=1,this._cursorTimeout2=setTimeout(function(){e._tick()},i)},abortCursorAnimation:function(){var t=this._currentTickState||this._currentTickCompleteState,e=this.canvas;this._currentTickState&&this._currentTickState.abort(),this._currentTickCompleteState&&this._currentTickCompleteState.abort(),clearTimeout(this._cursorTimeout1),clearTimeout(this._cursorTimeout2),this._currentCursorOpacity=0,t&&e&&e.clearContext(e.contextTop||e.contextContainer)},selectAll:function(){return this.selectionStart=0,this.selectionEnd=this._text.length,this._fireSelectionChanged(),this._updateTextarea(),this},getSelectedText:function(){return this._text.slice(this.selectionStart,this.selectionEnd).join(\"\")},findWordBoundaryLeft:function(t){var e=0,i=t-1;if(this._reSpace.test(this._text[i]))for(;this._reSpace.test(this._text[i]);)e++,i--;for(;/\\S/.test(this._text[i])&&-1<i;)e++,i--;return t-e},findWordBoundaryRight:function(t){var e=0,i=t;if(this._reSpace.test(this._text[i]))for(;this._reSpace.test(this._text[i]);)e++,i++;for(;/\\S/.test(this._text[i])&&i<this.text.length;)e++,i++;return t+e},findLineBoundaryLeft:function(t){for(var e=0,i=t-1;!/\\n/.test(this._text[i])&&-1<i;)e++,i--;return t-e},findLineBoundaryRight:function(t){for(var e=0,i=t;!/\\n/.test(this._text[i])&&i<this.text.length;)e++,i++;return t+e},searchWordBoundary:function(t,e){for(var i=this._reSpace.test(this.text.charAt(t))?t-1:t,r=this.text.charAt(i),n=/[ \\n\\.,;!\\?\\-]/;!n.test(r)&&0<i&&i<this.text.length;)i+=e,r=this.text.charAt(i);return n.test(r)&&\"\\n\"!==r&&(i+=1===e?0:1),i},selectWord:function(t){t=t||this.selectionStart;var e=this.searchWordBoundary(t,-1),i=this.searchWordBoundary(t,1);this.selectionStart=e,this.selectionEnd=i,this._fireSelectionChanged(),this._updateTextarea(),this.renderCursorOrSelection()},selectLine:function(t){t=t||this.selectionStart;var e=this.findLineBoundaryLeft(t),i=this.findLineBoundaryRight(t);return this.selectionStart=e,this.selectionEnd=i,this._fireSelectionChanged(),this._updateTextarea(),this},enterEditing:function(t){if(!this.isEditing&&this.editable)return this.canvas&&(this.canvas.calcOffset(),this.exitEditingOnOthers(this.canvas)),this.isEditing=!0,this.initHiddenTextarea(t),this.hiddenTextarea.focus(),this.hiddenTextarea.value=this.text,this._updateTextarea(),this._saveEditingProps(),this._setEditingProps(),this._textBeforeEdit=this.text,this._tick(),this.fire(\"editing:entered\"),this._fireSelectionChanged(),this.canvas&&(this.canvas.fire(\"text:editing:entered\",{target:this}),this.initMouseMoveHandler(),this.canvas.requestRenderAll()),this},exitEditingOnOthers:function(t){t._iTextInstances&&t._iTextInstances.forEach(function(t){t.selected=!1,t.isEditing&&t.exitEditing()})},initMouseMoveHandler:function(){this.canvas.on(\"mouse:move\",this.mouseMoveHandler)},mouseMoveHandler:function(t){if(this.__isMousedown&&this.isEditing){var e=this.getSelectionStartFromPointer(t.e),i=this.selectionStart,r=this.selectionEnd;(e===this.__selectionStartOnMouseDown&&i!==r||i!==e&&r!==e)&&(e>this.__selectionStartOnMouseDown?(this.selectionStart=this.__selectionStartOnMouseDown,this.selectionEnd=e):(this.selectionStart=e,this.selectionEnd=this.__selectionStartOnMouseDown),this.selectionStart===i&&this.selectionEnd===r||(this.restartCursorIfNeeded(),this._fireSelectionChanged(),this._updateTextarea(),this.renderCursorOrSelection()))}},_setEditingProps:function(){this.hoverCursor=\"text\",this.canvas&&(this.canvas.defaultCursor=this.canvas.moveCursor=\"text\"),this.borderColor=this.editingBorderColor,this.hasControls=this.selectable=!1,this.lockMovementX=this.lockMovementY=!0},fromStringToGraphemeSelection:function(t,e,i){var r=i.slice(0,t),n=fabric.util.string.graphemeSplit(r).length;if(t===e)return{selectionStart:n,selectionEnd:n};var s=i.slice(t,e);return{selectionStart:n,selectionEnd:n+fabric.util.string.graphemeSplit(s).length}},fromGraphemeToStringSelection:function(t,e,i){var r=i.slice(0,t).join(\"\").length;return t===e?{selectionStart:r,selectionEnd:r}:{selectionStart:r,selectionEnd:r+i.slice(t,e).join(\"\").length}},_updateTextarea:function(){if(this.cursorOffsetCache={},this.hiddenTextarea){if(!this.inCompositionMode){var t=this.fromGraphemeToStringSelection(this.selectionStart,this.selectionEnd,this._text);this.hiddenTextarea.selectionStart=t.selectionStart,this.hiddenTextarea.selectionEnd=t.selectionEnd}this.updateTextareaPosition()}},updateFromTextArea:function(){if(this.hiddenTextarea){this.cursorOffsetCache={},this.text=this.hiddenTextarea.value,this._shouldClearDimensionCache()&&(this.initDimensions(),this.setCoords());var t=this.fromStringToGraphemeSelection(this.hiddenTextarea.selectionStart,this.hiddenTextarea.selectionEnd,this.hiddenTextarea.value);this.selectionEnd=this.selectionStart=t.selectionEnd,this.inCompositionMode||(this.selectionStart=t.selectionStart),this.updateTextareaPosition()}},updateTextareaPosition:function(){if(this.selectionStart===this.selectionEnd){var t=this._calcTextareaPosition();this.hiddenTextarea.style.left=t.left,this.hiddenTextarea.style.top=t.top}},_calcTextareaPosition:function(){if(!this.canvas)return{x:1,y:1};var t=this.inCompositionMode?this.compositionStart:this.selectionStart,e=this._getCursorBoundaries(t),i=this.get2DCursorLocation(t),r=i.lineIndex,n=i.charIndex,s=this.getValueOfPropertyAt(r,n,\"fontSize\")*this.lineHeight,o=e.leftOffset,a=this.calcTransformMatrix(),h={x:e.left+o,y:e.top+e.topOffset+s},c=this.canvas.upperCanvasEl,l=c.width,u=c.height,f=l-s,d=u-s,g=c.clientWidth/l,p=c.clientHeight/u;return h=fabric.util.transformPoint(h,a),(h=fabric.util.transformPoint(h,this.canvas.viewportTransform)).x*=g,h.y*=p,h.x<0&&(h.x=0),h.x>f&&(h.x=f),h.y<0&&(h.y=0),h.y>d&&(h.y=d),h.x+=this.canvas._offset.left,h.y+=this.canvas._offset.top,{left:h.x+\"px\",top:h.y+\"px\",fontSize:s+\"px\",charHeight:s}},_saveEditingProps:function(){this._savedProps={hasControls:this.hasControls,borderColor:this.borderColor,lockMovementX:this.lockMovementX,lockMovementY:this.lockMovementY,hoverCursor:this.hoverCursor,defaultCursor:this.canvas&&this.canvas.defaultCursor,moveCursor:this.canvas&&this.canvas.moveCursor}},_restoreEditingProps:function(){this._savedProps&&(this.hoverCursor=this._savedProps.hoverCursor,this.hasControls=this._savedProps.hasControls,this.borderColor=this._savedProps.borderColor,this.lockMovementX=this._savedProps.lockMovementX,this.lockMovementY=this._savedProps.lockMovementY,this.canvas&&(this.canvas.defaultCursor=this._savedProps.defaultCursor,this.canvas.moveCursor=this._savedProps.moveCursor))},exitEditing:function(){var t=this._textBeforeEdit!==this.text;return this.selected=!1,this.isEditing=!1,this.selectable=!0,this.selectionEnd=this.selectionStart,this.hiddenTextarea&&(this.hiddenTextarea.blur&&this.hiddenTextarea.blur(),this.canvas&&this.hiddenTextarea.parentNode.removeChild(this.hiddenTextarea),this.hiddenTextarea=null),this.abortCursorAnimation(),this._restoreEditingProps(),this._currentCursorOpacity=0,this._shouldClearDimensionCache()&&(this.initDimensions(),this.setCoords()),this.fire(\"editing:exited\"),t&&this.fire(\"modified\"),this.canvas&&(this.canvas.off(\"mouse:move\",this.mouseMoveHandler),this.canvas.fire(\"text:editing:exited\",{target:this}),t&&this.canvas.fire(\"object:modified\",{target:this})),this},_removeExtraneousStyles:function(){for(var t in this.styles)this._textLines[t]||delete this.styles[t]},removeStyleFromTo:function(t,e){var i,r,n=this.get2DCursorLocation(t,!0),s=this.get2DCursorLocation(e,!0),o=n.lineIndex,a=n.charIndex,h=s.lineIndex,c=s.charIndex;if(o!==h){if(this.styles[o])for(i=a;i<this._unwrappedTextLines[o].length;i++)delete this.styles[o][i];if(this.styles[h])for(i=c;i<this._unwrappedTextLines[h].length;i++)(r=this.styles[h][i])&&(this.styles[o]||(this.styles[o]={}),this.styles[o][a+i-c]=r);for(i=o+1;i<=h;i++)delete this.styles[i];this.shiftLineStyles(h,o-h)}else if(this.styles[o]){r=this.styles[o];var l,u,f=c-a;for(i=a;i<c;i++)delete r[i];for(u in this.styles[o])c<=(l=parseInt(u,10))&&(r[l-f]=r[u],delete r[u])}},shiftLineStyles:function(t,e){var i=c(this.styles);for(var r in this.styles){var n=parseInt(r,10);t<n&&(this.styles[n+e]=i[n],i[n-e]||delete this.styles[n])}},restartCursorIfNeeded:function(){this._currentTickState&&!this._currentTickState.isAborted&&this._currentTickCompleteState&&!this._currentTickCompleteState.isAborted||this.initDelayedCursor()},insertNewlineStyleObject:function(t,e,i,r){var n,s={},o=!1;for(var a in i||(i=1),this.shiftLineStyles(t,i),this.styles[t]&&(n=this.styles[t][0===e?e:e-1]),this.styles[t]){var h=parseInt(a,10);e<=h&&(o=!0,s[h-e]=this.styles[t][a],delete this.styles[t][a])}for(o?this.styles[t+i]=s:delete this.styles[t+i];1<i;)i--,r&&r[i]?this.styles[t+i]={0:c(r[i])}:n?this.styles[t+i]={0:c(n)}:delete this.styles[t+i];this._forceClearCache=!0},insertCharStyleObject:function(t,e,i,r){this.styles||(this.styles={});var n=this.styles[t],s=n?c(n):{};for(var o in i||(i=1),s){var a=parseInt(o,10);e<=a&&(n[a+i]=s[a],s[a-i]||delete n[a])}if(this._forceClearCache=!0,r)for(;i--;)Object.keys(r[i]).length&&(this.styles[t]||(this.styles[t]={}),this.styles[t][e+i]=c(r[i]));else if(n)for(var h=n[e?e-1:1];h&&i--;)this.styles[t][e+i]=c(h)},insertNewStyleBlock:function(t,e,i){for(var r=this.get2DCursorLocation(e,!0),n=[0],s=0,o=0;o<t.length;o++)\"\\n\"===t[o]?n[++s]=0:n[s]++;0<n[0]&&(this.insertCharStyleObject(r.lineIndex,r.charIndex,n[0],i),i=i&&i.slice(n[0]+1)),s&&this.insertNewlineStyleObject(r.lineIndex,r.charIndex+n[0],s);for(o=1;o<s;o++)0<n[o]?this.insertCharStyleObject(r.lineIndex+o,0,n[o],i):i&&(this.styles[r.lineIndex+o][0]=i[0]),i=i&&i.slice(n[o]+1);0<n[o]&&this.insertCharStyleObject(r.lineIndex+o,0,n[o],i)},setSelectionStartEndWithShift:function(t,e,i){i<=t?(e===t?this._selectionDirection=\"left\":\"right\"===this._selectionDirection&&(this._selectionDirection=\"left\",this.selectionEnd=t),this.selectionStart=i):t<i&&i<e?\"right\"===this._selectionDirection?this.selectionEnd=i:this.selectionStart=i:(e===t?this._selectionDirection=\"right\":\"left\"===this._selectionDirection&&(this._selectionDirection=\"right\",this.selectionStart=e),this.selectionEnd=i)},setSelectionInBoundaries:function(){var t=this.text.length;this.selectionStart>t?this.selectionStart=t:this.selectionStart<0&&(this.selectionStart=0),this.selectionEnd>t?this.selectionEnd=t:this.selectionEnd<0&&(this.selectionEnd=0)}})}(),fabric.util.object.extend(fabric.IText.prototype,{initDoubleClickSimulation:function(){this.__lastClickTime=+new Date,this.__lastLastClickTime=+new Date,this.__lastPointer={},this.on(\"mousedown\",this.onMouseDown)},onMouseDown:function(t){if(this.canvas){this.__newClickTime=+new Date;var e=t.pointer;this.isTripleClick(e)&&(this.fire(\"tripleclick\",t),this._stopEvent(t.e)),this.__lastLastClickTime=this.__lastClickTime,this.__lastClickTime=this.__newClickTime,this.__lastPointer=e,this.__lastIsEditing=this.isEditing,this.__lastSelected=this.selected}},isTripleClick:function(t){return this.__newClickTime-this.__lastClickTime<500&&this.__lastClickTime-this.__lastLastClickTime<500&&this.__lastPointer.x===t.x&&this.__lastPointer.y===t.y},_stopEvent:function(t){t.preventDefault&&t.preventDefault(),t.stopPropagation&&t.stopPropagation()},initCursorSelectionHandlers:function(){this.initMousedownHandler(),this.initMouseupHandler(),this.initClicks()},initClicks:function(){this.on(\"mousedblclick\",function(t){this.selectWord(this.getSelectionStartFromPointer(t.e))}),this.on(\"tripleclick\",function(t){this.selectLine(this.getSelectionStartFromPointer(t.e))})},_mouseDownHandler:function(t){!this.canvas||!this.editable||t.e.button&&1!==t.e.button||(this.__isMousedown=!0,this.selected&&this.setCursorByClick(t.e),this.isEditing&&(this.__selectionStartOnMouseDown=this.selectionStart,this.selectionStart===this.selectionEnd&&this.abortCursorAnimation(),this.renderCursorOrSelection()))},_mouseDownHandlerBefore:function(t){!this.canvas||!this.editable||t.e.button&&1!==t.e.button||this===this.canvas._activeObject&&(this.selected=!0)},initMousedownHandler:function(){this.on(\"mousedown\",this._mouseDownHandler),this.on(\"mousedown:before\",this._mouseDownHandlerBefore)},initMouseupHandler:function(){this.on(\"mouseup\",this.mouseUpHandler)},mouseUpHandler:function(t){this.__isMousedown=!1,!this.editable||this.group||t.transform&&t.transform.actionPerformed||t.e.button&&1!==t.e.button||(this.__lastSelected&&!this.__corner?(this.selected=!1,this.__lastSelected=!1,this.enterEditing(t.e),this.selectionStart===this.selectionEnd?this.initDelayedCursor(!0):this.renderCursorOrSelection()):this.selected=!0)},setCursorByClick:function(t){var e=this.getSelectionStartFromPointer(t),i=this.selectionStart,r=this.selectionEnd;t.shiftKey?this.setSelectionStartEndWithShift(i,r,e):(this.selectionStart=e,this.selectionEnd=e),this.isEditing&&(this._fireSelectionChanged(),this._updateTextarea())},getSelectionStartFromPointer:function(t){for(var e=this.getLocalPointer(t),i=0,r=0,n=0,s=0,o=0,a=0,h=this._textLines.length;a<h&&n<=e.y;a++)n+=this.getHeightOfLine(a)*this.scaleY,0<(o=a)&&(s+=this._textLines[a-1].length+1);r=this._getLineLeftOffset(o)*this.scaleX;for(var c=0,l=this._textLines[o].length;c<l&&(i=r,(r+=this.__charBounds[o][c].kernedWidth*this.scaleX)<=e.x);c++)s++;return this._getNewSelectionStartFromOffset(e,i,r,s,l)},_getNewSelectionStartFromOffset:function(t,e,i,r,n){var s=t.x-e,o=i-t.x,a=r+(s<o||o<0?0:1);return this.flipX&&(a=n-a),a>this._text.length&&(a=this._text.length),a}}),fabric.util.object.extend(fabric.IText.prototype,{initHiddenTextarea:function(){this.hiddenTextarea=fabric.document.createElement(\"textarea\"),this.hiddenTextarea.setAttribute(\"autocapitalize\",\"off\"),this.hiddenTextarea.setAttribute(\"autocorrect\",\"off\"),this.hiddenTextarea.setAttribute(\"autocomplete\",\"off\"),this.hiddenTextarea.setAttribute(\"spellcheck\",\"false\"),this.hiddenTextarea.setAttribute(\"data-fabric-hiddentextarea\",\"\"),this.hiddenTextarea.setAttribute(\"wrap\",\"off\");var t=this._calcTextareaPosition();this.hiddenTextarea.style.cssText=\"position: absolute; top: \"+t.top+\"; left: \"+t.left+\"; z-index: -999; opacity: 0; width: 1px; height: 1px; font-size: 1px; paddingｰtop: \"+t.fontSize+\";\",fabric.document.body.appendChild(this.hiddenTextarea),fabric.util.addListener(this.hiddenTextarea,\"keydown\",this.onKeyDown.bind(this)),fabric.util.addListener(this.hiddenTextarea,\"keyup\",this.onKeyUp.bind(this)),fabric.util.addListener(this.hiddenTextarea,\"input\",this.onInput.bind(this)),fabric.util.addListener(this.hiddenTextarea,\"copy\",this.copy.bind(this)),fabric.util.addListener(this.hiddenTextarea,\"cut\",this.copy.bind(this)),fabric.util.addListener(this.hiddenTextarea,\"paste\",this.paste.bind(this)),fabric.util.addListener(this.hiddenTextarea,\"compositionstart\",this.onCompositionStart.bind(this)),fabric.util.addListener(this.hiddenTextarea,\"compositionupdate\",this.onCompositionUpdate.bind(this)),fabric.util.addListener(this.hiddenTextarea,\"compositionend\",this.onCompositionEnd.bind(this)),!this._clickHandlerInitialized&&this.canvas&&(fabric.util.addListener(this.canvas.upperCanvasEl,\"click\",this.onClick.bind(this)),this._clickHandlerInitialized=!0)},keysMap:{9:\"exitEditing\",27:\"exitEditing\",33:\"moveCursorUp\",34:\"moveCursorDown\",35:\"moveCursorRight\",36:\"moveCursorLeft\",37:\"moveCursorLeft\",38:\"moveCursorUp\",39:\"moveCursorRight\",40:\"moveCursorDown\"},ctrlKeysMapUp:{67:\"copy\",88:\"cut\"},ctrlKeysMapDown:{65:\"selectAll\"},onClick:function(){this.hiddenTextarea&&this.hiddenTextarea.focus()},onKeyDown:function(t){if(this.isEditing&&!this.inCompositionMode){if(t.keyCode in this.keysMap)this[this.keysMap[t.keyCode]](t);else{if(!(t.keyCode in this.ctrlKeysMapDown&&(t.ctrlKey||t.metaKey)))return;this[this.ctrlKeysMapDown[t.keyCode]](t)}t.stopImmediatePropagation(),t.preventDefault(),33<=t.keyCode&&t.keyCode<=40?(this.clearContextTop(),this.renderCursorOrSelection()):this.canvas&&this.canvas.requestRenderAll()}},onKeyUp:function(t){!this.isEditing||this._copyDone||this.inCompositionMode?this._copyDone=!1:t.keyCode in this.ctrlKeysMapUp&&(t.ctrlKey||t.metaKey)&&(this[this.ctrlKeysMapUp[t.keyCode]](t),t.stopImmediatePropagation(),t.preventDefault(),this.canvas&&this.canvas.requestRenderAll())},onInput:function(t){var e=this.fromPaste;if(this.fromPaste=!1,t&&t.stopPropagation(),this.isEditing){var i,r,n=this._splitTextIntoLines(this.hiddenTextarea.value).graphemeText,s=this._text.length,o=n.length,a=o-s;if(\"\"===this.hiddenTextarea.value)return this.styles={},this.updateFromTextArea(),this.fire(\"changed\"),void(this.canvas&&(this.canvas.fire(\"text:changed\",{target:this}),this.canvas.requestRenderAll()));var h=this.fromStringToGraphemeSelection(this.hiddenTextarea.selectionStart,this.hiddenTextarea.selectionEnd,this.hiddenTextarea.value),c=this.selectionStart>h.selectionStart;this.selectionStart!==this.selectionEnd?(i=this._text.slice(this.selectionStart,this.selectionEnd),a+=this.selectionEnd-this.selectionStart):o<s&&(i=c?this._text.slice(this.selectionEnd+a,this.selectionEnd):this._text.slice(this.selectionStart,this.selectionStart-a)),r=n.slice(h.selectionEnd-a,h.selectionEnd),i&&i.length&&(this.selectionStart!==this.selectionEnd?this.removeStyleFromTo(this.selectionStart,this.selectionEnd):c?this.removeStyleFromTo(this.selectionEnd-i.length,this.selectionEnd):this.removeStyleFromTo(this.selectionEnd,this.selectionEnd+i.length)),r.length&&(e&&r.join(\"\")===fabric.copiedText?this.insertNewStyleBlock(r,this.selectionStart,fabric.copiedTextStyle):this.insertNewStyleBlock(r,this.selectionStart)),this.updateFromTextArea(),this.fire(\"changed\"),this.canvas&&(this.canvas.fire(\"text:changed\",{target:this}),this.canvas.requestRenderAll())}},onCompositionStart:function(){this.inCompositionMode=!0},onCompositionEnd:function(){this.inCompositionMode=!1},onCompositionUpdate:function(t){this.compositionStart=t.target.selectionStart,this.compositionEnd=t.target.selectionEnd,this.updateTextareaPosition()},copy:function(){this.selectionStart!==this.selectionEnd&&(fabric.copiedText=this.getSelectedText(),fabric.copiedTextStyle=this.getSelectionStyles(this.selectionStart,this.selectionEnd,!0),this._copyDone=!0)},paste:function(){this.fromPaste=!0},_getClipboardData:function(t){return t&&t.clipboardData||fabric.window.clipboardData},_getWidthBeforeCursor:function(t,e){var i,r=this._getLineLeftOffset(t);return 0<e&&(r+=(i=this.__charBounds[t][e-1]).left+i.width),r},getDownCursorOffset:function(t,e){var i=this._getSelectionForOffset(t,e),r=this.get2DCursorLocation(i),n=r.lineIndex;if(n===this._textLines.length-1||t.metaKey||34===t.keyCode)return this._text.length-i;var s=r.charIndex,o=this._getWidthBeforeCursor(n,s),a=this._getIndexOnLine(n+1,o);return this._textLines[n].slice(s).length+a+2},_getSelectionForOffset:function(t,e){return t.shiftKey&&this.selectionStart!==this.selectionEnd&&e?this.selectionEnd:this.selectionStart},getUpCursorOffset:function(t,e){var i=this._getSelectionForOffset(t,e),r=this.get2DCursorLocation(i),n=r.lineIndex;if(0===n||t.metaKey||33===t.keyCode)return-i;var s=r.charIndex,o=this._getWidthBeforeCursor(n,s),a=this._getIndexOnLine(n-1,o),h=this._textLines[n].slice(0,s);return-this._textLines[n-1].length+a-h.length},_getIndexOnLine:function(t,e){for(var i,r,n=this._textLines[t],s=this._getLineLeftOffset(t),o=0,a=0,h=n.length;a<h;a++)if(e<(s+=i=this.__charBounds[t][a].width)){r=!0;var c=s-i,l=s,u=Math.abs(c-e);o=Math.abs(l-e)<u?a:a-1;break}return r||(o=n.length-1),o},moveCursorDown:function(t){this.selectionStart>=this._text.length&&this.selectionEnd>=this._text.length||this._moveCursorUpOrDown(\"Down\",t)},moveCursorUp:function(t){0===this.selectionStart&&0===this.selectionEnd||this._moveCursorUpOrDown(\"Up\",t)},_moveCursorUpOrDown:function(t,e){var i=this[\"get\"+t+\"CursorOffset\"](e,\"right\"===this._selectionDirection);e.shiftKey?this.moveCursorWithShift(i):this.moveCursorWithoutShift(i),0!==i&&(this.setSelectionInBoundaries(),this.abortCursorAnimation(),this._currentCursorOpacity=1,this.initDelayedCursor(),this._fireSelectionChanged(),this._updateTextarea())},moveCursorWithShift:function(t){var e=\"left\"===this._selectionDirection?this.selectionStart+t:this.selectionEnd+t;return this.setSelectionStartEndWithShift(this.selectionStart,this.selectionEnd,e),0!==t},moveCursorWithoutShift:function(t){return t<0?(this.selectionStart+=t,this.selectionEnd=this.selectionStart):(this.selectionEnd+=t,this.selectionStart=this.selectionEnd),0!==t},moveCursorLeft:function(t){0===this.selectionStart&&0===this.selectionEnd||this._moveCursorLeftOrRight(\"Left\",t)},_move:function(t,e,i){var r;if(t.altKey)r=this[\"findWordBoundary\"+i](this[e]);else{if(!t.metaKey&&35!==t.keyCode&&36!==t.keyCode)return this[e]+=\"Left\"===i?-1:1,!0;r=this[\"findLineBoundary\"+i](this[e])}if(void 0!==typeof r&&this[e]!==r)return this[e]=r,!0},_moveLeft:function(t,e){return this._move(t,e,\"Left\")},_moveRight:function(t,e){return this._move(t,e,\"Right\")},moveCursorLeftWithoutShift:function(t){var e=!0;return this._selectionDirection=\"left\",this.selectionEnd===this.selectionStart&&0!==this.selectionStart&&(e=this._moveLeft(t,\"selectionStart\")),this.selectionEnd=this.selectionStart,e},moveCursorLeftWithShift:function(t){return\"right\"===this._selectionDirection&&this.selectionStart!==this.selectionEnd?this._moveLeft(t,\"selectionEnd\"):0!==this.selectionStart?(this._selectionDirection=\"left\",this._moveLeft(t,\"selectionStart\")):void 0},moveCursorRight:function(t){this.selectionStart>=this._text.length&&this.selectionEnd>=this._text.length||this._moveCursorLeftOrRight(\"Right\",t)},_moveCursorLeftOrRight:function(t,e){var i=\"moveCursor\"+t+\"With\";this._currentCursorOpacity=1,e.shiftKey?i+=\"Shift\":i+=\"outShift\",this[i](e)&&(this.abortCursorAnimation(),this.initDelayedCursor(),this._fireSelectionChanged(),this._updateTextarea())},moveCursorRightWithShift:function(t){return\"left\"===this._selectionDirection&&this.selectionStart!==this.selectionEnd?this._moveRight(t,\"selectionStart\"):this.selectionEnd!==this._text.length?(this._selectionDirection=\"right\",this._moveRight(t,\"selectionEnd\")):void 0},moveCursorRightWithoutShift:function(t){var e=!0;return this._selectionDirection=\"right\",this.selectionStart===this.selectionEnd?(e=this._moveRight(t,\"selectionStart\"),this.selectionEnd=this.selectionStart):this.selectionStart=this.selectionEnd,e},removeChars:function(t,e){void 0===e&&(e=t+1),this.removeStyleFromTo(t,e),this._text.splice(t,e-t),this.text=this._text.join(\"\"),this.set(\"dirty\",!0),this._shouldClearDimensionCache()&&(this.initDimensions(),this.setCoords()),this._removeExtraneousStyles()},insertChars:function(t,e,i,r){void 0===r&&(r=i),i<r&&this.removeStyleFromTo(i,r);var n=fabric.util.string.graphemeSplit(t);this.insertNewStyleBlock(n,i,e),this._text=[].concat(this._text.slice(0,i),n,this._text.slice(r)),this.text=this._text.join(\"\"),this.set(\"dirty\",!0),this._shouldClearDimensionCache()&&(this.initDimensions(),this.setCoords()),this._removeExtraneousStyles()}}),function(){var l=fabric.util.toFixed,u=/  +/g;fabric.util.object.extend(fabric.Text.prototype,{toSVG:function(t){var e=this._createBaseSVGMarkup(),i=this._getSVGLeftTopOffsets(),r=this._getSVGTextAndBg(i.textTop,i.textLeft);return this._wrapSVGTextAndBg(e,r),t?t(e.join(\"\")):e.join(\"\")},_getSVGLeftTopOffsets:function(){return{textLeft:-this.width/2,textTop:-this.height/2,lineTop:this.getHeightOfLine(0)}},_wrapSVGTextAndBg:function(t,e){var i=this.getSvgFilter(),r=\"\"===i?\"\":' style=\"'+i+'\"',n=this.getSvgTextDecoration(this);t.push(\"\\t<g \",this.getSvgId(),'transform=\"',this.getSvgTransform(),this.getSvgTransformMatrix(),'\"',r,\">\\n\",e.textBgRects.join(\"\"),'\\t\\t<text xml:space=\"preserve\" ',this.fontFamily?'font-family=\"'+this.fontFamily.replace(/\"/g,\"'\")+'\" ':\"\",this.fontSize?'font-size=\"'+this.fontSize+'\" ':\"\",this.fontStyle?'font-style=\"'+this.fontStyle+'\" ':\"\",this.fontWeight?'font-weight=\"'+this.fontWeight+'\" ':\"\",n?'text-decoration=\"'+n+'\" ':\"\",'style=\"',this.getSvgStyles(!0),'\"',this.addPaintOrder(),\" >\",e.textSpans.join(\"\"),\"</text>\\n\",\"\\t</g>\\n\")},_getSVGTextAndBg:function(t,e){var i,r=[],n=[],s=t;this._setSVGBg(n);for(var o=0,a=this._textLines.length;o<a;o++)i=this._getLineLeftOffset(o),(this.textBackgroundColor||this.styleHas(\"textBackgroundColor\",o))&&this._setSVGTextLineBg(n,o,e+i,s),this._setSVGTextLineText(r,o,e+i,s),s+=this.getHeightOfLine(o);return{textSpans:r,textBgRects:n}},_createTextCharSpan:function(t,e,i,r){var n=t!==t.trim()||t.match(u),s=this.getSvgSpanStyles(e,n),o=s?'style=\"'+s+'\"':\"\",a=e.deltaY,h=\"\",c=fabric.Object.NUM_FRACTION_DIGITS;return a&&(h=' dy=\"'+l(a,c)+'\" '),['<tspan x=\"',l(i,c),'\" y=\"',l(r,c),'\" ',h,o,\">\",fabric.util.string.escapeXml(t),\"</tspan>\"].join(\"\")},_setSVGTextLineText:function(t,e,i,r){var n,s,o,a,h,c=this.getHeightOfLine(e),l=-1!==this.textAlign.indexOf(\"justify\"),u=\"\",f=0,d=this._textLines[e];r+=c*(1-this._fontSizeFraction)/this.lineHeight;for(var g=0,p=d.length-1;g<=p;g++)h=g===p||this.charSpacing,u+=d[g],o=this.__charBounds[e][g],0===f?(i+=o.kernedWidth-o.width,f+=o.width):f+=o.kernedWidth,l&&!h&&this._reSpaceAndTab.test(d[g])&&(h=!0),h||(n=n||this.getCompleteStyleDeclaration(e,g),s=this.getCompleteStyleDeclaration(e,g+1),h=this._hasStyleChangedForSvg(n,s)),h&&(a=this._getStyleDeclaration(e,g)||{},t.push(this._createTextCharSpan(u,a,i,r)),u=\"\",n=s,i+=f,f=0)},_pushTextBgRect:function(t,e,i,r,n,s){var o=fabric.Object.NUM_FRACTION_DIGITS;t.push(\"\\t\\t<rect \",this._getFillAttributes(e),' x=\"',l(i,o),'\" y=\"',l(r,o),'\" width=\"',l(n,o),'\" height=\"',l(s,o),'\"></rect>\\n')},_setSVGTextLineBg:function(t,e,i,r){for(var n,s,o=this._textLines[e],a=this.getHeightOfLine(e)/this.lineHeight,h=0,c=0,l=this.getValueOfPropertyAt(e,0,\"textBackgroundColor\"),u=0,f=o.length;u<f;u++)n=this.__charBounds[e][u],(s=this.getValueOfPropertyAt(e,u,\"textBackgroundColor\"))!==l?(l&&this._pushTextBgRect(t,l,i+c,r,h,a),c=n.left,h=n.width,l=s):h+=n.kernedWidth;s&&this._pushTextBgRect(t,s,i+c,r,h,a)},_getFillAttributes:function(t){var e=t&&\"string\"==typeof t?new fabric.Color(t):\"\";return e&&e.getSource()&&1!==e.getAlpha()?'opacity=\"'+e.getAlpha()+'\" fill=\"'+e.setAlpha(1).toRgb()+'\"':'fill=\"'+t+'\"'},_getSVGLineTopOffset:function(t){for(var e,i=0,r=0;r<t;r++)i+=this.getHeightOfLine(r);return e=this.getHeightOfLine(r),{lineTop:i,offset:(this._fontSizeMult-this._fontSizeFraction)*e/(this.lineHeight*this._fontSizeMult)}},getSvgStyles:function(t){return fabric.Object.prototype.getSvgStyles.call(this,t)+\" white-space: pre;\"}})}(),function(t){\"use strict\";var v=t.fabric||(t.fabric={});v.Textbox=v.util.createClass(v.IText,v.Observable,{type:\"textbox\",minWidth:20,dynamicMinWidth:2,__cachedLines:null,lockScalingFlip:!0,noScaleCache:!1,_dimensionAffectingProps:v.Text.prototype._dimensionAffectingProps.concat(\"width\"),initDimensions:function(){this.__skipDimension||(this.isEditing&&this.initDelayedCursor(),this.clearContextTop(),this._clearCache(),this.dynamicMinWidth=0,this._styleMap=this._generateStyleMap(this._splitText()),this.dynamicMinWidth>this.width&&this._set(\"width\",this.dynamicMinWidth),-1!==this.textAlign.indexOf(\"justify\")&&this.enlargeSpaces(),this.height=this.calcTextHeight(),this.saveState({propertySet:\"_dimensionAffectingProps\"}))},_generateStyleMap:function(t){for(var e=0,i=0,r=0,n={},s=0;s<t.graphemeLines.length;s++)\"\\n\"===t.graphemeText[r]&&0<s?(i=0,r++,e++):this._reSpaceAndTab.test(t.graphemeText[r])&&0<s&&(i++,r++),n[s]={line:e,offset:i},r+=t.graphemeLines[s].length,i+=t.graphemeLines[s].length;return n},styleHas:function(t,e){if(this._styleMap&&!this.isWrapping){var i=this._styleMap[e];i&&(e=i.line)}return v.Text.prototype.styleHas.call(this,t,e)},isEmptyStyles:function(t){var e,i,r=0,n=!1,s=this._styleMap[t],o=this._styleMap[t+1];for(var a in s&&(t=s.line,r=s.offset),o&&(n=o.line===t,e=o.offset),i=void 0===t?this.styles:{line:this.styles[t]})for(var h in i[a])if(r<=h&&(!n||h<e))for(var c in i[a][h])return!1;return!0},_getStyleDeclaration:function(t,e){if(this._styleMap&&!this.isWrapping){var i=this._styleMap[t];if(!i)return null;t=i.line,e=i.offset+e}return this.callSuper(\"_getStyleDeclaration\",t,e)},_setStyleDeclaration:function(t,e,i){var r=this._styleMap[t];t=r.line,e=r.offset+e,this.styles[t][e]=i},_deleteStyleDeclaration:function(t,e){var i=this._styleMap[t];t=i.line,e=i.offset+e,delete this.styles[t][e]},_getLineStyle:function(t){var e=this._styleMap[t];return this.styles[e.line]},_setLineStyle:function(t,e){var i=this._styleMap[t];this.styles[i.line]=e},_deleteLineStyle:function(t){var e=this._styleMap[t];delete this.styles[e.line]},_wrapText:function(t,e){var i,r=[];for(this.isWrapping=!0,i=0;i<t.length;i++)r=r.concat(this._wrapLine(t[i],i,e));return this.isWrapping=!1,r},_measureWord:function(t,e,i){var r,n=0;i=i||0;for(var s=0,o=t.length;s<o;s++){n+=this._getGraphemeBox(t[s],e,s+i,r,!0).kernedWidth,r=t[s]}return n},_wrapLine:function(t,e,i,r){var n=0,s=[],o=[],a=t.split(this._reSpaceAndTab),h=\"\",c=0,l=0,u=0,f=0,d=!0,g=this._getWidthOfCharSpacing();i-=r=r||0;for(var p=0;p<a.length;p++)h=v.util.string.graphemeSplit(a[p]),l=this._measureWord(h,e,c),c+=h.length,i<=(n+=u+l-g)&&!d?(s.push(o),o=[],n=l,d=!0):n+=g,d||o.push(\" \"),o=o.concat(h),u=this._measureWord([\" \"],e,c),c++,d=!1,f<l&&(f=l);return p&&s.push(o),f+r>this.dynamicMinWidth&&(this.dynamicMinWidth=f-g+r),s},isEndOfWrapping:function(t){return!this._styleMap[t+1]||this._styleMap[t+1].line!==this._styleMap[t].line},_splitTextIntoLines:function(t){for(var e=v.Text.prototype._splitTextIntoLines.call(this,t),i=this._wrapText(e.lines,this.width),r=new Array(i.length),n=0;n<i.length;n++)r[n]=i[n].join(\"\");return e.lines=r,e.graphemeLines=i,e},getMinWidth:function(){return Math.max(this.minWidth,this.dynamicMinWidth)},toObject:function(t){return this.callSuper(\"toObject\",[\"minWidth\"].concat(t))}}),v.Textbox.fromObject=function(t,e){return v.Object._fromObject(\"Textbox\",t,e,\"text\")}}(\"undefined\"!=typeof exports?exports:this),function(){var l=fabric.Canvas.prototype._setObjectScale;fabric.Canvas.prototype._setObjectScale=function(t,e,i,r,n,s,o){var a=e.target;if(!(\"x\"===n&&a instanceof fabric.Textbox))return l.call(fabric.Canvas.prototype,t,e,i,r,n,s,o);var h=a._getTransformedDimensions().x,c=a.width*(t.x/h);return c>=a.getMinWidth()?(a.set(\"width\",c),!0):void 0},fabric.util.object.extend(fabric.Textbox.prototype,{_removeExtraneousStyles:function(){for(var t in this._styleMap)this._textLines[t]||delete this.styles[this._styleMap[t].line]}})}();"
-
-/***/ }),
-
-/***/ "../uxele-render-fabric/node_modules/script-loader/addScript.js":
-/*!***************************************************************!*\
-  !*** .-render-fabric/node_modules/script-loader/addScript.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-module.exports = function(src) {
-	function log(error) {
-		(typeof console !== "undefined")
-		&& (console.error || console.log)("[Script Loader]", error);
-	}
-
-	// Check for IE =< 8
-	function isIE() {
-		return typeof attachEvent !== "undefined" && typeof addEventListener === "undefined";
-	}
-
-	try {
-		if (typeof execScript !== "undefined" && isIE()) {
-			execScript(src);
-		} else if (typeof eval !== "undefined") {
-			eval.call(null, src);
-		} else {
-			log("EvalError: No eval function available");
-		}
-	} catch (error) {
-		log(error);
-	}
-}
-
-
-/***/ }),
-
-/***/ "../uxele-render-fabric/node_modules/script-loader/index.js!../uxele-render-fabric/build/vendor/fabric.min.js":
-/*!*********************************************************************************************!*\
-  !*** .-render-fabric/node_modules/script-loader!.-render-fabric/build/vendor/fabric.min.js ***!
-  \*********************************************************************************************/
+/***/ "../uxele-render-svg/index.js":
+/*!*****************************!*\
+  !*** .-render-svg/index.js ***!
+  \*****************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! !.-render-fabric/node_modules/script-loader/addScript.js */ "../uxele-render-fabric/node_modules/script-loader/addScript.js")(__webpack_require__(/*! !.-render-fabric/node_modules/raw-loader!.-render-fabric/build/vendor/fabric.min.js */ "../uxele-render-fabric/node_modules/raw-loader/index.js!../uxele-render-fabric/build/vendor/fabric.min.js"))
+module.exports=__webpack_require__(/*! ./build */ "../uxele-render-svg/build/index.js");
+
+/***/ }),
+
+/***/ "../uxele-render-svg/node_modules/svg.js/dist/svg.js":
+/*!****************************************************!*\
+  !*** .-render-svg/node_modules/svg.js/dist/svg.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/*!
+* svg.js - A lightweight library for manipulating and animating SVG.
+* @version 2.7.0
+* https://svgdotjs.github.io/
+*
+* @copyright Wout Fierens <wout@mick-wout.com>
+* @license MIT
+*
+* BUILT: Tue Nov 13 2018 21:10:01 GMT+0100 (GMT+01:00)
+*/;
+(function(root, factory) {
+  /* istanbul ignore next */
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_RESULT__ = (function(){
+      return factory(root, root.document)
+    }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+  } else {}
+}(typeof window !== "undefined" ? window : this, function(window, document) {
+
+// Find global reference - uses 'this' by default when available,
+// falls back to 'window' otherwise (for bundlers like Webpack)
+var globalRef = (typeof this !== "undefined") ? this : window;
+
+// The main wrapping element
+var SVG = globalRef.SVG = function(element) {
+  if (SVG.supported) {
+    element = new SVG.Doc(element)
+
+    if(!SVG.parser.draw)
+      SVG.prepare()
+
+    return element
+  }
+}
+
+// Default namespaces
+SVG.ns    = 'http://www.w3.org/2000/svg'
+SVG.xmlns = 'http://www.w3.org/2000/xmlns/'
+SVG.xlink = 'http://www.w3.org/1999/xlink'
+SVG.svgjs = 'http://svgjs.com/svgjs'
+
+// Svg support test
+SVG.supported = (function() {
+  return !! document.createElementNS &&
+         !! document.createElementNS(SVG.ns,'svg').createSVGRect
+})()
+
+// Don't bother to continue if SVG is not supported
+if (!SVG.supported) return false
+
+// Element id sequence
+SVG.did  = 1000
+
+// Get next named element id
+SVG.eid = function(name) {
+  return 'Svgjs' + capitalize(name) + (SVG.did++)
+}
+
+// Method for element creation
+SVG.create = function(name) {
+  // create element
+  var element = document.createElementNS(this.ns, name)
+
+  // apply unique id
+  element.setAttribute('id', this.eid(name))
+
+  return element
+}
+
+// Method for extending objects
+SVG.extend = function() {
+  var modules, methods, key, i
+
+  // Get list of modules
+  modules = [].slice.call(arguments)
+
+  // Get object with extensions
+  methods = modules.pop()
+
+  for (i = modules.length - 1; i >= 0; i--)
+    if (modules[i])
+      for (key in methods)
+        modules[i].prototype[key] = methods[key]
+
+  // Make sure SVG.Set inherits any newly added methods
+  if (SVG.Set && SVG.Set.inherit)
+    SVG.Set.inherit()
+}
+
+// Invent new element
+SVG.invent = function(config) {
+  // Create element initializer
+  var initializer = typeof config.create == 'function' ?
+    config.create :
+    function() {
+      this.constructor.call(this, SVG.create(config.create))
+    }
+
+  // Inherit prototype
+  if (config.inherit)
+    initializer.prototype = new config.inherit
+
+  // Extend with methods
+  if (config.extend)
+    SVG.extend(initializer, config.extend)
+
+  // Attach construct method to parent
+  if (config.construct)
+    SVG.extend(config.parent || SVG.Container, config.construct)
+
+  return initializer
+}
+
+// Adopt existing svg elements
+SVG.adopt = function(node) {
+  // check for presence of node
+  if (!node) return null
+
+  // make sure a node isn't already adopted
+  if (node.instance) return node.instance
+
+  // initialize variables
+  var element
+
+  // adopt with element-specific settings
+  if (node.nodeName == 'svg')
+    element = node.parentNode instanceof window.SVGElement ? new SVG.Nested : new SVG.Doc
+  else if (node.nodeName == 'linearGradient')
+    element = new SVG.Gradient('linear')
+  else if (node.nodeName == 'radialGradient')
+    element = new SVG.Gradient('radial')
+  else if (SVG[capitalize(node.nodeName)])
+    element = new SVG[capitalize(node.nodeName)]
+  else
+    element = new SVG.Element(node)
+
+  // ensure references
+  element.type  = node.nodeName
+  element.node  = node
+  node.instance = element
+
+  // SVG.Class specific preparations
+  if (element instanceof SVG.Doc)
+    element.namespace().defs()
+
+  // pull svgjs data from the dom (getAttributeNS doesn't work in html5)
+  element.setData(JSON.parse(node.getAttribute('svgjs:data')) || {})
+
+  return element
+}
+
+// Initialize parsing element
+SVG.prepare = function() {
+  // Select document body and create invisible svg element
+  var body = document.getElementsByTagName('body')[0]
+    , draw = (body ? new SVG.Doc(body) : SVG.adopt(document.documentElement).nested()).size(2, 0)
+
+  // Create parser object
+  SVG.parser = {
+    body: body || document.documentElement
+  , draw: draw.style('opacity:0;position:absolute;left:-100%;top:-100%;overflow:hidden').attr('focusable', 'false').node
+  , poly: draw.polyline().node
+  , path: draw.path().node
+  , native: SVG.create('svg')
+  }
+}
+
+SVG.parser = {
+  native: SVG.create('svg')
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if(!SVG.parser.draw)
+    SVG.prepare()
+}, false)
+
+// Storage for regular expressions
+SVG.regex = {
+  // Parse unit value
+  numberAndUnit:    /^([+-]?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?)([a-z%]*)$/i
+
+  // Parse hex value
+, hex:              /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i
+
+  // Parse rgb value
+, rgb:              /rgb\((\d+),(\d+),(\d+)\)/
+
+  // Parse reference id
+, reference:        /#([a-z0-9\-_]+)/i
+
+  // splits a transformation chain
+, transforms:       /\)\s*,?\s*/
+
+  // Whitespace
+, whitespace:       /\s/g
+
+  // Test hex value
+, isHex:            /^#[a-f0-9]{3,6}$/i
+
+  // Test rgb value
+, isRgb:            /^rgb\(/
+
+  // Test css declaration
+, isCss:            /[^:]+:[^;]+;?/
+
+  // Test for blank string
+, isBlank:          /^(\s+)?$/
+
+  // Test for numeric string
+, isNumber:         /^[+-]?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i
+
+  // Test for percent value
+, isPercent:        /^-?[\d\.]+%$/
+
+  // Test for image url
+, isImage:          /\.(jpg|jpeg|png|gif|svg)(\?[^=]+.*)?/i
+
+  // split at whitespace and comma
+, delimiter:        /[\s,]+/
+
+  // The following regex are used to parse the d attribute of a path
+
+  // Matches all hyphens which are not after an exponent
+, hyphen:           /([^e])\-/gi
+
+  // Replaces and tests for all path letters
+, pathLetters:      /[MLHVCSQTAZ]/gi
+
+  // yes we need this one, too
+, isPathLetter:     /[MLHVCSQTAZ]/i
+
+  // matches 0.154.23.45
+, numbersWithDots:  /((\d?\.\d+(?:e[+-]?\d+)?)((?:\.\d+(?:e[+-]?\d+)?)+))+/gi
+
+  // matches .
+, dots:             /\./g
+}
+
+SVG.utils = {
+  // Map function
+  map: function(array, block) {
+    var i
+      , il = array.length
+      , result = []
+
+    for (i = 0; i < il; i++)
+      result.push(block(array[i]))
+
+    return result
+  }
+
+  // Filter function
+, filter: function(array, block) {
+    var i
+      , il = array.length
+      , result = []
+
+    for (i = 0; i < il; i++)
+      if (block(array[i]))
+        result.push(array[i])
+
+    return result
+  }
+
+  // Degrees to radians
+, radians: function(d) {
+    return d % 360 * Math.PI / 180
+  }
+
+  // Radians to degrees
+, degrees: function(r) {
+    return r * 180 / Math.PI % 360
+  }
+
+, filterSVGElements: function(nodes) {
+    return this.filter( nodes, function(el) { return el instanceof window.SVGElement })
+  }
+
+}
+
+SVG.defaults = {
+  // Default attribute values
+  attrs: {
+    // fill and stroke
+    'fill-opacity':     1
+  , 'stroke-opacity':   1
+  , 'stroke-width':     0
+  , 'stroke-linejoin':  'miter'
+  , 'stroke-linecap':   'butt'
+  , fill:               '#000000'
+  , stroke:             '#000000'
+  , opacity:            1
+    // position
+  , x:                  0
+  , y:                  0
+  , cx:                 0
+  , cy:                 0
+    // size
+  , width:              0
+  , height:             0
+    // radius
+  , r:                  0
+  , rx:                 0
+  , ry:                 0
+    // gradient
+  , offset:             0
+  , 'stop-opacity':     1
+  , 'stop-color':       '#000000'
+    // text
+  , 'font-size':        16
+  , 'font-family':      'Helvetica, Arial, sans-serif'
+  , 'text-anchor':      'start'
+  }
+
+}
+// Module for color convertions
+SVG.Color = function(color) {
+  var match
+
+  // initialize defaults
+  this.r = 0
+  this.g = 0
+  this.b = 0
+
+  if(!color) return
+
+  // parse color
+  if (typeof color === 'string') {
+    if (SVG.regex.isRgb.test(color)) {
+      // get rgb values
+      match = SVG.regex.rgb.exec(color.replace(SVG.regex.whitespace,''))
+
+      // parse numeric values
+      this.r = parseInt(match[1])
+      this.g = parseInt(match[2])
+      this.b = parseInt(match[3])
+
+    } else if (SVG.regex.isHex.test(color)) {
+      // get hex values
+      match = SVG.regex.hex.exec(fullHex(color))
+
+      // parse numeric values
+      this.r = parseInt(match[1], 16)
+      this.g = parseInt(match[2], 16)
+      this.b = parseInt(match[3], 16)
+
+    }
+
+  } else if (typeof color === 'object') {
+    this.r = color.r
+    this.g = color.g
+    this.b = color.b
+
+  }
+
+}
+
+SVG.extend(SVG.Color, {
+  // Default to hex conversion
+  toString: function() {
+    return this.toHex()
+  }
+  // Build hex value
+, toHex: function() {
+    return '#'
+      + compToHex(this.r)
+      + compToHex(this.g)
+      + compToHex(this.b)
+  }
+  // Build rgb value
+, toRgb: function() {
+    return 'rgb(' + [this.r, this.g, this.b].join() + ')'
+  }
+  // Calculate true brightness
+, brightness: function() {
+    return (this.r / 255 * 0.30)
+         + (this.g / 255 * 0.59)
+         + (this.b / 255 * 0.11)
+  }
+  // Make color morphable
+, morph: function(color) {
+    this.destination = new SVG.Color(color)
+
+    return this
+  }
+  // Get morphed color at given position
+, at: function(pos) {
+    // make sure a destination is defined
+    if (!this.destination) return this
+
+    // normalise pos
+    pos = pos < 0 ? 0 : pos > 1 ? 1 : pos
+
+    // generate morphed color
+    return new SVG.Color({
+      r: ~~(this.r + (this.destination.r - this.r) * pos)
+    , g: ~~(this.g + (this.destination.g - this.g) * pos)
+    , b: ~~(this.b + (this.destination.b - this.b) * pos)
+    })
+  }
+
+})
+
+// Testers
+
+// Test if given value is a color string
+SVG.Color.test = function(color) {
+  color += ''
+  return SVG.regex.isHex.test(color)
+      || SVG.regex.isRgb.test(color)
+}
+
+// Test if given value is a rgb object
+SVG.Color.isRgb = function(color) {
+  return color && typeof color.r == 'number'
+               && typeof color.g == 'number'
+               && typeof color.b == 'number'
+}
+
+// Test if given value is a color
+SVG.Color.isColor = function(color) {
+  return SVG.Color.isRgb(color) || SVG.Color.test(color)
+}
+// Module for array conversion
+SVG.Array = function(array, fallback) {
+  array = (array || []).valueOf()
+
+  // if array is empty and fallback is provided, use fallback
+  if (array.length == 0 && fallback)
+    array = fallback.valueOf()
+
+  // parse array
+  this.value = this.parse(array)
+}
+
+SVG.extend(SVG.Array, {
+  // Make array morphable
+  morph: function(array) {
+    this.destination = this.parse(array)
+
+    // normalize length of arrays
+    if (this.value.length != this.destination.length) {
+      var lastValue       = this.value[this.value.length - 1]
+        , lastDestination = this.destination[this.destination.length - 1]
+
+      while(this.value.length > this.destination.length)
+        this.destination.push(lastDestination)
+      while(this.value.length < this.destination.length)
+        this.value.push(lastValue)
+    }
+
+    return this
+  }
+  // Clean up any duplicate points
+, settle: function() {
+    // find all unique values
+    for (var i = 0, il = this.value.length, seen = []; i < il; i++)
+      if (seen.indexOf(this.value[i]) == -1)
+        seen.push(this.value[i])
+
+    // set new value
+    return this.value = seen
+  }
+  // Get morphed array at given position
+, at: function(pos) {
+    // make sure a destination is defined
+    if (!this.destination) return this
+
+    // generate morphed array
+    for (var i = 0, il = this.value.length, array = []; i < il; i++)
+      array.push(this.value[i] + (this.destination[i] - this.value[i]) * pos)
+
+    return new SVG.Array(array)
+  }
+  // Convert array to string
+, toString: function() {
+    return this.value.join(' ')
+  }
+  // Real value
+, valueOf: function() {
+    return this.value
+  }
+  // Parse whitespace separated string
+, parse: function(array) {
+    array = array.valueOf()
+
+    // if already is an array, no need to parse it
+    if (Array.isArray(array)) return array
+
+    return this.split(array)
+  }
+  // Strip unnecessary whitespace
+, split: function(string) {
+    return string.trim().split(SVG.regex.delimiter).map(parseFloat)
+  }
+  // Reverse array
+, reverse: function() {
+    this.value.reverse()
+
+    return this
+  }
+, clone: function() {
+    var clone = new this.constructor()
+    clone.value = array_clone(this.value)
+    return clone
+  }
+})
+// Poly points array
+SVG.PointArray = function(array, fallback) {
+  SVG.Array.call(this, array, fallback || [[0,0]])
+}
+
+// Inherit from SVG.Array
+SVG.PointArray.prototype = new SVG.Array
+SVG.PointArray.prototype.constructor = SVG.PointArray
+
+SVG.extend(SVG.PointArray, {
+  // Convert array to string
+  toString: function() {
+    // convert to a poly point string
+    for (var i = 0, il = this.value.length, array = []; i < il; i++)
+      array.push(this.value[i].join(','))
+
+    return array.join(' ')
+  }
+  // Convert array to line object
+, toLine: function() {
+    return {
+      x1: this.value[0][0]
+    , y1: this.value[0][1]
+    , x2: this.value[1][0]
+    , y2: this.value[1][1]
+    }
+  }
+  // Get morphed array at given position
+, at: function(pos) {
+    // make sure a destination is defined
+    if (!this.destination) return this
+
+    // generate morphed point string
+    for (var i = 0, il = this.value.length, array = []; i < il; i++)
+      array.push([
+        this.value[i][0] + (this.destination[i][0] - this.value[i][0]) * pos
+      , this.value[i][1] + (this.destination[i][1] - this.value[i][1]) * pos
+      ])
+
+    return new SVG.PointArray(array)
+  }
+  // Parse point string and flat array
+, parse: function(array) {
+    var points = []
+
+    array = array.valueOf()
+
+    // if it is an array
+    if (Array.isArray(array)) {
+      // and it is not flat, there is no need to parse it
+      if(Array.isArray(array[0])) {
+        // make sure to use a clone
+        return array.map(function (el) { return el.slice() })
+      } else if (array[0].x != null){
+        // allow point objects to be passed
+        return array.map(function (el) { return [el.x, el.y] })
+      }
+    } else { // Else, it is considered as a string
+      // parse points
+      array = array.trim().split(SVG.regex.delimiter).map(parseFloat)
+    }
+
+    // validate points - https://svgwg.org/svg2-draft/shapes.html#DataTypePoints
+    // Odd number of coordinates is an error. In such cases, drop the last odd coordinate.
+    if (array.length % 2 !== 0) array.pop()
+
+    // wrap points in two-tuples and parse points as floats
+    for(var i = 0, len = array.length; i < len; i = i + 2)
+      points.push([ array[i], array[i+1] ])
+
+    return points
+  }
+  // Move point string
+, move: function(x, y) {
+    var box = this.bbox()
+
+    // get relative offset
+    x -= box.x
+    y -= box.y
+
+    // move every point
+    if (!isNaN(x) && !isNaN(y))
+      for (var i = this.value.length - 1; i >= 0; i--)
+        this.value[i] = [this.value[i][0] + x, this.value[i][1] + y]
+
+    return this
+  }
+  // Resize poly string
+, size: function(width, height) {
+    var i, box = this.bbox()
+
+    // recalculate position of all points according to new size
+    for (i = this.value.length - 1; i >= 0; i--) {
+      if(box.width) this.value[i][0] = ((this.value[i][0] - box.x) * width)  / box.width  + box.x
+      if(box.height) this.value[i][1] = ((this.value[i][1] - box.y) * height) / box.height + box.y
+    }
+
+    return this
+  }
+  // Get bounding box of points
+, bbox: function() {
+    SVG.parser.poly.setAttribute('points', this.toString())
+
+    return SVG.parser.poly.getBBox()
+  }
+})
+
+var pathHandlers = {
+  M: function(c, p, p0) {
+    p.x = p0.x = c[0]
+    p.y = p0.y = c[1]
+
+    return ['M', p.x, p.y]
+  },
+  L: function(c, p) {
+    p.x = c[0]
+    p.y = c[1]
+    return ['L', c[0], c[1]]
+  },
+  H: function(c, p) {
+    p.x = c[0]
+    return ['H', c[0]]
+  },
+  V: function(c, p) {
+    p.y = c[0]
+    return ['V', c[0]]
+  },
+  C: function(c, p) {
+    p.x = c[4]
+    p.y = c[5]
+    return ['C', c[0], c[1], c[2], c[3], c[4], c[5]]
+  },
+  S: function(c, p) {
+    p.x = c[2]
+    p.y = c[3]
+    return ['S', c[0], c[1], c[2], c[3]]
+  },
+  Q: function(c, p) {
+    p.x = c[2]
+    p.y = c[3]
+    return ['Q', c[0], c[1], c[2], c[3]]
+  },
+  T: function(c, p) {
+    p.x = c[0]
+    p.y = c[1]
+    return ['T', c[0], c[1]]
+  },
+  Z: function(c, p, p0) {
+    p.x = p0.x
+    p.y = p0.y
+    return ['Z']
+  },
+  A: function(c, p) {
+    p.x = c[5]
+    p.y = c[6]
+    return ['A', c[0], c[1], c[2], c[3], c[4], c[5], c[6]]
+  }
+}
+
+var mlhvqtcsa = 'mlhvqtcsaz'.split('')
+
+for(var i = 0, il = mlhvqtcsa.length; i < il; ++i){
+  pathHandlers[mlhvqtcsa[i]] = (function(i){
+    return function(c, p, p0) {
+      if(i == 'H') c[0] = c[0] + p.x
+      else if(i == 'V') c[0] = c[0] + p.y
+      else if(i == 'A'){
+        c[5] = c[5] + p.x,
+        c[6] = c[6] + p.y
+      }
+      else
+        for(var j = 0, jl = c.length; j < jl; ++j) {
+          c[j] = c[j] + (j%2 ? p.y : p.x)
+        }
+
+      return pathHandlers[i](c, p, p0)
+    }
+  })(mlhvqtcsa[i].toUpperCase())
+}
+
+// Path points array
+SVG.PathArray = function(array, fallback) {
+  SVG.Array.call(this, array, fallback || [['M', 0, 0]])
+}
+
+// Inherit from SVG.Array
+SVG.PathArray.prototype = new SVG.Array
+SVG.PathArray.prototype.constructor = SVG.PathArray
+
+SVG.extend(SVG.PathArray, {
+  // Convert array to string
+  toString: function() {
+    return arrayToString(this.value)
+  }
+  // Move path string
+, move: function(x, y) {
+    // get bounding box of current situation
+    var box = this.bbox()
+
+    // get relative offset
+    x -= box.x
+    y -= box.y
+
+    if (!isNaN(x) && !isNaN(y)) {
+      // move every point
+      for (var l, i = this.value.length - 1; i >= 0; i--) {
+        l = this.value[i][0]
+
+        if (l == 'M' || l == 'L' || l == 'T')  {
+          this.value[i][1] += x
+          this.value[i][2] += y
+
+        } else if (l == 'H')  {
+          this.value[i][1] += x
+
+        } else if (l == 'V')  {
+          this.value[i][1] += y
+
+        } else if (l == 'C' || l == 'S' || l == 'Q')  {
+          this.value[i][1] += x
+          this.value[i][2] += y
+          this.value[i][3] += x
+          this.value[i][4] += y
+
+          if (l == 'C')  {
+            this.value[i][5] += x
+            this.value[i][6] += y
+          }
+
+        } else if (l == 'A')  {
+          this.value[i][6] += x
+          this.value[i][7] += y
+        }
+
+      }
+    }
+
+    return this
+  }
+  // Resize path string
+, size: function(width, height) {
+    // get bounding box of current situation
+    var i, l, box = this.bbox()
+
+    // recalculate position of all points according to new size
+    for (i = this.value.length - 1; i >= 0; i--) {
+      l = this.value[i][0]
+
+      if (l == 'M' || l == 'L' || l == 'T')  {
+        this.value[i][1] = ((this.value[i][1] - box.x) * width)  / box.width  + box.x
+        this.value[i][2] = ((this.value[i][2] - box.y) * height) / box.height + box.y
+
+      } else if (l == 'H')  {
+        this.value[i][1] = ((this.value[i][1] - box.x) * width)  / box.width  + box.x
+
+      } else if (l == 'V')  {
+        this.value[i][1] = ((this.value[i][1] - box.y) * height) / box.height + box.y
+
+      } else if (l == 'C' || l == 'S' || l == 'Q')  {
+        this.value[i][1] = ((this.value[i][1] - box.x) * width)  / box.width  + box.x
+        this.value[i][2] = ((this.value[i][2] - box.y) * height) / box.height + box.y
+        this.value[i][3] = ((this.value[i][3] - box.x) * width)  / box.width  + box.x
+        this.value[i][4] = ((this.value[i][4] - box.y) * height) / box.height + box.y
+
+        if (l == 'C')  {
+          this.value[i][5] = ((this.value[i][5] - box.x) * width)  / box.width  + box.x
+          this.value[i][6] = ((this.value[i][6] - box.y) * height) / box.height + box.y
+        }
+
+      } else if (l == 'A')  {
+        // resize radii
+        this.value[i][1] = (this.value[i][1] * width)  / box.width
+        this.value[i][2] = (this.value[i][2] * height) / box.height
+
+        // move position values
+        this.value[i][6] = ((this.value[i][6] - box.x) * width)  / box.width  + box.x
+        this.value[i][7] = ((this.value[i][7] - box.y) * height) / box.height + box.y
+      }
+
+    }
+
+    return this
+  }
+  // Test if the passed path array use the same path data commands as this path array
+, equalCommands: function(pathArray) {
+    var i, il, equalCommands
+
+    pathArray = new SVG.PathArray(pathArray)
+
+    equalCommands = this.value.length === pathArray.value.length
+    for(i = 0, il = this.value.length; equalCommands && i < il; i++) {
+      equalCommands = this.value[i][0] === pathArray.value[i][0]
+    }
+
+    return equalCommands
+  }
+  // Make path array morphable
+, morph: function(pathArray) {
+    pathArray = new SVG.PathArray(pathArray)
+
+    if(this.equalCommands(pathArray)) {
+      this.destination = pathArray
+    } else {
+      this.destination = null
+    }
+
+    return this
+  }
+  // Get morphed path array at given position
+, at: function(pos) {
+    // make sure a destination is defined
+    if (!this.destination) return this
+
+    var sourceArray = this.value
+      , destinationArray = this.destination.value
+      , array = [], pathArray = new SVG.PathArray()
+      , i, il, j, jl
+
+    // Animate has specified in the SVG spec
+    // See: https://www.w3.org/TR/SVG11/paths.html#PathElement
+    for (i = 0, il = sourceArray.length; i < il; i++) {
+      array[i] = [sourceArray[i][0]]
+      for(j = 1, jl = sourceArray[i].length; j < jl; j++) {
+        array[i][j] = sourceArray[i][j] + (destinationArray[i][j] - sourceArray[i][j]) * pos
+      }
+      // For the two flags of the elliptical arc command, the SVG spec say:
+      // Flags and booleans are interpolated as fractions between zero and one, with any non-zero value considered to be a value of one/true
+      // Elliptical arc command as an array followed by corresponding indexes:
+      // ['A', rx, ry, x-axis-rotation, large-arc-flag, sweep-flag, x, y]
+      //   0    1   2        3                 4             5      6  7
+      if(array[i][0] === 'A') {
+        array[i][4] = +(array[i][4] != 0)
+        array[i][5] = +(array[i][5] != 0)
+      }
+    }
+
+    // Directly modify the value of a path array, this is done this way for performance
+    pathArray.value = array
+    return pathArray
+  }
+  // Absolutize and parse path to array
+, parse: function(array) {
+    // if it's already a patharray, no need to parse it
+    if (array instanceof SVG.PathArray) return array.valueOf()
+
+    // prepare for parsing
+    var i, x0, y0, s, seg, arr
+      , x = 0
+      , y = 0
+      , paramCnt = { 'M':2, 'L':2, 'H':1, 'V':1, 'C':6, 'S':4, 'Q':4, 'T':2, 'A':7, 'Z':0 }
+
+    if(typeof array == 'string'){
+
+      array = array
+        .replace(SVG.regex.numbersWithDots, pathRegReplace) // convert 45.123.123 to 45.123 .123
+        .replace(SVG.regex.pathLetters, ' $& ') // put some room between letters and numbers
+        .replace(SVG.regex.hyphen, '$1 -')      // add space before hyphen
+        .trim()                                 // trim
+        .split(SVG.regex.delimiter)   // split into array
+
+    }else{
+      array = array.reduce(function(prev, curr){
+        return [].concat.call(prev, curr)
+      }, [])
+    }
+
+    // array now is an array containing all parts of a path e.g. ['M', '0', '0', 'L', '30', '30' ...]
+    var arr = []
+      , p = new SVG.Point()
+      , p0 = new SVG.Point()
+      , index = 0
+      , len = array.length
+
+    do{
+      // Test if we have a path letter
+      if(SVG.regex.isPathLetter.test(array[index])){
+        s = array[index]
+        ++index
+      // If last letter was a move command and we got no new, it defaults to [L]ine
+      }else if(s == 'M'){
+        s = 'L'
+      }else if(s == 'm'){
+        s = 'l'
+      }
+
+      arr.push(pathHandlers[s].call(null,
+          array.slice(index, (index = index + paramCnt[s.toUpperCase()])).map(parseFloat),
+          p, p0
+        )
+      )
+
+    }while(len > index)
+
+    return arr
+
+  }
+  // Get bounding box of path
+, bbox: function() {
+    SVG.parser.path.setAttribute('d', this.toString())
+
+    return SVG.parser.path.getBBox()
+  }
+
+})
+
+// Module for unit convertions
+SVG.Number = SVG.invent({
+  // Initialize
+  create: function(value, unit) {
+    // initialize defaults
+    this.value = 0
+    this.unit  = unit || ''
+
+    // parse value
+    if (typeof value === 'number') {
+      // ensure a valid numeric value
+      this.value = isNaN(value) ? 0 : !isFinite(value) ? (value < 0 ? -3.4e+38 : +3.4e+38) : value
+
+    } else if (typeof value === 'string') {
+      unit = value.match(SVG.regex.numberAndUnit)
+
+      if (unit) {
+        // make value numeric
+        this.value = parseFloat(unit[1])
+
+        // normalize
+        if (unit[5] == '%')
+          this.value /= 100
+        else if (unit[5] == 's')
+          this.value *= 1000
+
+        // store unit
+        this.unit = unit[5]
+      }
+
+    } else {
+      if (value instanceof SVG.Number) {
+        this.value = value.valueOf()
+        this.unit  = value.unit
+      }
+    }
+
+  }
+  // Add methods
+, extend: {
+    // Stringalize
+    toString: function() {
+      return (
+        this.unit == '%' ?
+          ~~(this.value * 1e8) / 1e6:
+        this.unit == 's' ?
+          this.value / 1e3 :
+          this.value
+      ) + this.unit
+    }
+  , toJSON: function() {
+      return this.toString()
+    }
+  , // Convert to primitive
+    valueOf: function() {
+      return this.value
+    }
+    // Add number
+  , plus: function(number) {
+      number = new SVG.Number(number)
+      return new SVG.Number(this + number, this.unit || number.unit)
+    }
+    // Subtract number
+  , minus: function(number) {
+      number = new SVG.Number(number)
+      return new SVG.Number(this - number, this.unit || number.unit)
+    }
+    // Multiply number
+  , times: function(number) {
+      number = new SVG.Number(number)
+      return new SVG.Number(this * number, this.unit || number.unit)
+    }
+    // Divide number
+  , divide: function(number) {
+      number = new SVG.Number(number)
+      return new SVG.Number(this / number, this.unit || number.unit)
+    }
+    // Convert to different unit
+  , to: function(unit) {
+      var number = new SVG.Number(this)
+
+      if (typeof unit === 'string')
+        number.unit = unit
+
+      return number
+    }
+    // Make number morphable
+  , morph: function(number) {
+      this.destination = new SVG.Number(number)
+
+      if(number.relative) {
+        this.destination.value += this.value
+      }
+
+      return this
+    }
+    // Get morphed number at given position
+  , at: function(pos) {
+      // Make sure a destination is defined
+      if (!this.destination) return this
+
+      // Generate new morphed number
+      return new SVG.Number(this.destination)
+          .minus(this)
+          .times(pos)
+          .plus(this)
+    }
+
+  }
+})
+
+
+SVG.Element = SVG.invent({
+  // Initialize node
+  create: function(node) {
+    // make stroke value accessible dynamically
+    this._stroke = SVG.defaults.attrs.stroke
+    this._event = null
+    this._events = {}
+
+    // initialize data object
+    this.dom = {}
+
+    // create circular reference
+    if (this.node = node) {
+      this.type = node.nodeName
+      this.node.instance = this
+      this._events = node._events || {}
+
+      // store current attribute value
+      this._stroke = node.getAttribute('stroke') || this._stroke
+    }
+  }
+
+  // Add class methods
+, extend: {
+    // Move over x-axis
+    x: function(x) {
+      return this.attr('x', x)
+    }
+    // Move over y-axis
+  , y: function(y) {
+      return this.attr('y', y)
+    }
+    // Move by center over x-axis
+  , cx: function(x) {
+      return x == null ? this.x() + this.width() / 2 : this.x(x - this.width() / 2)
+    }
+    // Move by center over y-axis
+  , cy: function(y) {
+      return y == null ? this.y() + this.height() / 2 : this.y(y - this.height() / 2)
+    }
+    // Move element to given x and y values
+  , move: function(x, y) {
+      return this.x(x).y(y)
+    }
+    // Move element by its center
+  , center: function(x, y) {
+      return this.cx(x).cy(y)
+    }
+    // Set width of element
+  , width: function(width) {
+      return this.attr('width', width)
+    }
+    // Set height of element
+  , height: function(height) {
+      return this.attr('height', height)
+    }
+    // Set element size to given width and height
+  , size: function(width, height) {
+      var p = proportionalSize(this, width, height)
+
+      return this
+        .width(new SVG.Number(p.width))
+        .height(new SVG.Number(p.height))
+    }
+    // Clone element
+  , clone: function(parent) {
+      // write dom data to the dom so the clone can pickup the data
+      this.writeDataToDom()
+
+      // clone element and assign new id
+      var clone = assignNewId(this.node.cloneNode(true))
+
+      // insert the clone in the given parent or after myself
+      if(parent) parent.add(clone)
+      else this.after(clone)
+
+      return clone
+    }
+    // Remove element
+  , remove: function() {
+      if (this.parent())
+        this.parent().removeElement(this)
+
+      return this
+    }
+    // Replace element
+  , replace: function(element) {
+      this.after(element).remove()
+
+      return element
+    }
+    // Add element to given container and return self
+  , addTo: function(parent) {
+      return parent.put(this)
+    }
+    // Add element to given container and return container
+  , putIn: function(parent) {
+      return parent.add(this)
+    }
+    // Get / set id
+  , id: function(id) {
+      return this.attr('id', id)
+    }
+    // Checks whether the given point inside the bounding box of the element
+  , inside: function(x, y) {
+      var box = this.bbox()
+
+      return x > box.x
+          && y > box.y
+          && x < box.x + box.width
+          && y < box.y + box.height
+    }
+    // Show element
+  , show: function() {
+      return this.style('display', '')
+    }
+    // Hide element
+  , hide: function() {
+      return this.style('display', 'none')
+    }
+    // Is element visible?
+  , visible: function() {
+      return this.style('display') != 'none'
+    }
+    // Return id on string conversion
+  , toString: function() {
+      return this.attr('id')
+    }
+    // Return array of classes on the node
+  , classes: function() {
+      var attr = this.attr('class')
+
+      return attr == null ? [] : attr.trim().split(SVG.regex.delimiter)
+    }
+    // Return true if class exists on the node, false otherwise
+  , hasClass: function(name) {
+      return this.classes().indexOf(name) != -1
+    }
+    // Add class to the node
+  , addClass: function(name) {
+      if (!this.hasClass(name)) {
+        var array = this.classes()
+        array.push(name)
+        this.attr('class', array.join(' '))
+      }
+
+      return this
+    }
+    // Remove class from the node
+  , removeClass: function(name) {
+      if (this.hasClass(name)) {
+        this.attr('class', this.classes().filter(function(c) {
+          return c != name
+        }).join(' '))
+      }
+
+      return this
+    }
+    // Toggle the presence of a class on the node
+  , toggleClass: function(name) {
+      return this.hasClass(name) ? this.removeClass(name) : this.addClass(name)
+    }
+    // Get referenced element form attribute value
+  , reference: function(attr) {
+      return SVG.get(this.attr(attr))
+    }
+    // Returns the parent element instance
+  , parent: function(type) {
+      var parent = this
+
+      // check for parent
+      if(!parent.node.parentNode) return null
+
+      // get parent element
+      parent = SVG.adopt(parent.node.parentNode)
+
+      if(!type) return parent
+
+      // loop trough ancestors if type is given
+      while(parent && parent.node instanceof window.SVGElement){
+        if(typeof type === 'string' ? parent.matches(type) : parent instanceof type) return parent
+        if(!parent.node.parentNode || parent.node.parentNode.nodeName == '#document' || parent.node.parentNode.nodeName == '#document-fragment') return null // #759, #720
+        parent = SVG.adopt(parent.node.parentNode)
+      }
+    }
+    // Get parent document
+  , doc: function() {
+      return this instanceof SVG.Doc ? this : this.parent(SVG.Doc)
+    }
+    // return array of all ancestors of given type up to the root svg
+  , parents: function(type) {
+      var parents = [], parent = this
+
+      do{
+        parent = parent.parent(type)
+        if(!parent || !parent.node) break
+
+        parents.push(parent)
+      } while(parent.parent)
+
+      return parents
+    }
+    // matches the element vs a css selector
+  , matches: function(selector){
+      return matches(this.node, selector)
+    }
+    // Returns the svg node to call native svg methods on it
+  , native: function() {
+      return this.node
+    }
+    // Import raw svg
+  , svg: function(svg) {
+      // create temporary holder
+      var well = document.createElement('svg')
+
+      // act as a setter if svg is given
+      if (svg && this instanceof SVG.Parent) {
+        // dump raw svg
+        well.innerHTML = '<svg>' + svg.replace(/\n/, '').replace(/<([\w:-]+)([^<]+?)\/>/g, '<$1$2></$1>') + '</svg>'
+
+        // transplant nodes
+        for (var i = 0, il = well.firstChild.childNodes.length; i < il; i++)
+          this.node.appendChild(well.firstChild.firstChild)
+
+      // otherwise act as a getter
+      } else {
+        // create a wrapping svg element in case of partial content
+        well.appendChild(svg = document.createElement('svg'))
+
+        // write svgjs data to the dom
+        this.writeDataToDom()
+
+        // insert a copy of this node
+        svg.appendChild(this.node.cloneNode(true))
+
+        // return target element
+        return well.innerHTML.replace(/^<svg>/, '').replace(/<\/svg>$/, '')
+      }
+
+      return this
+    }
+  // write svgjs data to the dom
+  , writeDataToDom: function() {
+
+      // dump variables recursively
+      if(this.each || this.lines){
+        var fn = this.each ? this : this.lines();
+        fn.each(function(){
+          this.writeDataToDom()
+        })
+      }
+
+      // remove previously set data
+      this.node.removeAttribute('svgjs:data')
+
+      if(Object.keys(this.dom).length)
+        this.node.setAttribute('svgjs:data', JSON.stringify(this.dom)) // see #428
+
+      return this
+    }
+  // set given data to the elements data property
+  , setData: function(o){
+      this.dom = o
+      return this
+    }
+  , is: function(obj){
+      return is(this, obj)
+    }
+  }
+})
+
+SVG.easing = {
+  '-': function(pos){return pos}
+, '<>':function(pos){return -Math.cos(pos * Math.PI) / 2 + 0.5}
+, '>': function(pos){return  Math.sin(pos * Math.PI / 2)}
+, '<': function(pos){return -Math.cos(pos * Math.PI / 2) + 1}
+}
+
+SVG.morph = function(pos){
+  return function(from, to) {
+    return new SVG.MorphObj(from, to).at(pos)
+  }
+}
+
+SVG.Situation = SVG.invent({
+
+  create: function(o){
+    this.init = false
+    this.reversed = false
+    this.reversing = false
+
+    this.duration = new SVG.Number(o.duration).valueOf()
+    this.delay = new SVG.Number(o.delay).valueOf()
+
+    this.start = +new Date() + this.delay
+    this.finish = this.start + this.duration
+    this.ease = o.ease
+
+    // this.loop is incremented from 0 to this.loops
+    // it is also incremented when in an infinite loop (when this.loops is true)
+    this.loop = 0
+    this.loops = false
+
+    this.animations = {
+      // functionToCall: [list of morphable objects]
+      // e.g. move: [SVG.Number, SVG.Number]
+    }
+
+    this.attrs = {
+      // holds all attributes which are not represented from a function svg.js provides
+      // e.g. someAttr: SVG.Number
+    }
+
+    this.styles = {
+      // holds all styles which should be animated
+      // e.g. fill-color: SVG.Color
+    }
+
+    this.transforms = [
+      // holds all transformations as transformation objects
+      // e.g. [SVG.Rotate, SVG.Translate, SVG.Matrix]
+    ]
+
+    this.once = {
+      // functions to fire at a specific position
+      // e.g. "0.5": function foo(){}
+    }
+
+  }
+
+})
+
+
+SVG.FX = SVG.invent({
+
+  create: function(element) {
+    this._target = element
+    this.situations = []
+    this.active = false
+    this.situation = null
+    this.paused = false
+    this.lastPos = 0
+    this.pos = 0
+    // The absolute position of an animation is its position in the context of its complete duration (including delay and loops)
+    // When performing a delay, absPos is below 0 and when performing a loop, its value is above 1
+    this.absPos = 0
+    this._speed = 1
+  }
+
+, extend: {
+
+    /**
+     * sets or returns the target of this animation
+     * @param o object || number In case of Object it holds all parameters. In case of number its the duration of the animation
+     * @param ease function || string Function which should be used for easing or easing keyword
+     * @param delay Number indicating the delay before the animation starts
+     * @return target || this
+     */
+    animate: function(o, ease, delay){
+
+      if(typeof o == 'object'){
+        ease = o.ease
+        delay = o.delay
+        o = o.duration
+      }
+
+      var situation = new SVG.Situation({
+        duration: o || 1000,
+        delay: delay || 0,
+        ease: SVG.easing[ease || '-'] || ease
+      })
+
+      this.queue(situation)
+
+      return this
+    }
+
+    /**
+     * sets a delay before the next element of the queue is called
+     * @param delay Duration of delay in milliseconds
+     * @return this.target()
+     */
+  , delay: function(delay){
+      // The delay is performed by an empty situation with its duration
+      // attribute set to the duration of the delay
+      var situation = new SVG.Situation({
+        duration: delay,
+        delay: 0,
+        ease: SVG.easing['-']
+      })
+
+      return this.queue(situation)
+    }
+
+    /**
+     * sets or returns the target of this animation
+     * @param null || target SVG.Element which should be set as new target
+     * @return target || this
+     */
+  , target: function(target){
+      if(target && target instanceof SVG.Element){
+        this._target = target
+        return this
+      }
+
+      return this._target
+    }
+
+    // returns the absolute position at a given time
+  , timeToAbsPos: function(timestamp){
+      return (timestamp - this.situation.start) / (this.situation.duration/this._speed)
+    }
+
+    // returns the timestamp from a given absolute positon
+  , absPosToTime: function(absPos){
+      return this.situation.duration/this._speed * absPos + this.situation.start
+    }
+
+    // starts the animationloop
+  , startAnimFrame: function(){
+      this.stopAnimFrame()
+      this.animationFrame = window.requestAnimationFrame(function(){ this.step() }.bind(this))
+    }
+
+    // cancels the animationframe
+  , stopAnimFrame: function(){
+      window.cancelAnimationFrame(this.animationFrame)
+    }
+
+    // kicks off the animation - only does something when the queue is currently not active and at least one situation is set
+  , start: function(){
+      // dont start if already started
+      if(!this.active && this.situation){
+        this.active = true
+        this.startCurrent()
+      }
+
+      return this
+    }
+
+    // start the current situation
+  , startCurrent: function(){
+      this.situation.start = +new Date + this.situation.delay/this._speed
+      this.situation.finish = this.situation.start + this.situation.duration/this._speed
+      return this.initAnimations().step()
+    }
+
+    /**
+     * adds a function / Situation to the animation queue
+     * @param fn function / situation to add
+     * @return this
+     */
+  , queue: function(fn){
+      if(typeof fn == 'function' || fn instanceof SVG.Situation)
+        this.situations.push(fn)
+
+      if(!this.situation) this.situation = this.situations.shift()
+
+      return this
+    }
+
+    /**
+     * pulls next element from the queue and execute it
+     * @return this
+     */
+  , dequeue: function(){
+      // stop current animation
+      this.stop()
+
+      // get next animation from queue
+      this.situation = this.situations.shift()
+
+      if(this.situation){
+        if(this.situation instanceof SVG.Situation) {
+          this.start()
+        } else {
+          // If it is not a SVG.Situation, then it is a function, we execute it
+          this.situation.call(this)
+        }
+      }
+
+      return this
+    }
+
+    // updates all animations to the current state of the element
+    // this is important when one property could be changed from another property
+  , initAnimations: function() {
+      var i, j, source
+      var s = this.situation
+
+      if(s.init) return this
+
+      for(i in s.animations){
+        source = this.target()[i]()
+
+        if(!Array.isArray(source)) {
+          source = [source]
+        }
+
+        if(!Array.isArray(s.animations[i])) {
+          s.animations[i] = [s.animations[i]]
+        }
+
+        //if(s.animations[i].length > source.length) {
+        //  source.concat = source.concat(s.animations[i].slice(source.length, s.animations[i].length))
+        //}
+
+        for(j = source.length; j--;) {
+          // The condition is because some methods return a normal number instead
+          // of a SVG.Number
+          if(s.animations[i][j] instanceof SVG.Number)
+            source[j] = new SVG.Number(source[j])
+
+          s.animations[i][j] = source[j].morph(s.animations[i][j])
+        }
+      }
+
+      for(i in s.attrs){
+        s.attrs[i] = new SVG.MorphObj(this.target().attr(i), s.attrs[i])
+      }
+
+      for(i in s.styles){
+        s.styles[i] = new SVG.MorphObj(this.target().style(i), s.styles[i])
+      }
+
+      s.initialTransformation = this.target().matrixify()
+
+      s.init = true
+      return this
+    }
+  , clearQueue: function(){
+      this.situations = []
+      return this
+    }
+  , clearCurrent: function(){
+      this.situation = null
+      return this
+    }
+    /** stops the animation immediately
+     * @param jumpToEnd A Boolean indicating whether to complete the current animation immediately.
+     * @param clearQueue A Boolean indicating whether to remove queued animation as well.
+     * @return this
+     */
+  , stop: function(jumpToEnd, clearQueue){
+      var active = this.active
+      this.active = false
+
+      if(clearQueue){
+        this.clearQueue()
+      }
+
+      if(jumpToEnd && this.situation){
+        // initialize the situation if it was not
+        !active && this.startCurrent()
+        this.atEnd()
+      }
+
+      this.stopAnimFrame()
+
+      return this.clearCurrent()
+    }
+
+    /** resets the element to the state where the current element has started
+     * @return this
+     */
+  , reset: function(){
+      if(this.situation){
+        var temp = this.situation
+        this.stop()
+        this.situation = temp
+        this.atStart()
+      }
+      return this
+    }
+
+    // Stop the currently-running animation, remove all queued animations, and complete all animations for the element.
+  , finish: function(){
+
+      this.stop(true, false)
+
+      while(this.dequeue().situation && this.stop(true, false));
+
+      this.clearQueue().clearCurrent()
+
+      return this
+    }
+
+    // set the internal animation pointer at the start position, before any loops, and updates the visualisation
+  , atStart: function() {
+      return this.at(0, true)
+    }
+
+    // set the internal animation pointer at the end position, after all the loops, and updates the visualisation
+  , atEnd: function() {
+      if (this.situation.loops === true) {
+        // If in a infinite loop, we end the current iteration
+        this.situation.loops = this.situation.loop + 1
+      }
+
+      if(typeof this.situation.loops == 'number') {
+        // If performing a finite number of loops, we go after all the loops
+        return this.at(this.situation.loops, true)
+      } else {
+        // If no loops, we just go at the end
+        return this.at(1, true)
+      }
+    }
+
+    // set the internal animation pointer to the specified position and updates the visualisation
+    // if isAbsPos is true, pos is treated as an absolute position
+  , at: function(pos, isAbsPos){
+      var durDivSpd = this.situation.duration/this._speed
+
+      this.absPos = pos
+      // If pos is not an absolute position, we convert it into one
+      if (!isAbsPos) {
+        if (this.situation.reversed) this.absPos = 1 - this.absPos
+        this.absPos += this.situation.loop
+      }
+
+      this.situation.start = +new Date - this.absPos * durDivSpd
+      this.situation.finish = this.situation.start + durDivSpd
+
+      return this.step(true)
+    }
+
+    /**
+     * sets or returns the speed of the animations
+     * @param speed null || Number The new speed of the animations
+     * @return Number || this
+     */
+  , speed: function(speed){
+      if (speed === 0) return this.pause()
+
+      if (speed) {
+        this._speed = speed
+        // We use an absolute position here so that speed can affect the delay before the animation
+        return this.at(this.absPos, true)
+      } else return this._speed
+    }
+
+    // Make loopable
+  , loop: function(times, reverse) {
+      var c = this.last()
+
+      // store total loops
+      c.loops = (times != null) ? times : true
+      c.loop = 0
+
+      if(reverse) c.reversing = true
+      return this
+    }
+
+    // pauses the animation
+  , pause: function(){
+      this.paused = true
+      this.stopAnimFrame()
+
+      return this
+    }
+
+    // unpause the animation
+  , play: function(){
+      if(!this.paused) return this
+      this.paused = false
+      // We use an absolute position here so that the delay before the animation can be paused
+      return this.at(this.absPos, true)
+    }
+
+    /**
+     * toggle or set the direction of the animation
+     * true sets direction to backwards while false sets it to forwards
+     * @param reversed Boolean indicating whether to reverse the animation or not (default: toggle the reverse status)
+     * @return this
+     */
+  , reverse: function(reversed){
+      var c = this.last()
+
+      if(typeof reversed == 'undefined') c.reversed = !c.reversed
+      else c.reversed = reversed
+
+      return this
+    }
+
+
+    /**
+     * returns a float from 0-1 indicating the progress of the current animation
+     * @param eased Boolean indicating whether the returned position should be eased or not
+     * @return number
+     */
+  , progress: function(easeIt){
+      return easeIt ? this.situation.ease(this.pos) : this.pos
+    }
+
+    /**
+     * adds a callback function which is called when the current animation is finished
+     * @param fn Function which should be executed as callback
+     * @return number
+     */
+  , after: function(fn){
+      var c = this.last()
+        , wrapper = function wrapper(e){
+            if(e.detail.situation == c){
+              fn.call(this, c)
+              this.off('finished.fx', wrapper) // prevent memory leak
+            }
+          }
+
+      this.target().on('finished.fx', wrapper)
+
+      return this._callStart()
+    }
+
+    // adds a callback which is called whenever one animation step is performed
+  , during: function(fn){
+      var c = this.last()
+        , wrapper = function(e){
+            if(e.detail.situation == c){
+              fn.call(this, e.detail.pos, SVG.morph(e.detail.pos), e.detail.eased, c)
+            }
+          }
+
+      // see above
+      this.target().off('during.fx', wrapper).on('during.fx', wrapper)
+
+      this.after(function(){
+        this.off('during.fx', wrapper)
+      })
+
+      return this._callStart()
+    }
+
+    // calls after ALL animations in the queue are finished
+  , afterAll: function(fn){
+      var wrapper = function wrapper(e){
+            fn.call(this)
+            this.off('allfinished.fx', wrapper)
+          }
+
+      // see above
+      this.target().off('allfinished.fx', wrapper).on('allfinished.fx', wrapper)
+
+      return this._callStart()
+    }
+
+    // calls on every animation step for all animations
+  , duringAll: function(fn){
+      var wrapper = function(e){
+            fn.call(this, e.detail.pos, SVG.morph(e.detail.pos), e.detail.eased, e.detail.situation)
+          }
+
+      this.target().off('during.fx', wrapper).on('during.fx', wrapper)
+
+      this.afterAll(function(){
+        this.off('during.fx', wrapper)
+      })
+
+      return this._callStart()
+    }
+
+  , last: function(){
+      return this.situations.length ? this.situations[this.situations.length-1] : this.situation
+    }
+
+    // adds one property to the animations
+  , add: function(method, args, type){
+      this.last()[type || 'animations'][method] = args
+      return this._callStart()
+    }
+
+    /** perform one step of the animation
+     *  @param ignoreTime Boolean indicating whether to ignore time and use position directly or recalculate position based on time
+     *  @return this
+     */
+  , step: function(ignoreTime){
+
+      // convert current time to an absolute position
+      if(!ignoreTime) this.absPos = this.timeToAbsPos(+new Date)
+
+      // This part convert an absolute position to a position
+      if(this.situation.loops !== false) {
+        var absPos, absPosInt, lastLoop
+
+        // If the absolute position is below 0, we just treat it as if it was 0
+        absPos = Math.max(this.absPos, 0)
+        absPosInt = Math.floor(absPos)
+
+        if(this.situation.loops === true || absPosInt < this.situation.loops) {
+          this.pos = absPos - absPosInt
+          lastLoop = this.situation.loop
+          this.situation.loop = absPosInt
+        } else {
+          this.absPos = this.situation.loops
+          this.pos = 1
+          // The -1 here is because we don't want to toggle reversed when all the loops have been completed
+          lastLoop = this.situation.loop - 1
+          this.situation.loop = this.situation.loops
+        }
+
+        if(this.situation.reversing) {
+          // Toggle reversed if an odd number of loops as occured since the last call of step
+          this.situation.reversed = this.situation.reversed != Boolean((this.situation.loop - lastLoop) % 2)
+        }
+
+      } else {
+        // If there are no loop, the absolute position must not be above 1
+        this.absPos = Math.min(this.absPos, 1)
+        this.pos = this.absPos
+      }
+
+      // while the absolute position can be below 0, the position must not be below 0
+      if(this.pos < 0) this.pos = 0
+
+      if(this.situation.reversed) this.pos = 1 - this.pos
+
+
+      // apply easing
+      var eased = this.situation.ease(this.pos)
+
+      // call once-callbacks
+      for(var i in this.situation.once){
+        if(i > this.lastPos && i <= eased){
+          this.situation.once[i].call(this.target(), this.pos, eased)
+          delete this.situation.once[i]
+        }
+      }
+
+      // fire during callback with position, eased position and current situation as parameter
+      if(this.active) this.target().fire('during', {pos: this.pos, eased: eased, fx: this, situation: this.situation})
+
+      // the user may call stop or finish in the during callback
+      // so make sure that we still have a valid situation
+      if(!this.situation){
+        return this
+      }
+
+      // apply the actual animation to every property
+      this.eachAt()
+
+      // do final code when situation is finished
+      if((this.pos == 1 && !this.situation.reversed) || (this.situation.reversed && this.pos == 0)){
+
+        // stop animation callback
+        this.stopAnimFrame()
+
+        // fire finished callback with current situation as parameter
+        this.target().fire('finished', {fx:this, situation: this.situation})
+
+        if(!this.situations.length){
+          this.target().fire('allfinished')
+
+          // Recheck the length since the user may call animate in the afterAll callback
+          if(!this.situations.length){
+            this.target().off('.fx') // there shouldnt be any binding left, but to make sure...
+            this.active = false
+          }
+        }
+
+        // start next animation
+        if(this.active) this.dequeue()
+        else this.clearCurrent()
+
+      }else if(!this.paused && this.active){
+        // we continue animating when we are not at the end
+        this.startAnimFrame()
+      }
+
+      // save last eased position for once callback triggering
+      this.lastPos = eased
+      return this
+
+    }
+
+    // calculates the step for every property and calls block with it
+  , eachAt: function(){
+      var i, len, at, self = this, target = this.target(), s = this.situation
+
+      // apply animations which can be called trough a method
+      for(i in s.animations){
+
+        at = [].concat(s.animations[i]).map(function(el){
+          return typeof el !== 'string' && el.at ? el.at(s.ease(self.pos), self.pos) : el
+        })
+
+        target[i].apply(target, at)
+
+      }
+
+      // apply animation which has to be applied with attr()
+      for(i in s.attrs){
+
+        at = [i].concat(s.attrs[i]).map(function(el){
+          return typeof el !== 'string' && el.at ? el.at(s.ease(self.pos), self.pos) : el
+        })
+
+        target.attr.apply(target, at)
+
+      }
+
+      // apply animation which has to be applied with style()
+      for(i in s.styles){
+
+        at = [i].concat(s.styles[i]).map(function(el){
+          return typeof el !== 'string' && el.at ? el.at(s.ease(self.pos), self.pos) : el
+        })
+
+        target.style.apply(target, at)
+
+      }
+
+      // animate initialTransformation which has to be chained
+      if(s.transforms.length){
+
+        // get initial initialTransformation
+        at = s.initialTransformation
+        for(i = 0, len = s.transforms.length; i < len; i++){
+
+          // get next transformation in chain
+          var a = s.transforms[i]
+
+          // multiply matrix directly
+          if(a instanceof SVG.Matrix){
+
+            if(a.relative){
+              at = at.multiply(new SVG.Matrix().morph(a).at(s.ease(this.pos)))
+            }else{
+              at = at.morph(a).at(s.ease(this.pos))
+            }
+            continue
+          }
+
+          // when transformation is absolute we have to reset the needed transformation first
+          if(!a.relative)
+            a.undo(at.extract())
+
+          // and reapply it after
+          at = at.multiply(a.at(s.ease(this.pos)))
+
+        }
+
+        // set new matrix on element
+        target.matrix(at)
+      }
+
+      return this
+
+    }
+
+
+    // adds an once-callback which is called at a specific position and never again
+  , once: function(pos, fn, isEased){
+      var c = this.last()
+      if(!isEased) pos = c.ease(pos)
+
+      c.once[pos] = fn
+
+      return this
+    }
+
+  , _callStart: function() {
+      setTimeout(function(){this.start()}.bind(this), 0)
+      return this
+    }
+
+  }
+
+, parent: SVG.Element
+
+  // Add method to parent elements
+, construct: {
+    // Get fx module or create a new one, then animate with given duration and ease
+    animate: function(o, ease, delay) {
+      return (this.fx || (this.fx = new SVG.FX(this))).animate(o, ease, delay)
+    }
+  , delay: function(delay){
+      return (this.fx || (this.fx = new SVG.FX(this))).delay(delay)
+    }
+  , stop: function(jumpToEnd, clearQueue) {
+      if (this.fx)
+        this.fx.stop(jumpToEnd, clearQueue)
+
+      return this
+    }
+  , finish: function() {
+      if (this.fx)
+        this.fx.finish()
+
+      return this
+    }
+    // Pause current animation
+  , pause: function() {
+      if (this.fx)
+        this.fx.pause()
+
+      return this
+    }
+    // Play paused current animation
+  , play: function() {
+      if (this.fx)
+        this.fx.play()
+
+      return this
+    }
+    // Set/Get the speed of the animations
+  , speed: function(speed) {
+      if (this.fx)
+        if (speed == null)
+          return this.fx.speed()
+        else
+          this.fx.speed(speed)
+
+      return this
+    }
+  }
+
+})
+
+// MorphObj is used whenever no morphable object is given
+SVG.MorphObj = SVG.invent({
+
+  create: function(from, to){
+    // prepare color for morphing
+    if(SVG.Color.isColor(to)) return new SVG.Color(from).morph(to)
+    // check if we have a list of values
+    if(SVG.regex.delimiter.test(from)) {
+      // prepare path for morphing
+      if(SVG.regex.pathLetters.test(from)) return new SVG.PathArray(from).morph(to)
+      // prepare value list for morphing
+      else return new SVG.Array(from).morph(to)
+    }
+    // prepare number for morphing
+    if(SVG.regex.numberAndUnit.test(to)) return new SVG.Number(from).morph(to)
+
+    // prepare for plain morphing
+    this.value = from
+    this.destination = to
+  }
+
+, extend: {
+    at: function(pos, real){
+      return real < 1 ? this.value : this.destination
+    },
+
+    valueOf: function(){
+      return this.value
+    }
+  }
+
+})
+
+SVG.extend(SVG.FX, {
+  // Add animatable attributes
+  attr: function(a, v, relative) {
+    // apply attributes individually
+    if (typeof a == 'object') {
+      for (var key in a)
+        this.attr(key, a[key])
+
+    } else {
+      this.add(a, v, 'attrs')
+    }
+
+    return this
+  }
+  // Add animatable styles
+, style: function(s, v) {
+    if (typeof s == 'object')
+      for (var key in s)
+        this.style(key, s[key])
+
+    else
+      this.add(s, v, 'styles')
+
+    return this
+  }
+  // Animatable x-axis
+, x: function(x, relative) {
+    if(this.target() instanceof SVG.G){
+      this.transform({x:x}, relative)
+      return this
+    }
+
+    var num = new SVG.Number(x)
+    num.relative = relative
+    return this.add('x', num)
+  }
+  // Animatable y-axis
+, y: function(y, relative) {
+    if(this.target() instanceof SVG.G){
+      this.transform({y:y}, relative)
+      return this
+    }
+
+    var num = new SVG.Number(y)
+    num.relative = relative
+    return this.add('y', num)
+  }
+  // Animatable center x-axis
+, cx: function(x) {
+    return this.add('cx', new SVG.Number(x))
+  }
+  // Animatable center y-axis
+, cy: function(y) {
+    return this.add('cy', new SVG.Number(y))
+  }
+  // Add animatable move
+, move: function(x, y) {
+    return this.x(x).y(y)
+  }
+  // Add animatable center
+, center: function(x, y) {
+    return this.cx(x).cy(y)
+  }
+  // Add animatable size
+, size: function(width, height) {
+    if (this.target() instanceof SVG.Text) {
+      // animate font size for Text elements
+      this.attr('font-size', width)
+
+    } else {
+      // animate bbox based size for all other elements
+      var box
+
+      if(!width || !height){
+        box = this.target().bbox()
+      }
+
+      if(!width){
+        width = box.width / box.height  * height
+      }
+
+      if(!height){
+        height = box.height / box.width  * width
+      }
+
+      this.add('width' , new SVG.Number(width))
+          .add('height', new SVG.Number(height))
+
+    }
+
+    return this
+  }
+  // Add animatable width
+, width: function(width) {
+    return this.add('width', new SVG.Number(width))
+  }
+  // Add animatable height
+, height: function(height) {
+    return this.add('height', new SVG.Number(height))
+  }
+  // Add animatable plot
+, plot: function(a, b, c, d) {
+    // Lines can be plotted with 4 arguments
+    if(arguments.length == 4) {
+      return this.plot([a, b, c, d])
+    }
+
+    return this.add('plot', new (this.target().morphArray)(a))
+  }
+  // Add leading method
+, leading: function(value) {
+    return this.target().leading ?
+      this.add('leading', new SVG.Number(value)) :
+      this
+  }
+  // Add animatable viewbox
+, viewbox: function(x, y, width, height) {
+    if (this.target() instanceof SVG.Container) {
+      this.add('viewbox', new SVG.ViewBox(x, y, width, height))
+    }
+
+    return this
+  }
+, update: function(o) {
+    if (this.target() instanceof SVG.Stop) {
+      if (typeof o == 'number' || o instanceof SVG.Number) {
+        return this.update({
+          offset:  arguments[0]
+        , color:   arguments[1]
+        , opacity: arguments[2]
+        })
+      }
+
+      if (o.opacity != null) this.attr('stop-opacity', o.opacity)
+      if (o.color   != null) this.attr('stop-color', o.color)
+      if (o.offset  != null) this.attr('offset', o.offset)
+    }
+
+    return this
+  }
+})
+
+SVG.Box = SVG.invent({
+  create: function(x, y, width, height) {
+    if (typeof x == 'object' && !(x instanceof SVG.Element)) {
+      // chromes getBoundingClientRect has no x and y property
+      return SVG.Box.call(this, x.left != null ? x.left : x.x , x.top != null ? x.top : x.y, x.width, x.height)
+    } else if (arguments.length == 4) {
+      this.x = x
+      this.y = y
+      this.width = width
+      this.height = height
+    }
+
+    // add center, right, bottom...
+    fullBox(this)
+  }
+, extend: {
+    // Merge rect box with another, return a new instance
+    merge: function(box) {
+      var b = new this.constructor()
+
+      // merge boxes
+      b.x      = Math.min(this.x, box.x)
+      b.y      = Math.min(this.y, box.y)
+      b.width  = Math.max(this.x + this.width,  box.x + box.width)  - b.x
+      b.height = Math.max(this.y + this.height, box.y + box.height) - b.y
+
+      return fullBox(b)
+    }
+
+  , transform: function(m) {
+      var xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity, p, bbox
+
+      var pts = [
+        new SVG.Point(this.x, this.y),
+        new SVG.Point(this.x2, this.y),
+        new SVG.Point(this.x, this.y2),
+        new SVG.Point(this.x2, this.y2)
+      ]
+
+      pts.forEach(function(p) {
+        p = p.transform(m)
+        xMin = Math.min(xMin,p.x)
+        xMax = Math.max(xMax,p.x)
+        yMin = Math.min(yMin,p.y)
+        yMax = Math.max(yMax,p.y)
+      })
+
+      bbox = new this.constructor()
+      bbox.x = xMin
+      bbox.width = xMax-xMin
+      bbox.y = yMin
+      bbox.height = yMax-yMin
+
+      fullBox(bbox)
+
+      return bbox
+    }
+  }
+})
+
+SVG.BBox = SVG.invent({
+  // Initialize
+  create: function(element) {
+    SVG.Box.apply(this, [].slice.call(arguments))
+
+    // get values if element is given
+    if (element instanceof SVG.Element) {
+      var box
+
+      // yes this is ugly, but Firefox can be a pain when it comes to elements that are not yet rendered
+      try {
+
+        if (!document.documentElement.contains){
+          // This is IE - it does not support contains() for top-level SVGs
+          var topParent = element.node
+          while (topParent.parentNode){
+            topParent = topParent.parentNode
+          }
+          if (topParent != document) throw new Exception('Element not in the dom')
+        } else {
+          // the element is NOT in the dom, throw error
+          if(!document.documentElement.contains(element.node)) throw new Exception('Element not in the dom')
+        }
+
+        // find native bbox
+        box = element.node.getBBox()
+      } catch(e) {
+        if(element instanceof SVG.Shape){
+          var clone = element.clone(SVG.parser.draw.instance).show()
+          box = clone.node.getBBox()
+          clone.remove()
+        }else{
+          box = {
+            x:      element.node.clientLeft
+          , y:      element.node.clientTop
+          , width:  element.node.clientWidth
+          , height: element.node.clientHeight
+          }
+        }
+      }
+
+      SVG.Box.call(this, box)
+    }
+
+  }
+
+  // Define ancestor
+, inherit: SVG.Box
+
+  // Define Parent
+, parent: SVG.Element
+
+  // Constructor
+, construct: {
+    // Get bounding box
+    bbox: function() {
+      return new SVG.BBox(this)
+    }
+  }
+
+})
+
+SVG.BBox.prototype.constructor = SVG.BBox
+
+
+SVG.extend(SVG.Element, {
+  tbox: function(){
+    console.warn('Use of TBox is deprecated and mapped to RBox. Use .rbox() instead.')
+    return this.rbox(this.doc())
+  }
+})
+
+SVG.RBox = SVG.invent({
+  // Initialize
+  create: function(element) {
+    SVG.Box.apply(this, [].slice.call(arguments))
+
+    if (element instanceof SVG.Element) {
+      SVG.Box.call(this, element.node.getBoundingClientRect())
+    }
+  }
+
+, inherit: SVG.Box
+
+  // define Parent
+, parent: SVG.Element
+
+, extend: {
+    addOffset: function() {
+      // offset by window scroll position, because getBoundingClientRect changes when window is scrolled
+      this.x += window.pageXOffset
+      this.y += window.pageYOffset
+      return this
+    }
+  }
+
+  // Constructor
+, construct: {
+    // Get rect box
+    rbox: function(el) {
+      if (el) return new SVG.RBox(this).transform(el.screenCTM().inverse())
+      return new SVG.RBox(this).addOffset()
+    }
+  }
+
+})
+
+SVG.RBox.prototype.constructor = SVG.RBox
+
+SVG.Matrix = SVG.invent({
+  // Initialize
+  create: function(source) {
+    var i, base = arrayToMatrix([1, 0, 0, 1, 0, 0])
+
+    // ensure source as object
+    source = source instanceof SVG.Element ?
+      source.matrixify() :
+    typeof source === 'string' ?
+      arrayToMatrix(source.split(SVG.regex.delimiter).map(parseFloat)) :
+    arguments.length == 6 ?
+      arrayToMatrix([].slice.call(arguments)) :
+    Array.isArray(source) ?
+      arrayToMatrix(source) :
+    typeof source === 'object' ?
+      source : base
+
+    // merge source
+    for (i = abcdef.length - 1; i >= 0; --i)
+      this[abcdef[i]] = source[abcdef[i]] != null ?
+        source[abcdef[i]] : base[abcdef[i]]
+  }
+
+  // Add methods
+, extend: {
+    // Extract individual transformations
+    extract: function() {
+      // find delta transform points
+      var px    = deltaTransformPoint(this, 0, 1)
+        , py    = deltaTransformPoint(this, 1, 0)
+        , skewX = 180 / Math.PI * Math.atan2(px.y, px.x) - 90
+
+      return {
+        // translation
+        x:        this.e
+      , y:        this.f
+      , transformedX:(this.e * Math.cos(skewX * Math.PI / 180) + this.f * Math.sin(skewX * Math.PI / 180)) / Math.sqrt(this.a * this.a + this.b * this.b)
+      , transformedY:(this.f * Math.cos(skewX * Math.PI / 180) + this.e * Math.sin(-skewX * Math.PI / 180)) / Math.sqrt(this.c * this.c + this.d * this.d)
+        // skew
+      , skewX:    -skewX
+      , skewY:    180 / Math.PI * Math.atan2(py.y, py.x)
+        // scale
+      , scaleX:   Math.sqrt(this.a * this.a + this.b * this.b)
+      , scaleY:   Math.sqrt(this.c * this.c + this.d * this.d)
+        // rotation
+      , rotation: skewX
+      , a: this.a
+      , b: this.b
+      , c: this.c
+      , d: this.d
+      , e: this.e
+      , f: this.f
+      , matrix: new SVG.Matrix(this)
+      }
+    }
+    // Clone matrix
+  , clone: function() {
+      return new SVG.Matrix(this)
+    }
+    // Morph one matrix into another
+  , morph: function(matrix) {
+      // store new destination
+      this.destination = new SVG.Matrix(matrix)
+
+      return this
+    }
+    // Get morphed matrix at a given position
+  , at: function(pos) {
+      // make sure a destination is defined
+      if (!this.destination) return this
+
+      // calculate morphed matrix at a given position
+      var matrix = new SVG.Matrix({
+        a: this.a + (this.destination.a - this.a) * pos
+      , b: this.b + (this.destination.b - this.b) * pos
+      , c: this.c + (this.destination.c - this.c) * pos
+      , d: this.d + (this.destination.d - this.d) * pos
+      , e: this.e + (this.destination.e - this.e) * pos
+      , f: this.f + (this.destination.f - this.f) * pos
+      })
+
+      return matrix
+    }
+    // Multiplies by given matrix
+  , multiply: function(matrix) {
+      return new SVG.Matrix(this.native().multiply(parseMatrix(matrix).native()))
+    }
+    // Inverses matrix
+  , inverse: function() {
+      return new SVG.Matrix(this.native().inverse())
+    }
+    // Translate matrix
+  , translate: function(x, y) {
+      return new SVG.Matrix(this.native().translate(x || 0, y || 0))
+    }
+    // Scale matrix
+  , scale: function(x, y, cx, cy) {
+      // support uniformal scale
+      if (arguments.length == 1) {
+        y = x
+      } else if (arguments.length == 3) {
+        cy = cx
+        cx = y
+        y = x
+      }
+
+      return this.around(cx, cy, new SVG.Matrix(x, 0, 0, y, 0, 0))
+    }
+    // Rotate matrix
+  , rotate: function(r, cx, cy) {
+      // convert degrees to radians
+      r = SVG.utils.radians(r)
+
+      return this.around(cx, cy, new SVG.Matrix(Math.cos(r), Math.sin(r), -Math.sin(r), Math.cos(r), 0, 0))
+    }
+    // Flip matrix on x or y, at a given offset
+  , flip: function(a, o) {
+      return a == 'x' ?
+          this.scale(-1, 1, o, 0) :
+        a == 'y' ?
+          this.scale(1, -1, 0, o) :
+          this.scale(-1, -1, a, o != null ? o : a)
+    }
+    // Skew
+  , skew: function(x, y, cx, cy) {
+      // support uniformal skew
+      if (arguments.length == 1) {
+        y = x
+      } else if (arguments.length == 3) {
+        cy = cx
+        cx = y
+        y = x
+      }
+
+      // convert degrees to radians
+      x = SVG.utils.radians(x)
+      y = SVG.utils.radians(y)
+
+      return this.around(cx, cy, new SVG.Matrix(1, Math.tan(y), Math.tan(x), 1, 0, 0))
+    }
+    // SkewX
+  , skewX: function(x, cx, cy) {
+      return this.skew(x, 0, cx, cy)
+    }
+    // SkewY
+  , skewY: function(y, cx, cy) {
+      return this.skew(0, y, cx, cy)
+    }
+    // Transform around a center point
+  , around: function(cx, cy, matrix) {
+      return this
+        .multiply(new SVG.Matrix(1, 0, 0, 1, cx || 0, cy || 0))
+        .multiply(matrix)
+        .multiply(new SVG.Matrix(1, 0, 0, 1, -cx || 0, -cy || 0))
+    }
+    // Convert to native SVGMatrix
+  , native: function() {
+      // create new matrix
+      var matrix = SVG.parser.native.createSVGMatrix()
+
+      // update with current values
+      for (var i = abcdef.length - 1; i >= 0; i--)
+        matrix[abcdef[i]] = this[abcdef[i]]
+
+      return matrix
+    }
+    // Convert matrix to string
+  , toString: function() {
+      // Construct the matrix directly, avoid values that are too small
+      return 'matrix(' + float32String(this.a) + ',' + float32String(this.b)
+        + ',' + float32String(this.c) + ',' + float32String(this.d)
+        + ',' + float32String(this.e) + ',' + float32String(this.f)
+        + ')'
+    }
+  }
+
+  // Define parent
+, parent: SVG.Element
+
+  // Add parent method
+, construct: {
+    // Get current matrix
+    ctm: function() {
+      return new SVG.Matrix(this.node.getCTM())
+    },
+    // Get current screen matrix
+    screenCTM: function() {
+      /* https://bugzilla.mozilla.org/show_bug.cgi?id=1344537
+         This is needed because FF does not return the transformation matrix
+         for the inner coordinate system when getScreenCTM() is called on nested svgs.
+         However all other Browsers do that */
+      if(this instanceof SVG.Nested) {
+        var rect = this.rect(1,1)
+        var m = rect.node.getScreenCTM()
+        rect.remove()
+        return new SVG.Matrix(m)
+      }
+      return new SVG.Matrix(this.node.getScreenCTM())
+    }
+
+  }
+
+})
+
+SVG.Point = SVG.invent({
+  // Initialize
+  create: function(x,y) {
+    var i, source, base = {x:0, y:0}
+
+    // ensure source as object
+    source = Array.isArray(x) ?
+      {x:x[0], y:x[1]} :
+    typeof x === 'object' ?
+      {x:x.x, y:x.y} :
+    x != null ?
+      {x:x, y:(y != null ? y : x)} : base // If y has no value, then x is used has its value
+
+    // merge source
+    this.x = source.x
+    this.y = source.y
+  }
+
+  // Add methods
+, extend: {
+    // Clone point
+    clone: function() {
+      return new SVG.Point(this)
+    }
+    // Morph one point into another
+  , morph: function(x, y) {
+      // store new destination
+      this.destination = new SVG.Point(x, y)
+
+      return this
+    }
+    // Get morphed point at a given position
+  , at: function(pos) {
+      // make sure a destination is defined
+      if (!this.destination) return this
+
+      // calculate morphed matrix at a given position
+      var point = new SVG.Point({
+        x: this.x + (this.destination.x - this.x) * pos
+      , y: this.y + (this.destination.y - this.y) * pos
+      })
+
+      return point
+    }
+    // Convert to native SVGPoint
+  , native: function() {
+      // create new point
+      var point = SVG.parser.native.createSVGPoint()
+
+      // update with current values
+      point.x = this.x
+      point.y = this.y
+
+      return point
+    }
+    // transform point with matrix
+  , transform: function(matrix) {
+      return new SVG.Point(this.native().matrixTransform(matrix.native()))
+    }
+
+  }
+
+})
+
+SVG.extend(SVG.Element, {
+
+  // Get point
+  point: function(x, y) {
+    return new SVG.Point(x,y).transform(this.screenCTM().inverse());
+  }
+
+})
+
+SVG.extend(SVG.Element, {
+  // Set svg element attribute
+  attr: function(a, v, n) {
+    // act as full getter
+    if (a == null) {
+      // get an object of attributes
+      a = {}
+      v = this.node.attributes
+      for (n = v.length - 1; n >= 0; n--)
+        a[v[n].nodeName] = SVG.regex.isNumber.test(v[n].nodeValue) ? parseFloat(v[n].nodeValue) : v[n].nodeValue
+
+      return a
+
+    } else if (typeof a == 'object') {
+      // apply every attribute individually if an object is passed
+      for (v in a) this.attr(v, a[v])
+
+    } else if (v === null) {
+        // remove value
+        this.node.removeAttribute(a)
+
+    } else if (v == null) {
+      // act as a getter if the first and only argument is not an object
+      v = this.node.getAttribute(a)
+      return v == null ?
+        SVG.defaults.attrs[a] :
+      SVG.regex.isNumber.test(v) ?
+        parseFloat(v) : v
+
+    } else {
+      // BUG FIX: some browsers will render a stroke if a color is given even though stroke width is 0
+      if (a == 'stroke-width')
+        this.attr('stroke', parseFloat(v) > 0 ? this._stroke : null)
+      else if (a == 'stroke')
+        this._stroke = v
+
+      // convert image fill and stroke to patterns
+      if (a == 'fill' || a == 'stroke') {
+        if (SVG.regex.isImage.test(v))
+          v = this.doc().defs().image(v, 0, 0)
+
+        if (v instanceof SVG.Image)
+          v = this.doc().defs().pattern(0, 0, function() {
+            this.add(v)
+          })
+      }
+
+      // ensure correct numeric values (also accepts NaN and Infinity)
+      if (typeof v === 'number')
+        v = new SVG.Number(v)
+
+      // ensure full hex color
+      else if (SVG.Color.isColor(v))
+        v = new SVG.Color(v)
+
+      // parse array values
+      else if (Array.isArray(v))
+        v = new SVG.Array(v)
+
+      // if the passed attribute is leading...
+      if (a == 'leading') {
+        // ... call the leading method instead
+        if (this.leading)
+          this.leading(v)
+      } else {
+        // set given attribute on node
+        typeof n === 'string' ?
+          this.node.setAttributeNS(n, a, v.toString()) :
+          this.node.setAttribute(a, v.toString())
+      }
+
+      // rebuild if required
+      if (this.rebuild && (a == 'font-size' || a == 'x'))
+        this.rebuild(a, v)
+    }
+
+    return this
+  }
+})
+SVG.extend(SVG.Element, {
+  // Add transformations
+  transform: function(o, relative) {
+    // get target in case of the fx module, otherwise reference this
+    var target = this
+      , matrix, bbox
+
+    // act as a getter
+    if (typeof o !== 'object') {
+      // get current matrix
+      matrix = new SVG.Matrix(target).extract()
+
+      return typeof o === 'string' ? matrix[o] : matrix
+    }
+
+    // get current matrix
+    matrix = new SVG.Matrix(target)
+
+    // ensure relative flag
+    relative = !!relative || !!o.relative
+
+    // act on matrix
+    if (o.a != null) {
+      matrix = relative ?
+        // relative
+        matrix.multiply(new SVG.Matrix(o)) :
+        // absolute
+        new SVG.Matrix(o)
+
+    // act on rotation
+    } else if (o.rotation != null) {
+      // ensure centre point
+      ensureCentre(o, target)
+
+      // apply transformation
+      matrix = relative ?
+        // relative
+        matrix.rotate(o.rotation, o.cx, o.cy) :
+        // absolute
+        matrix.rotate(o.rotation - matrix.extract().rotation, o.cx, o.cy)
+
+    // act on scale
+    } else if (o.scale != null || o.scaleX != null || o.scaleY != null) {
+      // ensure centre point
+      ensureCentre(o, target)
+
+      // ensure scale values on both axes
+      o.scaleX = o.scale != null ? o.scale : o.scaleX != null ? o.scaleX : 1
+      o.scaleY = o.scale != null ? o.scale : o.scaleY != null ? o.scaleY : 1
+
+      if (!relative) {
+        // absolute; multiply inversed values
+        var e = matrix.extract()
+        o.scaleX = o.scaleX * 1 / e.scaleX
+        o.scaleY = o.scaleY * 1 / e.scaleY
+      }
+
+      matrix = matrix.scale(o.scaleX, o.scaleY, o.cx, o.cy)
+
+    // act on skew
+    } else if (o.skew != null || o.skewX != null || o.skewY != null) {
+      // ensure centre point
+      ensureCentre(o, target)
+
+      // ensure skew values on both axes
+      o.skewX = o.skew != null ? o.skew : o.skewX != null ? o.skewX : 0
+      o.skewY = o.skew != null ? o.skew : o.skewY != null ? o.skewY : 0
+
+      if (!relative) {
+        // absolute; reset skew values
+        var e = matrix.extract()
+        matrix = matrix.multiply(new SVG.Matrix().skew(e.skewX, e.skewY, o.cx, o.cy).inverse())
+      }
+
+      matrix = matrix.skew(o.skewX, o.skewY, o.cx, o.cy)
+
+    // act on flip
+    } else if (o.flip) {
+      if(o.flip == 'x' || o.flip == 'y') {
+        o.offset = o.offset == null ? target.bbox()['c' + o.flip] : o.offset
+      } else {
+        if(o.offset == null) {
+          bbox = target.bbox()
+          o.flip = bbox.cx
+          o.offset = bbox.cy
+        } else {
+          o.flip = o.offset
+        }
+      }
+
+      matrix = new SVG.Matrix().flip(o.flip, o.offset)
+
+    // act on translate
+    } else if (o.x != null || o.y != null) {
+      if (relative) {
+        // relative
+        matrix = matrix.translate(o.x, o.y)
+      } else {
+        // absolute
+        if (o.x != null) matrix.e = o.x
+        if (o.y != null) matrix.f = o.y
+      }
+    }
+
+    return this.attr('transform', matrix)
+  }
+})
+
+SVG.extend(SVG.FX, {
+  transform: function(o, relative) {
+    // get target in case of the fx module, otherwise reference this
+    var target = this.target()
+      , matrix, bbox
+
+    // act as a getter
+    if (typeof o !== 'object') {
+      // get current matrix
+      matrix = new SVG.Matrix(target).extract()
+
+      return typeof o === 'string' ? matrix[o] : matrix
+    }
+
+    // ensure relative flag
+    relative = !!relative || !!o.relative
+
+    // act on matrix
+    if (o.a != null) {
+      matrix = new SVG.Matrix(o)
+
+    // act on rotation
+    } else if (o.rotation != null) {
+      // ensure centre point
+      ensureCentre(o, target)
+
+      // apply transformation
+      matrix = new SVG.Rotate(o.rotation, o.cx, o.cy)
+
+    // act on scale
+    } else if (o.scale != null || o.scaleX != null || o.scaleY != null) {
+      // ensure centre point
+      ensureCentre(o, target)
+
+      // ensure scale values on both axes
+      o.scaleX = o.scale != null ? o.scale : o.scaleX != null ? o.scaleX : 1
+      o.scaleY = o.scale != null ? o.scale : o.scaleY != null ? o.scaleY : 1
+
+      matrix = new SVG.Scale(o.scaleX, o.scaleY, o.cx, o.cy)
+
+    // act on skew
+    } else if (o.skewX != null || o.skewY != null) {
+      // ensure centre point
+      ensureCentre(o, target)
+
+      // ensure skew values on both axes
+      o.skewX = o.skewX != null ? o.skewX : 0
+      o.skewY = o.skewY != null ? o.skewY : 0
+
+      matrix = new SVG.Skew(o.skewX, o.skewY, o.cx, o.cy)
+
+    // act on flip
+    } else if (o.flip) {
+      if(o.flip == 'x' || o.flip == 'y') {
+        o.offset = o.offset == null ? target.bbox()['c' + o.flip] : o.offset
+      } else {
+        if(o.offset == null) {
+          bbox = target.bbox()
+          o.flip = bbox.cx
+          o.offset = bbox.cy
+        } else {
+          o.flip = o.offset
+        }
+      }
+
+      matrix = new SVG.Matrix().flip(o.flip, o.offset)
+
+    // act on translate
+    } else if (o.x != null || o.y != null) {
+      matrix = new SVG.Translate(o.x, o.y)
+    }
+
+    if(!matrix) return this
+
+    matrix.relative = relative
+
+    this.last().transforms.push(matrix)
+
+    return this._callStart()
+  }
+})
+
+SVG.extend(SVG.Element, {
+  // Reset all transformations
+  untransform: function() {
+    return this.attr('transform', null)
+  },
+  // merge the whole transformation chain into one matrix and returns it
+  matrixify: function() {
+
+    var matrix = (this.attr('transform') || '')
+      // split transformations
+      .split(SVG.regex.transforms).slice(0,-1).map(function(str){
+        // generate key => value pairs
+        var kv = str.trim().split('(')
+        return [kv[0], kv[1].split(SVG.regex.delimiter).map(function(str){ return parseFloat(str) })]
+      })
+      // merge every transformation into one matrix
+      .reduce(function(matrix, transform){
+
+        if(transform[0] == 'matrix') return matrix.multiply(arrayToMatrix(transform[1]))
+        return matrix[transform[0]].apply(matrix, transform[1])
+
+      }, new SVG.Matrix())
+
+    return matrix
+  },
+  // add an element to another parent without changing the visual representation on the screen
+  toParent: function(parent) {
+    if(this == parent) return this
+    var ctm = this.screenCTM()
+    var pCtm = parent.screenCTM().inverse()
+
+    this.addTo(parent).untransform().transform(pCtm.multiply(ctm))
+
+    return this
+  },
+  // same as above with parent equals root-svg
+  toDoc: function() {
+    return this.toParent(this.doc())
+  }
+
+})
+
+SVG.Transformation = SVG.invent({
+
+  create: function(source, inversed){
+
+    if(arguments.length > 1 && typeof inversed != 'boolean'){
+      return this.constructor.call(this, [].slice.call(arguments))
+    }
+
+    if(Array.isArray(source)){
+      for(var i = 0, len = this.arguments.length; i < len; ++i){
+        this[this.arguments[i]] = source[i]
+      }
+    } else if(typeof source == 'object'){
+      for(var i = 0, len = this.arguments.length; i < len; ++i){
+        this[this.arguments[i]] = source[this.arguments[i]]
+      }
+    }
+
+    this.inversed = false
+
+    if(inversed === true){
+      this.inversed = true
+    }
+
+  }
+
+, extend: {
+
+    arguments: []
+  , method: ''
+
+  , at: function(pos){
+
+      var params = []
+
+      for(var i = 0, len = this.arguments.length; i < len; ++i){
+        params.push(this[this.arguments[i]])
+      }
+
+      var m = this._undo || new SVG.Matrix()
+
+      m = new SVG.Matrix().morph(SVG.Matrix.prototype[this.method].apply(m, params)).at(pos)
+
+      return this.inversed ? m.inverse() : m
+
+    }
+
+  , undo: function(o){
+      for(var i = 0, len = this.arguments.length; i < len; ++i){
+        o[this.arguments[i]] = typeof this[this.arguments[i]] == 'undefined' ? 0 : o[this.arguments[i]]
+      }
+
+      // The method SVG.Matrix.extract which was used before calling this
+      // method to obtain a value for the parameter o doesn't return a cx and
+      // a cy so we use the ones that were provided to this object at its creation
+      o.cx = this.cx
+      o.cy = this.cy
+
+      this._undo = new SVG[capitalize(this.method)](o, true).at(1)
+
+      return this
+    }
+
+  }
+
+})
+
+SVG.Translate = SVG.invent({
+
+  parent: SVG.Matrix
+, inherit: SVG.Transformation
+
+, create: function(source, inversed){
+    this.constructor.apply(this, [].slice.call(arguments))
+  }
+
+, extend: {
+    arguments: ['transformedX', 'transformedY']
+  , method: 'translate'
+  }
+
+})
+
+SVG.Rotate = SVG.invent({
+
+  parent: SVG.Matrix
+, inherit: SVG.Transformation
+
+, create: function(source, inversed){
+    this.constructor.apply(this, [].slice.call(arguments))
+  }
+
+, extend: {
+    arguments: ['rotation', 'cx', 'cy']
+  , method: 'rotate'
+  , at: function(pos){
+      var m = new SVG.Matrix().rotate(new SVG.Number().morph(this.rotation - (this._undo ? this._undo.rotation : 0)).at(pos), this.cx, this.cy)
+      return this.inversed ? m.inverse() : m
+    }
+  , undo: function(o){
+      this._undo = o
+      return this
+    }
+  }
+
+})
+
+SVG.Scale = SVG.invent({
+
+  parent: SVG.Matrix
+, inherit: SVG.Transformation
+
+, create: function(source, inversed){
+    this.constructor.apply(this, [].slice.call(arguments))
+  }
+
+, extend: {
+    arguments: ['scaleX', 'scaleY', 'cx', 'cy']
+  , method: 'scale'
+  }
+
+})
+
+SVG.Skew = SVG.invent({
+
+  parent: SVG.Matrix
+, inherit: SVG.Transformation
+
+, create: function(source, inversed){
+    this.constructor.apply(this, [].slice.call(arguments))
+  }
+
+, extend: {
+    arguments: ['skewX', 'skewY', 'cx', 'cy']
+  , method: 'skew'
+  }
+
+})
+
+SVG.extend(SVG.Element, {
+  // Dynamic style generator
+  style: function(s, v) {
+    if (arguments.length == 0) {
+      // get full style
+      return this.node.style.cssText || ''
+
+    } else if (arguments.length < 2) {
+      // apply every style individually if an object is passed
+      if (typeof s == 'object') {
+        for (v in s) this.style(v, s[v])
+
+      } else if (SVG.regex.isCss.test(s)) {
+        // parse css string
+        s = s.split(/\s*;\s*/)
+          // filter out suffix ; and stuff like ;;
+          .filter(function(e) { return !!e })
+          .map(function(e){ return e.split(/\s*:\s*/) })
+
+        // apply every definition individually
+        while (v = s.pop()) {
+          this.style(v[0], v[1])
+        }
+      } else {
+        // act as a getter if the first and only argument is not an object
+        return this.node.style[camelCase(s)]
+      }
+
+    } else {
+      this.node.style[camelCase(s)] = v === null || SVG.regex.isBlank.test(v) ? '' : v
+    }
+
+    return this
+  }
+})
+SVG.Parent = SVG.invent({
+  // Initialize node
+  create: function(element) {
+    this.constructor.call(this, element)
+  }
+
+  // Inherit from
+, inherit: SVG.Element
+
+  // Add class methods
+, extend: {
+    // Returns all child elements
+    children: function() {
+      return SVG.utils.map(SVG.utils.filterSVGElements(this.node.childNodes), function(node) {
+        return SVG.adopt(node)
+      })
+    }
+    // Add given element at a position
+  , add: function(element, i) {
+      if (i == null)
+        this.node.appendChild(element.node)
+      else if (element.node != this.node.childNodes[i])
+        this.node.insertBefore(element.node, this.node.childNodes[i])
+
+      return this
+    }
+    // Basically does the same as `add()` but returns the added element instead
+  , put: function(element, i) {
+      this.add(element, i)
+      return element
+    }
+    // Checks if the given element is a child
+  , has: function(element) {
+      return this.index(element) >= 0
+    }
+    // Gets index of given element
+  , index: function(element) {
+      return [].slice.call(this.node.childNodes).indexOf(element.node)
+    }
+    // Get a element at the given index
+  , get: function(i) {
+      return SVG.adopt(this.node.childNodes[i])
+    }
+    // Get first child
+  , first: function() {
+      return this.get(0)
+    }
+    // Get the last child
+  , last: function() {
+      return this.get(this.node.childNodes.length - 1)
+    }
+    // Iterates over all children and invokes a given block
+  , each: function(block, deep) {
+      var i, il
+        , children = this.children()
+
+      for (i = 0, il = children.length; i < il; i++) {
+        if (children[i] instanceof SVG.Element)
+          block.apply(children[i], [i, children])
+
+        if (deep && (children[i] instanceof SVG.Container))
+          children[i].each(block, deep)
+      }
+
+      return this
+    }
+    // Remove a given child
+  , removeElement: function(element) {
+      this.node.removeChild(element.node)
+
+      return this
+    }
+    // Remove all elements in this container
+  , clear: function() {
+      // remove children
+      while(this.node.hasChildNodes())
+        this.node.removeChild(this.node.lastChild)
+
+      // remove defs reference
+      delete this._defs
+
+      return this
+    }
+  , // Get defs
+    defs: function() {
+      return this.doc().defs()
+    }
+  }
+
+})
+
+SVG.extend(SVG.Parent, {
+
+  ungroup: function(parent, depth) {
+    if(depth === 0 || this instanceof SVG.Defs || this.node == SVG.parser.draw) return this
+
+    parent = parent || (this instanceof SVG.Doc ? this : this.parent(SVG.Parent))
+    depth = depth || Infinity
+
+    this.each(function(){
+      if(this instanceof SVG.Defs) return this
+      if(this instanceof SVG.Parent) return this.ungroup(parent, depth-1)
+      return this.toParent(parent)
+    })
+
+    this.node.firstChild || this.remove()
+
+    return this
+  },
+
+  flatten: function(parent, depth) {
+    return this.ungroup(parent, depth)
+  }
+
+})
+SVG.Container = SVG.invent({
+  // Initialize node
+  create: function(element) {
+    this.constructor.call(this, element)
+  }
+
+  // Inherit from
+, inherit: SVG.Parent
+
+})
+
+SVG.ViewBox = SVG.invent({
+
+  create: function(source) {
+    var i, base = [0, 0, 0, 0]
+
+    var x, y, width, height, box, view, we, he
+      , wm   = 1 // width multiplier
+      , hm   = 1 // height multiplier
+      , reg  = /[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?/gi
+
+    if(source instanceof SVG.Element){
+
+      we = source
+      he = source
+      view = (source.attr('viewBox') || '').match(reg)
+      box = source.bbox
+
+      // get dimensions of current node
+      width  = new SVG.Number(source.width())
+      height = new SVG.Number(source.height())
+
+      // find nearest non-percentual dimensions
+      while (width.unit == '%') {
+        wm *= width.value
+        width = new SVG.Number(we instanceof SVG.Doc ? we.parent().offsetWidth : we.parent().width())
+        we = we.parent()
+      }
+      while (height.unit == '%') {
+        hm *= height.value
+        height = new SVG.Number(he instanceof SVG.Doc ? he.parent().offsetHeight : he.parent().height())
+        he = he.parent()
+      }
+
+      // ensure defaults
+      this.x      = 0
+      this.y      = 0
+      this.width  = width  * wm
+      this.height = height * hm
+      this.zoom   = 1
+
+      if (view) {
+        // get width and height from viewbox
+        x      = parseFloat(view[0])
+        y      = parseFloat(view[1])
+        width  = parseFloat(view[2])
+        height = parseFloat(view[3])
+
+        // calculate zoom accoring to viewbox
+        this.zoom = ((this.width / this.height) > (width / height)) ?
+          this.height / height :
+          this.width  / width
+
+        // calculate real pixel dimensions on parent SVG.Doc element
+        this.x      = x
+        this.y      = y
+        this.width  = width
+        this.height = height
+
+      }
+
+    }else{
+
+      // ensure source as object
+      source = typeof source === 'string' ?
+        source.match(reg).map(function(el){ return parseFloat(el) }) :
+      Array.isArray(source) ?
+        source :
+      typeof source == 'object' ?
+        [source.x, source.y, source.width, source.height] :
+      arguments.length == 4 ?
+        [].slice.call(arguments) :
+        base
+
+      this.x = source[0]
+      this.y = source[1]
+      this.width = source[2]
+      this.height = source[3]
+    }
+
+
+  }
+
+, extend: {
+
+    toString: function() {
+      return this.x + ' ' + this.y + ' ' + this.width + ' ' + this.height
+    }
+  , morph: function(x, y, width, height){
+      this.destination = new SVG.ViewBox(x, y, width, height)
+      return this
+    }
+
+  , at: function(pos) {
+
+      if(!this.destination) return this
+
+      return new SVG.ViewBox([
+          this.x + (this.destination.x - this.x) * pos
+        , this.y + (this.destination.y - this.y) * pos
+        , this.width + (this.destination.width - this.width) * pos
+        , this.height + (this.destination.height - this.height) * pos
+      ])
+
+    }
+
+  }
+
+  // Define parent
+, parent: SVG.Container
+
+  // Add parent method
+, construct: {
+
+    // get/set viewbox
+    viewbox: function(x, y, width, height) {
+      if (arguments.length == 0)
+        // act as a getter if there are no arguments
+        return new SVG.ViewBox(this)
+
+      // otherwise act as a setter
+      return this.attr('viewBox', new SVG.ViewBox(x, y, width, height))
+    }
+
+  }
+
+})
+// Add events to elements
+
+;[ 'click',
+  'dblclick',
+  'mousedown',
+  'mouseup',
+  'mouseover',
+  'mouseout',
+  'mousemove',
+  'mouseenter',
+  'mouseleave',
+  'touchstart',
+  'touchmove',
+  'touchleave',
+  'touchend',
+  'touchcancel' ].forEach(function (event) {
+    // add event to SVG.Element
+    SVG.Element.prototype[event] = function (f) {
+      // bind event to element rather than element node
+      if (f == null) {
+        SVG.off(this, event)
+      } else {
+        SVG.on(this, event, f)
+      }
+      return this
+    }
+  })
+
+SVG.listenerId = 0
+
+// Add event binder in the SVG namespace
+SVG.on = function (node, events, listener, binding, options) {
+  var l = listener.bind(binding || node)
+  var n = node instanceof SVG.Element ? node.node : node
+
+  // ensure instance object for nodes which are not adopted
+  n.instance = n.instance || {_events: {}}
+
+  var bag = n.instance._events
+
+  // add id to listener
+  if (!listener._svgjsListenerId) { listener._svgjsListenerId = ++SVG.listenerId }
+
+  events.split(SVG.regex.delimiter).forEach(function (event) {
+    var ev = event.split('.')[0]
+    var ns = event.split('.')[1] || '*'
+
+    // ensure valid object
+    bag[ev] = bag[ev] || {}
+    bag[ev][ns] = bag[ev][ns] || {}
+
+    // reference listener
+    bag[ev][ns][listener._svgjsListenerId] = l
+
+    // add listener
+    n.addEventListener(ev, l, options || false)
+  })
+}
+
+// Add event unbinder in the SVG namespace
+SVG.off = function (node, events, listener, options) {
+  var n = node instanceof SVG.Element ? node.node : node
+  if (!n.instance) return
+
+  // listener can be a function or a number
+  if (typeof listener === 'function') {
+    listener = listener._svgjsListenerId
+    if (!listener) return
+  }
+
+  var bag = n.instance._events
+
+  ;(events || '').split(SVG.regex.delimiter).forEach(function (event) {
+    var ev = event && event.split('.')[0]
+    var ns = event && event.split('.')[1]
+    var namespace, l
+
+    if (listener) {
+      // remove listener reference
+      if (bag[ev] && bag[ev][ns || '*']) {
+        // removeListener
+        n.removeEventListener(ev, bag[ev][ns || '*'][listener], options || false)
+
+        delete bag[ev][ns || '*'][listener]
+      }
+    } else if (ev && ns) {
+      // remove all listeners for a namespaced event
+      if (bag[ev] && bag[ev][ns]) {
+        for (l in bag[ev][ns]) { SVG.off(n, [ev, ns].join('.'), l) }
+
+        delete bag[ev][ns]
+      }
+    } else if (ns) {
+      // remove all listeners for a specific namespace
+      for (event in bag) {
+        for (namespace in bag[event]) {
+          if (ns === namespace) { SVG.off(n, [event, ns].join('.')) }
+        }
+      }
+    } else if (ev) {
+      // remove all listeners for the event
+      if (bag[ev]) {
+        for (namespace in bag[ev]) { SVG.off(n, [ev, namespace].join('.')) }
+
+        delete bag[ev]
+      }
+    } else {
+      // remove all listeners on a given node
+      for (event in bag) { SVG.off(n, event) }
+
+      n.instance._events = {}
+    }
+  })
+}
+
+SVG.extend(SVG.Element, {
+  // Bind given event to listener
+  on: function (event, listener, binding, options) {
+    SVG.on(this, event, listener, binding, options)
+    return this
+  },
+  // Unbind event from listener
+  off: function (event, listener) {
+    SVG.off(this.node, event, listener)
+    return this
+  },
+  fire: function (event, data) {
+    // Dispatch event
+    if (event instanceof window.Event) {
+      this.node.dispatchEvent(event)
+    } else {
+      this.node.dispatchEvent(event = new window.CustomEvent(event, {detail: data, cancelable: true}))
+    }
+    this._event = event
+    return this
+  },
+  event: function() {
+    return this._event
+  }
+})
+
+
+SVG.Defs = SVG.invent({
+  // Initialize node
+  create: 'defs'
+
+  // Inherit from
+, inherit: SVG.Container
+
+})
+SVG.G = SVG.invent({
+  // Initialize node
+  create: 'g'
+
+  // Inherit from
+, inherit: SVG.Container
+
+  // Add class methods
+, extend: {
+    // Move over x-axis
+    x: function(x) {
+      return x == null ? this.transform('x') : this.transform({ x: x - this.x() }, true)
+    }
+    // Move over y-axis
+  , y: function(y) {
+      return y == null ? this.transform('y') : this.transform({ y: y - this.y() }, true)
+    }
+    // Move by center over x-axis
+  , cx: function(x) {
+      return x == null ? this.gbox().cx : this.x(x - this.gbox().width / 2)
+    }
+    // Move by center over y-axis
+  , cy: function(y) {
+      return y == null ? this.gbox().cy : this.y(y - this.gbox().height / 2)
+    }
+  , gbox: function() {
+
+      var bbox  = this.bbox()
+        , trans = this.transform()
+
+      bbox.x  += trans.x
+      bbox.x2 += trans.x
+      bbox.cx += trans.x
+
+      bbox.y  += trans.y
+      bbox.y2 += trans.y
+      bbox.cy += trans.y
+
+      return bbox
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // Create a group element
+    group: function() {
+      return this.put(new SVG.G)
+    }
+  }
+})
+
+SVG.Doc = SVG.invent({
+  // Initialize node
+  create: function(element) {
+    if (element) {
+      // ensure the presence of a dom element
+      element = typeof element == 'string' ?
+        document.getElementById(element) :
+        element
+
+      // If the target is an svg element, use that element as the main wrapper.
+      // This allows svg.js to work with svg documents as well.
+      if (element.nodeName == 'svg') {
+        this.constructor.call(this, element)
+      } else {
+        this.constructor.call(this, SVG.create('svg'))
+        element.appendChild(this.node)
+        this.size('100%', '100%')
+      }
+
+      // set svg element attributes and ensure defs node
+      this.namespace().defs()
+    }
+  }
+
+  // Inherit from
+, inherit: SVG.Container
+
+  // Add class methods
+, extend: {
+    // Add namespaces
+    namespace: function() {
+      return this
+        .attr({ xmlns: SVG.ns, version: '1.1' })
+        .attr('xmlns:xlink', SVG.xlink, SVG.xmlns)
+        .attr('xmlns:svgjs', SVG.svgjs, SVG.xmlns)
+    }
+    // Creates and returns defs element
+  , defs: function() {
+      if (!this._defs) {
+        var defs
+
+        // Find or create a defs element in this instance
+        if (defs = this.node.getElementsByTagName('defs')[0])
+          this._defs = SVG.adopt(defs)
+        else
+          this._defs = new SVG.Defs
+
+        // Make sure the defs node is at the end of the stack
+        this.node.appendChild(this._defs.node)
+      }
+
+      return this._defs
+    }
+    // custom parent method
+  , parent: function() {
+      if(!this.node.parentNode || this.node.parentNode.nodeName == '#document' || this.node.parentNode.nodeName == '#document-fragment') return null
+      return this.node.parentNode
+    }
+    // Fix for possible sub-pixel offset. See:
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=608812
+  , spof: function() {
+      var pos = this.node.getScreenCTM()
+
+      if (pos)
+        this
+          .style('left', (-pos.e % 1) + 'px')
+          .style('top',  (-pos.f % 1) + 'px')
+
+      return this
+    }
+
+      // Removes the doc from the DOM
+  , remove: function() {
+      if(this.parent()) {
+        this.parent().removeChild(this.node)
+      }
+
+      return this
+    }
+  , clear: function() {
+      // remove children
+      while(this.node.hasChildNodes())
+        this.node.removeChild(this.node.lastChild)
+
+      // remove defs reference
+      delete this._defs
+
+      // add back parser
+      if(!SVG.parser.draw.parentNode)
+        this.node.appendChild(SVG.parser.draw)
+
+      return this
+    }
+  , clone: function (parent) {
+      // write dom data to the dom so the clone can pickup the data
+      this.writeDataToDom()
+
+      // get reference to node
+      var node = this.node
+
+      // clone element and assign new id
+      var clone = assignNewId(node.cloneNode(true))
+
+      // insert the clone in the given parent or after myself
+      if(parent) {
+        (parent.node || parent).appendChild(clone.node)
+      } else {
+        node.parentNode.insertBefore(clone.node, node.nextSibling)
+      }
+
+      return clone
+    }
+  }
+
+})
+
+// ### This module adds backward / forward functionality to elements.
+
+//
+SVG.extend(SVG.Element, {
+  // Get all siblings, including myself
+  siblings: function() {
+    return this.parent().children()
+  }
+  // Get the curent position siblings
+, position: function() {
+    return this.parent().index(this)
+  }
+  // Get the next element (will return null if there is none)
+, next: function() {
+    return this.siblings()[this.position() + 1]
+  }
+  // Get the next element (will return null if there is none)
+, previous: function() {
+    return this.siblings()[this.position() - 1]
+  }
+  // Send given element one step forward
+, forward: function() {
+    var i = this.position() + 1
+      , p = this.parent()
+
+    // move node one step forward
+    p.removeElement(this).add(this, i)
+
+    // make sure defs node is always at the top
+    if (p instanceof SVG.Doc)
+      p.node.appendChild(p.defs().node)
+
+    return this
+  }
+  // Send given element one step backward
+, backward: function() {
+    var i = this.position()
+
+    if (i > 0)
+      this.parent().removeElement(this).add(this, i - 1)
+
+    return this
+  }
+  // Send given element all the way to the front
+, front: function() {
+    var p = this.parent()
+
+    // Move node forward
+    p.node.appendChild(this.node)
+
+    // Make sure defs node is always at the top
+    if (p instanceof SVG.Doc)
+      p.node.appendChild(p.defs().node)
+
+    return this
+  }
+  // Send given element all the way to the back
+, back: function() {
+    if (this.position() > 0)
+      this.parent().removeElement(this).add(this, 0)
+
+    return this
+  }
+  // Inserts a given element before the targeted element
+, before: function(element) {
+    element.remove()
+
+    var i = this.position()
+
+    this.parent().add(element, i)
+
+    return this
+  }
+  // Insters a given element after the targeted element
+, after: function(element) {
+    element.remove()
+
+    var i = this.position()
+
+    this.parent().add(element, i + 1)
+
+    return this
+  }
+
+})
+SVG.Mask = SVG.invent({
+  // Initialize node
+  create: function() {
+    this.constructor.call(this, SVG.create('mask'))
+
+    // keep references to masked elements
+    this.targets = []
+  }
+
+  // Inherit from
+, inherit: SVG.Container
+
+  // Add class methods
+, extend: {
+    // Unmask all masked elements and remove itself
+    remove: function() {
+      // unmask all targets
+      for (var i = this.targets.length - 1; i >= 0; i--)
+        if (this.targets[i])
+          this.targets[i].unmask()
+      this.targets = []
+
+      // remove mask from parent
+      SVG.Element.prototype.remove.call(this)
+
+      return this
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // Create masking element
+    mask: function() {
+      return this.defs().put(new SVG.Mask)
+    }
+  }
+})
+
+
+SVG.extend(SVG.Element, {
+  // Distribute mask to svg element
+  maskWith: function(element) {
+    // use given mask or create a new one
+    this.masker = element instanceof SVG.Mask ? element : this.parent().mask().add(element)
+
+    // store reverence on self in mask
+    this.masker.targets.push(this)
+
+    // apply mask
+    return this.attr('mask', 'url("#' + this.masker.attr('id') + '")')
+  }
+  // Unmask element
+, unmask: function() {
+    delete this.masker
+    return this.attr('mask', null)
+  }
+
+})
+
+SVG.ClipPath = SVG.invent({
+  // Initialize node
+  create: function() {
+    this.constructor.call(this, SVG.create('clipPath'))
+
+    // keep references to clipped elements
+    this.targets = []
+  }
+
+  // Inherit from
+, inherit: SVG.Container
+
+  // Add class methods
+, extend: {
+    // Unclip all clipped elements and remove itself
+    remove: function() {
+      // unclip all targets
+      for (var i = this.targets.length - 1; i >= 0; i--)
+        if (this.targets[i])
+          this.targets[i].unclip()
+      this.targets = []
+
+      // remove clipPath from parent
+      this.parent().removeElement(this)
+
+      return this
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // Create clipping element
+    clip: function() {
+      return this.defs().put(new SVG.ClipPath)
+    }
+  }
+})
+
+//
+SVG.extend(SVG.Element, {
+  // Distribute clipPath to svg element
+  clipWith: function(element) {
+    // use given clip or create a new one
+    this.clipper = element instanceof SVG.ClipPath ? element : this.parent().clip().add(element)
+
+    // store reverence on self in mask
+    this.clipper.targets.push(this)
+
+    // apply mask
+    return this.attr('clip-path', 'url("#' + this.clipper.attr('id') + '")')
+  }
+  // Unclip element
+, unclip: function() {
+    delete this.clipper
+    return this.attr('clip-path', null)
+  }
+
+})
+SVG.Gradient = SVG.invent({
+  // Initialize node
+  create: function(type) {
+    this.constructor.call(this, SVG.create(type + 'Gradient'))
+
+    // store type
+    this.type = type
+  }
+
+  // Inherit from
+, inherit: SVG.Container
+
+  // Add class methods
+, extend: {
+    // Add a color stop
+    at: function(offset, color, opacity) {
+      return this.put(new SVG.Stop).update(offset, color, opacity)
+    }
+    // Update gradient
+  , update: function(block) {
+      // remove all stops
+      this.clear()
+
+      // invoke passed block
+      if (typeof block == 'function')
+        block.call(this, this)
+
+      return this
+    }
+    // Return the fill id
+  , fill: function() {
+      return 'url(#' + this.id() + ')'
+    }
+    // Alias string convertion to fill
+  , toString: function() {
+      return this.fill()
+    }
+    // custom attr to handle transform
+  , attr: function(a, b, c) {
+      if(a == 'transform') a = 'gradientTransform'
+      return SVG.Container.prototype.attr.call(this, a, b, c)
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // Create gradient element in defs
+    gradient: function(type, block) {
+      return this.defs().gradient(type, block)
+    }
+  }
+})
+
+// Add animatable methods to both gradient and fx module
+SVG.extend(SVG.Gradient, SVG.FX, {
+  // From position
+  from: function(x, y) {
+    return (this._target || this).type == 'radial' ?
+      this.attr({ fx: new SVG.Number(x), fy: new SVG.Number(y) }) :
+      this.attr({ x1: new SVG.Number(x), y1: new SVG.Number(y) })
+  }
+  // To position
+, to: function(x, y) {
+    return (this._target || this).type == 'radial' ?
+      this.attr({ cx: new SVG.Number(x), cy: new SVG.Number(y) }) :
+      this.attr({ x2: new SVG.Number(x), y2: new SVG.Number(y) })
+  }
+})
+
+// Base gradient generation
+SVG.extend(SVG.Defs, {
+  // define gradient
+  gradient: function(type, block) {
+    return this.put(new SVG.Gradient(type)).update(block)
+  }
+
+})
+
+SVG.Stop = SVG.invent({
+  // Initialize node
+  create: 'stop'
+
+  // Inherit from
+, inherit: SVG.Element
+
+  // Add class methods
+, extend: {
+    // add color stops
+    update: function(o) {
+      if (typeof o == 'number' || o instanceof SVG.Number) {
+        o = {
+          offset:  arguments[0]
+        , color:   arguments[1]
+        , opacity: arguments[2]
+        }
+      }
+
+      // set attributes
+      if (o.opacity != null) this.attr('stop-opacity', o.opacity)
+      if (o.color   != null) this.attr('stop-color', o.color)
+      if (o.offset  != null) this.attr('offset', new SVG.Number(o.offset))
+
+      return this
+    }
+  }
+
+})
+
+SVG.Pattern = SVG.invent({
+  // Initialize node
+  create: 'pattern'
+
+  // Inherit from
+, inherit: SVG.Container
+
+  // Add class methods
+, extend: {
+    // Return the fill id
+    fill: function() {
+      return 'url(#' + this.id() + ')'
+    }
+    // Update pattern by rebuilding
+  , update: function(block) {
+      // remove content
+      this.clear()
+
+      // invoke passed block
+      if (typeof block == 'function')
+        block.call(this, this)
+
+      return this
+    }
+    // Alias string convertion to fill
+  , toString: function() {
+      return this.fill()
+    }
+    // custom attr to handle transform
+  , attr: function(a, b, c) {
+      if(a == 'transform') a = 'patternTransform'
+      return SVG.Container.prototype.attr.call(this, a, b, c)
+    }
+
+  }
+
+  // Add parent method
+, construct: {
+    // Create pattern element in defs
+    pattern: function(width, height, block) {
+      return this.defs().pattern(width, height, block)
+    }
+  }
+})
+
+SVG.extend(SVG.Defs, {
+  // Define gradient
+  pattern: function(width, height, block) {
+    return this.put(new SVG.Pattern).update(block).attr({
+      x:            0
+    , y:            0
+    , width:        width
+    , height:       height
+    , patternUnits: 'userSpaceOnUse'
+    })
+  }
+
+})
+SVG.Shape = SVG.invent({
+  // Initialize node
+  create: function(element) {
+    this.constructor.call(this, element)
+  }
+
+  // Inherit from
+, inherit: SVG.Element
+
+})
+
+SVG.Bare = SVG.invent({
+  // Initialize
+  create: function(element, inherit) {
+    // construct element
+    this.constructor.call(this, SVG.create(element))
+
+    // inherit custom methods
+    if (inherit)
+      for (var method in inherit.prototype)
+        if (typeof inherit.prototype[method] === 'function')
+          this[method] = inherit.prototype[method]
+  }
+
+  // Inherit from
+, inherit: SVG.Element
+
+  // Add methods
+, extend: {
+    // Insert some plain text
+    words: function(text) {
+      // remove contents
+      while (this.node.hasChildNodes())
+        this.node.removeChild(this.node.lastChild)
+
+      // create text node
+      this.node.appendChild(document.createTextNode(text))
+
+      return this
+    }
+  }
+})
+
+
+SVG.extend(SVG.Parent, {
+  // Create an element that is not described by SVG.js
+  element: function(element, inherit) {
+    return this.put(new SVG.Bare(element, inherit))
+  }
+})
+
+SVG.Symbol = SVG.invent({
+  // Initialize node
+  create: 'symbol'
+
+  // Inherit from
+, inherit: SVG.Container
+
+, construct: {
+    // create symbol
+    symbol: function() {
+      return this.put(new SVG.Symbol)
+    }
+  }
+})
+
+SVG.Use = SVG.invent({
+  // Initialize node
+  create: 'use'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add class methods
+, extend: {
+    // Use element as a reference
+    element: function(element, file) {
+      // Set lined element
+      return this.attr('href', (file || '') + '#' + element, SVG.xlink)
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // Create a use element
+    use: function(element, file) {
+      return this.put(new SVG.Use).element(element, file)
+    }
+  }
+})
+SVG.Rect = SVG.invent({
+  // Initialize node
+  create: 'rect'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add parent method
+, construct: {
+    // Create a rect element
+    rect: function(width, height) {
+      return this.put(new SVG.Rect()).size(width, height)
+    }
+  }
+})
+SVG.Circle = SVG.invent({
+  // Initialize node
+  create: 'circle'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add parent method
+, construct: {
+    // Create circle element, based on ellipse
+    circle: function(size) {
+      return this.put(new SVG.Circle).rx(new SVG.Number(size).divide(2)).move(0, 0)
+    }
+  }
+})
+
+SVG.extend(SVG.Circle, SVG.FX, {
+  // Radius x value
+  rx: function(rx) {
+    return this.attr('r', rx)
+  }
+  // Alias radius x value
+, ry: function(ry) {
+    return this.rx(ry)
+  }
+})
+
+SVG.Ellipse = SVG.invent({
+  // Initialize node
+  create: 'ellipse'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add parent method
+, construct: {
+    // Create an ellipse
+    ellipse: function(width, height) {
+      return this.put(new SVG.Ellipse).size(width, height).move(0, 0)
+    }
+  }
+})
+
+SVG.extend(SVG.Ellipse, SVG.Rect, SVG.FX, {
+  // Radius x value
+  rx: function(rx) {
+    return this.attr('rx', rx)
+  }
+  // Radius y value
+, ry: function(ry) {
+    return this.attr('ry', ry)
+  }
+})
+
+// Add common method
+SVG.extend(SVG.Circle, SVG.Ellipse, {
+    // Move over x-axis
+    x: function(x) {
+      return x == null ? this.cx() - this.rx() : this.cx(x + this.rx())
+    }
+    // Move over y-axis
+  , y: function(y) {
+      return y == null ? this.cy() - this.ry() : this.cy(y + this.ry())
+    }
+    // Move by center over x-axis
+  , cx: function(x) {
+      return x == null ? this.attr('cx') : this.attr('cx', x)
+    }
+    // Move by center over y-axis
+  , cy: function(y) {
+      return y == null ? this.attr('cy') : this.attr('cy', y)
+    }
+    // Set width of element
+  , width: function(width) {
+      return width == null ? this.rx() * 2 : this.rx(new SVG.Number(width).divide(2))
+    }
+    // Set height of element
+  , height: function(height) {
+      return height == null ? this.ry() * 2 : this.ry(new SVG.Number(height).divide(2))
+    }
+    // Custom size function
+  , size: function(width, height) {
+      var p = proportionalSize(this, width, height)
+
+      return this
+        .rx(new SVG.Number(p.width).divide(2))
+        .ry(new SVG.Number(p.height).divide(2))
+    }
+})
+SVG.Line = SVG.invent({
+  // Initialize node
+  create: 'line'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add class methods
+, extend: {
+    // Get array
+    array: function() {
+      return new SVG.PointArray([
+        [ this.attr('x1'), this.attr('y1') ]
+      , [ this.attr('x2'), this.attr('y2') ]
+      ])
+    }
+    // Overwrite native plot() method
+  , plot: function(x1, y1, x2, y2) {
+      if (x1 == null)
+        return this.array()
+      else if (typeof y1 !== 'undefined')
+        x1 = { x1: x1, y1: y1, x2: x2, y2: y2 }
+      else
+        x1 = new SVG.PointArray(x1).toLine()
+
+      return this.attr(x1)
+    }
+    // Move by left top corner
+  , move: function(x, y) {
+      return this.attr(this.array().move(x, y).toLine())
+    }
+    // Set element size to given width and height
+  , size: function(width, height) {
+      var p = proportionalSize(this, width, height)
+
+      return this.attr(this.array().size(p.width, p.height).toLine())
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // Create a line element
+    line: function(x1, y1, x2, y2) {
+      // make sure plot is called as a setter
+      // x1 is not necessarily a number, it can also be an array, a string and a SVG.PointArray
+      return SVG.Line.prototype.plot.apply(
+        this.put(new SVG.Line)
+      , x1 != null ? [x1, y1, x2, y2] : [0, 0, 0, 0]
+      )
+    }
+  }
+})
+
+SVG.Polyline = SVG.invent({
+  // Initialize node
+  create: 'polyline'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add parent method
+, construct: {
+    // Create a wrapped polyline element
+    polyline: function(p) {
+      // make sure plot is called as a setter
+      return this.put(new SVG.Polyline).plot(p || new SVG.PointArray)
+    }
+  }
+})
+
+SVG.Polygon = SVG.invent({
+  // Initialize node
+  create: 'polygon'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add parent method
+, construct: {
+    // Create a wrapped polygon element
+    polygon: function(p) {
+      // make sure plot is called as a setter
+      return this.put(new SVG.Polygon).plot(p || new SVG.PointArray)
+    }
+  }
+})
+
+// Add polygon-specific functions
+SVG.extend(SVG.Polyline, SVG.Polygon, {
+  // Get array
+  array: function() {
+    return this._array || (this._array = new SVG.PointArray(this.attr('points')))
+  }
+  // Plot new path
+, plot: function(p) {
+    return (p == null) ?
+      this.array() :
+      this.clear().attr('points', typeof p == 'string' ? p : (this._array = new SVG.PointArray(p)))
+  }
+  // Clear array cache
+, clear: function() {
+    delete this._array
+    return this
+  }
+  // Move by left top corner
+, move: function(x, y) {
+    return this.attr('points', this.array().move(x, y))
+  }
+  // Set element size to given width and height
+, size: function(width, height) {
+    var p = proportionalSize(this, width, height)
+
+    return this.attr('points', this.array().size(p.width, p.height))
+  }
+
+})
+
+// unify all point to point elements
+SVG.extend(SVG.Line, SVG.Polyline, SVG.Polygon, {
+  // Define morphable array
+  morphArray:  SVG.PointArray
+  // Move by left top corner over x-axis
+, x: function(x) {
+    return x == null ? this.bbox().x : this.move(x, this.bbox().y)
+  }
+  // Move by left top corner over y-axis
+, y: function(y) {
+    return y == null ? this.bbox().y : this.move(this.bbox().x, y)
+  }
+  // Set width of element
+, width: function(width) {
+    var b = this.bbox()
+
+    return width == null ? b.width : this.size(width, b.height)
+  }
+  // Set height of element
+, height: function(height) {
+    var b = this.bbox()
+
+    return height == null ? b.height : this.size(b.width, height)
+  }
+})
+SVG.Path = SVG.invent({
+  // Initialize node
+  create: 'path'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add class methods
+, extend: {
+    // Define morphable array
+    morphArray:  SVG.PathArray
+    // Get array
+  , array: function() {
+      return this._array || (this._array = new SVG.PathArray(this.attr('d')))
+    }
+    // Plot new path
+  , plot: function(d) {
+      return (d == null) ?
+        this.array() :
+        this.clear().attr('d', typeof d == 'string' ? d : (this._array = new SVG.PathArray(d)))
+    }
+    // Clear array cache
+  , clear: function() {
+      delete this._array
+      return this
+    }
+    // Move by left top corner
+  , move: function(x, y) {
+      return this.attr('d', this.array().move(x, y))
+    }
+    // Move by left top corner over x-axis
+  , x: function(x) {
+      return x == null ? this.bbox().x : this.move(x, this.bbox().y)
+    }
+    // Move by left top corner over y-axis
+  , y: function(y) {
+      return y == null ? this.bbox().y : this.move(this.bbox().x, y)
+    }
+    // Set element size to given width and height
+  , size: function(width, height) {
+      var p = proportionalSize(this, width, height)
+
+      return this.attr('d', this.array().size(p.width, p.height))
+    }
+    // Set width of element
+  , width: function(width) {
+      return width == null ? this.bbox().width : this.size(width, this.bbox().height)
+    }
+    // Set height of element
+  , height: function(height) {
+      return height == null ? this.bbox().height : this.size(this.bbox().width, height)
+    }
+
+  }
+
+  // Add parent method
+, construct: {
+    // Create a wrapped path element
+    path: function(d) {
+      // make sure plot is called as a setter
+      return this.put(new SVG.Path).plot(d || new SVG.PathArray)
+    }
+  }
+})
+
+SVG.Image = SVG.invent({
+  // Initialize node
+  create: 'image'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add class methods
+, extend: {
+    // (re)load image
+    load: function(url) {
+      if (!url) return this
+
+      var self = this
+        , img  = new window.Image()
+
+      // preload image
+      SVG.on(img, 'load', function() {
+        SVG.off(img)
+
+        var p = self.parent(SVG.Pattern)
+
+        if(p === null) return
+
+        // ensure image size
+        if (self.width() == 0 && self.height() == 0)
+          self.size(img.width, img.height)
+
+        // ensure pattern size if not set
+        if (p && p.width() == 0 && p.height() == 0)
+          p.size(self.width(), self.height())
+
+        // callback
+        if (typeof self._loaded === 'function')
+          self._loaded.call(self, {
+            width:  img.width
+          , height: img.height
+          , ratio:  img.width / img.height
+          , url:    url
+          })
+      })
+
+      SVG.on(img, 'error', function(e){
+        SVG.off(img)
+
+        if (typeof self._error === 'function'){
+            self._error.call(self, e)
+        }
+      })
+
+      return this.attr('href', (img.src = this.src = url), SVG.xlink)
+    }
+    // Add loaded callback
+  , loaded: function(loaded) {
+      this._loaded = loaded
+      return this
+    }
+
+  , error: function(error) {
+      this._error = error
+      return this
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // create image element, load image and set its size
+    image: function(source, width, height) {
+      return this.put(new SVG.Image).load(source).size(width || 0, height || width || 0)
+    }
+  }
+
+})
+SVG.Text = SVG.invent({
+  // Initialize node
+  create: function() {
+    this.constructor.call(this, SVG.create('text'))
+
+    this.dom.leading = new SVG.Number(1.3)    // store leading value for rebuilding
+    this._rebuild = true                      // enable automatic updating of dy values
+    this._build   = false                     // disable build mode for adding multiple lines
+
+    // set default font
+    this.attr('font-family', SVG.defaults.attrs['font-family'])
+  }
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add class methods
+, extend: {
+    // Move over x-axis
+    x: function(x) {
+      // act as getter
+      if (x == null)
+        return this.attr('x')
+
+      return this.attr('x', x)
+    }
+    // Move over y-axis
+  , y: function(y) {
+      var oy = this.attr('y')
+        , o  = typeof oy === 'number' ? oy - this.bbox().y : 0
+
+      // act as getter
+      if (y == null)
+        return typeof oy === 'number' ? oy - o : oy
+
+      return this.attr('y', typeof y.valueOf() === 'number' ? y + o : y)
+    }
+    // Move center over x-axis
+  , cx: function(x) {
+      return x == null ? this.bbox().cx : this.x(x - this.bbox().width / 2)
+    }
+    // Move center over y-axis
+  , cy: function(y) {
+      return y == null ? this.bbox().cy : this.y(y - this.bbox().height / 2)
+    }
+    // Set the text content
+  , text: function(text) {
+      // act as getter
+      if (typeof text === 'undefined'){
+        var text = ''
+        var children = this.node.childNodes
+        for(var i = 0, len = children.length; i < len; ++i){
+
+          // add newline if its not the first child and newLined is set to true
+          if(i != 0 && children[i].nodeType != 3 && SVG.adopt(children[i]).dom.newLined == true){
+            text += '\n'
+          }
+
+          // add content of this node
+          text += children[i].textContent
+        }
+
+        return text
+      }
+
+      // remove existing content
+      this.clear().build(true)
+
+      if (typeof text === 'function') {
+        // call block
+        text.call(this, this)
+
+      } else {
+        // store text and make sure text is not blank
+        text = text.split('\n')
+
+        // build new lines
+        for (var i = 0, il = text.length; i < il; i++)
+          this.tspan(text[i]).newLine()
+      }
+
+      // disable build mode and rebuild lines
+      return this.build(false).rebuild()
+    }
+    // Set font size
+  , size: function(size) {
+      return this.attr('font-size', size).rebuild()
+    }
+    // Set / get leading
+  , leading: function(value) {
+      // act as getter
+      if (value == null)
+        return this.dom.leading
+
+      // act as setter
+      this.dom.leading = new SVG.Number(value)
+
+      return this.rebuild()
+    }
+    // Get all the first level lines
+  , lines: function() {
+      var node = (this.textPath && this.textPath() || this).node
+
+      // filter tspans and map them to SVG.js instances
+      var lines = SVG.utils.map(SVG.utils.filterSVGElements(node.childNodes), function(el){
+        return SVG.adopt(el)
+      })
+
+      // return an instance of SVG.set
+      return new SVG.Set(lines)
+    }
+    // Rebuild appearance type
+  , rebuild: function(rebuild) {
+      // store new rebuild flag if given
+      if (typeof rebuild == 'boolean')
+        this._rebuild = rebuild
+
+      // define position of all lines
+      if (this._rebuild) {
+        var self = this
+          , blankLineOffset = 0
+          , dy = this.dom.leading * new SVG.Number(this.attr('font-size'))
+
+        this.lines().each(function() {
+          if (this.dom.newLined) {
+            if (!self.textPath())
+              this.attr('x', self.attr('x'))
+            if(this.text() == '\n') {
+              blankLineOffset += dy
+            }else{
+              this.attr('dy', dy + blankLineOffset)
+              blankLineOffset = 0
+            }
+          }
+        })
+
+        this.fire('rebuild')
+      }
+
+      return this
+    }
+    // Enable / disable build mode
+  , build: function(build) {
+      this._build = !!build
+      return this
+    }
+    // overwrite method from parent to set data properly
+  , setData: function(o){
+      this.dom = o
+      this.dom.leading = new SVG.Number(o.leading || 1.3)
+      return this
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // Create text element
+    text: function(text) {
+      return this.put(new SVG.Text).text(text)
+    }
+    // Create plain text element
+  , plain: function(text) {
+      return this.put(new SVG.Text).plain(text)
+    }
+  }
+
+})
+
+SVG.Tspan = SVG.invent({
+  // Initialize node
+  create: 'tspan'
+
+  // Inherit from
+, inherit: SVG.Shape
+
+  // Add class methods
+, extend: {
+    // Set text content
+    text: function(text) {
+      if(text == null) return this.node.textContent + (this.dom.newLined ? '\n' : '')
+
+      typeof text === 'function' ? text.call(this, this) : this.plain(text)
+
+      return this
+    }
+    // Shortcut dx
+  , dx: function(dx) {
+      return this.attr('dx', dx)
+    }
+    // Shortcut dy
+  , dy: function(dy) {
+      return this.attr('dy', dy)
+    }
+    // Create new line
+  , newLine: function() {
+      // fetch text parent
+      var t = this.parent(SVG.Text)
+
+      // mark new line
+      this.dom.newLined = true
+
+      // apply new hy¡n
+      return this.dy(t.dom.leading * t.attr('font-size')).attr('x', t.x())
+    }
+  }
+
+})
+
+SVG.extend(SVG.Text, SVG.Tspan, {
+  // Create plain text node
+  plain: function(text) {
+    // clear if build mode is disabled
+    if (this._build === false)
+      this.clear()
+
+    // create text node
+    this.node.appendChild(document.createTextNode(text))
+
+    return this
+  }
+  // Create a tspan
+, tspan: function(text) {
+    var node  = (this.textPath && this.textPath() || this).node
+      , tspan = new SVG.Tspan
+
+    // clear if build mode is disabled
+    if (this._build === false)
+      this.clear()
+
+    // add new tspan
+    node.appendChild(tspan.node)
+
+    return tspan.text(text)
+  }
+  // Clear all lines
+, clear: function() {
+    var node = (this.textPath && this.textPath() || this).node
+
+    // remove existing child nodes
+    while (node.hasChildNodes())
+      node.removeChild(node.lastChild)
+
+    return this
+  }
+  // Get length of text element
+, length: function() {
+    return this.node.getComputedTextLength()
+  }
+})
+
+SVG.TextPath = SVG.invent({
+  // Initialize node
+  create: 'textPath'
+
+  // Inherit from
+, inherit: SVG.Parent
+
+  // Define parent class
+, parent: SVG.Text
+
+  // Add parent method
+, construct: {
+    morphArray: SVG.PathArray
+    // Create path for text to run on
+  , path: function(d) {
+      // create textPath element
+      var path  = new SVG.TextPath
+        , track = this.doc().defs().path(d)
+
+      // move lines to textpath
+      while (this.node.hasChildNodes())
+        path.node.appendChild(this.node.firstChild)
+
+      // add textPath element as child node
+      this.node.appendChild(path.node)
+
+      // link textPath to path and add content
+      path.attr('href', '#' + track, SVG.xlink)
+
+      return this
+    }
+    // return the array of the path track element
+  , array: function() {
+      var track = this.track()
+
+      return track ? track.array() : null
+    }
+    // Plot path if any
+  , plot: function(d) {
+      var track = this.track()
+        , pathArray = null
+
+      if (track) {
+        pathArray = track.plot(d)
+      }
+
+      return (d == null) ? pathArray : this
+    }
+    // Get the path track element
+  , track: function() {
+      var path = this.textPath()
+
+      if (path)
+        return path.reference('href')
+    }
+    // Get the textPath child
+  , textPath: function() {
+      if (this.node.firstChild && this.node.firstChild.nodeName == 'textPath')
+        return SVG.adopt(this.node.firstChild)
+    }
+  }
+})
+
+SVG.Nested = SVG.invent({
+  // Initialize node
+  create: function() {
+    this.constructor.call(this, SVG.create('svg'))
+
+    this.style('overflow', 'visible')
+  }
+
+  // Inherit from
+, inherit: SVG.Container
+
+  // Add parent method
+, construct: {
+    // Create nested svg document
+    nested: function() {
+      return this.put(new SVG.Nested)
+    }
+  }
+})
+SVG.A = SVG.invent({
+  // Initialize node
+  create: 'a'
+
+  // Inherit from
+, inherit: SVG.Container
+
+  // Add class methods
+, extend: {
+    // Link url
+    to: function(url) {
+      return this.attr('href', url, SVG.xlink)
+    }
+    // Link show attribute
+  , show: function(target) {
+      return this.attr('show', target, SVG.xlink)
+    }
+    // Link target attribute
+  , target: function(target) {
+      return this.attr('target', target)
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // Create a hyperlink element
+    link: function(url) {
+      return this.put(new SVG.A).to(url)
+    }
+  }
+})
+
+SVG.extend(SVG.Element, {
+  // Create a hyperlink element
+  linkTo: function(url) {
+    var link = new SVG.A
+
+    if (typeof url == 'function')
+      url.call(link, link)
+    else
+      link.to(url)
+
+    return this.parent().put(link).put(this)
+  }
+
+})
+SVG.Marker = SVG.invent({
+  // Initialize node
+  create: 'marker'
+
+  // Inherit from
+, inherit: SVG.Container
+
+  // Add class methods
+, extend: {
+    // Set width of element
+    width: function(width) {
+      return this.attr('markerWidth', width)
+    }
+    // Set height of element
+  , height: function(height) {
+      return this.attr('markerHeight', height)
+    }
+    // Set marker refX and refY
+  , ref: function(x, y) {
+      return this.attr('refX', x).attr('refY', y)
+    }
+    // Update marker
+  , update: function(block) {
+      // remove all content
+      this.clear()
+
+      // invoke passed block
+      if (typeof block == 'function')
+        block.call(this, this)
+
+      return this
+    }
+    // Return the fill id
+  , toString: function() {
+      return 'url(#' + this.id() + ')'
+    }
+  }
+
+  // Add parent method
+, construct: {
+    marker: function(width, height, block) {
+      // Create marker element in defs
+      return this.defs().marker(width, height, block)
+    }
+  }
+
+})
+
+SVG.extend(SVG.Defs, {
+  // Create marker
+  marker: function(width, height, block) {
+    // Set default viewbox to match the width and height, set ref to cx and cy and set orient to auto
+    return this.put(new SVG.Marker)
+      .size(width, height)
+      .ref(width / 2, height / 2)
+      .viewbox(0, 0, width, height)
+      .attr('orient', 'auto')
+      .update(block)
+  }
+
+})
+
+SVG.extend(SVG.Line, SVG.Polyline, SVG.Polygon, SVG.Path, {
+  // Create and attach markers
+  marker: function(marker, width, height, block) {
+    var attr = ['marker']
+
+    // Build attribute name
+    if (marker != 'all') attr.push(marker)
+    attr = attr.join('-')
+
+    // Set marker attribute
+    marker = arguments[1] instanceof SVG.Marker ?
+      arguments[1] :
+      this.doc().marker(width, height, block)
+
+    return this.attr(attr, marker)
+  }
+
+})
+// Define list of available attributes for stroke and fill
+var sugar = {
+  stroke: ['color', 'width', 'opacity', 'linecap', 'linejoin', 'miterlimit', 'dasharray', 'dashoffset']
+, fill:   ['color', 'opacity', 'rule']
+, prefix: function(t, a) {
+    return a == 'color' ? t : t + '-' + a
+  }
+}
+
+// Add sugar for fill and stroke
+;['fill', 'stroke'].forEach(function(m) {
+  var i, extension = {}
+
+  extension[m] = function(o) {
+    if (typeof o == 'undefined')
+      return this
+    if (typeof o == 'string' || SVG.Color.isRgb(o) || (o && typeof o.fill === 'function'))
+      this.attr(m, o)
+
+    else
+      // set all attributes from sugar.fill and sugar.stroke list
+      for (i = sugar[m].length - 1; i >= 0; i--)
+        if (o[sugar[m][i]] != null)
+          this.attr(sugar.prefix(m, sugar[m][i]), o[sugar[m][i]])
+
+    return this
+  }
+
+  SVG.extend(SVG.Element, SVG.FX, extension)
+
+})
+
+SVG.extend(SVG.Element, SVG.FX, {
+  // Map rotation to transform
+  rotate: function(d, cx, cy) {
+    return this.transform({ rotation: d, cx: cx, cy: cy })
+  }
+  // Map skew to transform
+, skew: function(x, y, cx, cy) {
+    return arguments.length == 1  || arguments.length == 3 ?
+      this.transform({ skew: x, cx: y, cy: cx }) :
+      this.transform({ skewX: x, skewY: y, cx: cx, cy: cy })
+  }
+  // Map scale to transform
+, scale: function(x, y, cx, cy) {
+    return arguments.length == 1  || arguments.length == 3 ?
+      this.transform({ scale: x, cx: y, cy: cx }) :
+      this.transform({ scaleX: x, scaleY: y, cx: cx, cy: cy })
+  }
+  // Map translate to transform
+, translate: function(x, y) {
+    return this.transform({ x: x, y: y })
+  }
+  // Map flip to transform
+, flip: function(a, o) {
+    o = typeof a == 'number' ? a : o
+    return this.transform({ flip: a || 'both', offset: o })
+  }
+  // Map matrix to transform
+, matrix: function(m) {
+    return this.attr('transform', new SVG.Matrix(arguments.length == 6 ? [].slice.call(arguments) : m))
+  }
+  // Opacity
+, opacity: function(value) {
+    return this.attr('opacity', value)
+  }
+  // Relative move over x axis
+, dx: function(x) {
+    return this.x(new SVG.Number(x).plus(this instanceof SVG.FX ? 0 : this.x()), true)
+  }
+  // Relative move over y axis
+, dy: function(y) {
+    return this.y(new SVG.Number(y).plus(this instanceof SVG.FX ? 0 : this.y()), true)
+  }
+  // Relative move over x and y axes
+, dmove: function(x, y) {
+    return this.dx(x).dy(y)
+  }
+})
+
+SVG.extend(SVG.Rect, SVG.Ellipse, SVG.Circle, SVG.Gradient, SVG.FX, {
+  // Add x and y radius
+  radius: function(x, y) {
+    var type = (this._target || this).type;
+    return type == 'radial' || type == 'circle' ?
+      this.attr('r', new SVG.Number(x)) :
+      this.rx(x).ry(y == null ? x : y)
+  }
+})
+
+SVG.extend(SVG.Path, {
+  // Get path length
+  length: function() {
+    return this.node.getTotalLength()
+  }
+  // Get point at length
+, pointAt: function(length) {
+    return this.node.getPointAtLength(length)
+  }
+})
+
+SVG.extend(SVG.Parent, SVG.Text, SVG.Tspan, SVG.FX, {
+  // Set font
+  font: function(a, v) {
+    if (typeof a == 'object') {
+      for (v in a) this.font(v, a[v])
+    }
+
+    return a == 'leading' ?
+        this.leading(v) :
+      a == 'anchor' ?
+        this.attr('text-anchor', v) :
+      a == 'size' || a == 'family' || a == 'weight' || a == 'stretch' || a == 'variant' || a == 'style' ?
+        this.attr('font-'+ a, v) :
+        this.attr(a, v)
+  }
+})
+
+SVG.Set = SVG.invent({
+  // Initialize
+  create: function(members) {
+    if (members instanceof SVG.Set) {
+      this.members = members.members.slice()
+    } else {
+      Array.isArray(members) ? this.members = members : this.clear()
+    }
+  }
+
+  // Add class methods
+, extend: {
+    // Add element to set
+    add: function() {
+      var i, il, elements = [].slice.call(arguments)
+
+      for (i = 0, il = elements.length; i < il; i++)
+        this.members.push(elements[i])
+
+      return this
+    }
+    // Remove element from set
+  , remove: function(element) {
+      var i = this.index(element)
+
+      // remove given child
+      if (i > -1)
+        this.members.splice(i, 1)
+
+      return this
+    }
+    // Iterate over all members
+  , each: function(block) {
+      for (var i = 0, il = this.members.length; i < il; i++)
+        block.apply(this.members[i], [i, this.members])
+
+      return this
+    }
+    // Restore to defaults
+  , clear: function() {
+      // initialize store
+      this.members = []
+
+      return this
+    }
+    // Get the length of a set
+  , length: function() {
+      return this.members.length
+    }
+    // Checks if a given element is present in set
+  , has: function(element) {
+      return this.index(element) >= 0
+    }
+    // retuns index of given element in set
+  , index: function(element) {
+      return this.members.indexOf(element)
+    }
+    // Get member at given index
+  , get: function(i) {
+      return this.members[i]
+    }
+    // Get first member
+  , first: function() {
+      return this.get(0)
+    }
+    // Get last member
+  , last: function() {
+      return this.get(this.members.length - 1)
+    }
+    // Default value
+  , valueOf: function() {
+      return this.members
+    }
+    // Get the bounding box of all members included or empty box if set has no items
+  , bbox: function(){
+      // return an empty box of there are no members
+      if (this.members.length == 0)
+        return new SVG.RBox()
+
+      // get the first rbox and update the target bbox
+      var rbox = this.members[0].rbox(this.members[0].doc())
+
+      this.each(function() {
+        // user rbox for correct position and visual representation
+        rbox = rbox.merge(this.rbox(this.doc()))
+      })
+
+      return rbox
+    }
+  }
+
+  // Add parent method
+, construct: {
+    // Create a new set
+    set: function(members) {
+      return new SVG.Set(members)
+    }
+  }
+})
+
+SVG.FX.Set = SVG.invent({
+  // Initialize node
+  create: function(set) {
+    // store reference to set
+    this.set = set
+  }
+
+})
+
+// Alias methods
+SVG.Set.inherit = function() {
+  var m
+    , methods = []
+
+  // gather shape methods
+  for(var m in SVG.Shape.prototype)
+    if (typeof SVG.Shape.prototype[m] == 'function' && typeof SVG.Set.prototype[m] != 'function')
+      methods.push(m)
+
+  // apply shape aliasses
+  methods.forEach(function(method) {
+    SVG.Set.prototype[method] = function() {
+      for (var i = 0, il = this.members.length; i < il; i++)
+        if (this.members[i] && typeof this.members[i][method] == 'function')
+          this.members[i][method].apply(this.members[i], arguments)
+
+      return method == 'animate' ? (this.fx || (this.fx = new SVG.FX.Set(this))) : this
+    }
+  })
+
+  // clear methods for the next round
+  methods = []
+
+  // gather fx methods
+  for(var m in SVG.FX.prototype)
+    if (typeof SVG.FX.prototype[m] == 'function' && typeof SVG.FX.Set.prototype[m] != 'function')
+      methods.push(m)
+
+  // apply fx aliasses
+  methods.forEach(function(method) {
+    SVG.FX.Set.prototype[method] = function() {
+      for (var i = 0, il = this.set.members.length; i < il; i++)
+        this.set.members[i].fx[method].apply(this.set.members[i].fx, arguments)
+
+      return this
+    }
+  })
+}
+
+
+SVG.extend(SVG.Element, {
+  // Store data values on svg nodes
+  data: function(a, v, r) {
+    if (typeof a == 'object') {
+      for (v in a)
+        this.data(v, a[v])
+
+    } else if (arguments.length < 2) {
+      try {
+        return JSON.parse(this.attr('data-' + a))
+      } catch(e) {
+        return this.attr('data-' + a)
+      }
+
+    } else {
+      this.attr(
+        'data-' + a
+      , v === null ?
+          null :
+        r === true || typeof v === 'string' || typeof v === 'number' ?
+          v :
+          JSON.stringify(v)
+      )
+    }
+
+    return this
+  }
+})
+SVG.extend(SVG.Element, {
+  // Remember arbitrary data
+  remember: function(k, v) {
+    // remember every item in an object individually
+    if (typeof arguments[0] == 'object')
+      for (var v in k)
+        this.remember(v, k[v])
+
+    // retrieve memory
+    else if (arguments.length == 1)
+      return this.memory()[k]
+
+    // store memory
+    else
+      this.memory()[k] = v
+
+    return this
+  }
+
+  // Erase a given memory
+, forget: function() {
+    if (arguments.length == 0)
+      this._memory = {}
+    else
+      for (var i = arguments.length - 1; i >= 0; i--)
+        delete this.memory()[arguments[i]]
+
+    return this
+  }
+
+  // Initialize or return local memory object
+, memory: function() {
+    return this._memory || (this._memory = {})
+  }
+
+})
+// Method for getting an element by id
+SVG.get = function(id) {
+  var node = document.getElementById(idFromReference(id) || id)
+  return SVG.adopt(node)
+}
+
+// Select elements by query string
+SVG.select = function(query, parent) {
+  return new SVG.Set(
+    SVG.utils.map((parent || document).querySelectorAll(query), function(node) {
+      return SVG.adopt(node)
+    })
+  )
+}
+
+SVG.extend(SVG.Parent, {
+  // Scoped select method
+  select: function(query) {
+    return SVG.select(query, this.node)
+  }
+
+})
+function pathRegReplace(a, b, c, d) {
+  return c + d.replace(SVG.regex.dots, ' .')
+}
+
+// creates deep clone of array
+function array_clone(arr){
+  var clone = arr.slice(0)
+  for(var i = clone.length; i--;){
+    if(Array.isArray(clone[i])){
+      clone[i] = array_clone(clone[i])
+    }
+  }
+  return clone
+}
+
+// tests if a given element is instance of an object
+function is(el, obj){
+  return el instanceof obj
+}
+
+// tests if a given selector matches an element
+function matches(el, selector) {
+  return (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
+}
+
+// Convert dash-separated-string to camelCase
+function camelCase(s) {
+  return s.toLowerCase().replace(/-(.)/g, function(m, g) {
+    return g.toUpperCase()
+  })
+}
+
+// Capitalize first letter of a string
+function capitalize(s) {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+// Ensure to six-based hex
+function fullHex(hex) {
+  return hex.length == 4 ?
+    [ '#',
+      hex.substring(1, 2), hex.substring(1, 2)
+    , hex.substring(2, 3), hex.substring(2, 3)
+    , hex.substring(3, 4), hex.substring(3, 4)
+    ].join('') : hex
+}
+
+// Component to hex value
+function compToHex(comp) {
+  var hex = comp.toString(16)
+  return hex.length == 1 ? '0' + hex : hex
+}
+
+// Calculate proportional width and height values when necessary
+function proportionalSize(element, width, height) {
+  if (width == null || height == null) {
+    var box = element.bbox()
+
+    if (width == null)
+      width = box.width / box.height * height
+    else if (height == null)
+      height = box.height / box.width * width
+  }
+
+  return {
+    width:  width
+  , height: height
+  }
+}
+
+// Delta transform point
+function deltaTransformPoint(matrix, x, y) {
+  return {
+    x: x * matrix.a + y * matrix.c + 0
+  , y: x * matrix.b + y * matrix.d + 0
+  }
+}
+
+// Map matrix array to object
+function arrayToMatrix(a) {
+  return { a: a[0], b: a[1], c: a[2], d: a[3], e: a[4], f: a[5] }
+}
+
+// Parse matrix if required
+function parseMatrix(matrix) {
+  if (!(matrix instanceof SVG.Matrix))
+    matrix = new SVG.Matrix(matrix)
+
+  return matrix
+}
+
+// Add centre point to transform object
+function ensureCentre(o, target) {
+  o.cx = o.cx == null ? target.bbox().cx : o.cx
+  o.cy = o.cy == null ? target.bbox().cy : o.cy
+}
+
+// PathArray Helpers
+function arrayToString(a) {
+  for (var i = 0, il = a.length, s = ''; i < il; i++) {
+    s += a[i][0]
+
+    if (a[i][1] != null) {
+      s += a[i][1]
+
+      if (a[i][2] != null) {
+        s += ' '
+        s += a[i][2]
+
+        if (a[i][3] != null) {
+          s += ' '
+          s += a[i][3]
+          s += ' '
+          s += a[i][4]
+
+          if (a[i][5] != null) {
+            s += ' '
+            s += a[i][5]
+            s += ' '
+            s += a[i][6]
+
+            if (a[i][7] != null) {
+              s += ' '
+              s += a[i][7]
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return s + ' '
+}
+
+// Deep new id assignment
+function assignNewId(node) {
+  // do the same for SVG child nodes as well
+  for (var i = node.childNodes.length - 1; i >= 0; i--)
+    if (node.childNodes[i] instanceof window.SVGElement)
+      assignNewId(node.childNodes[i])
+
+  return SVG.adopt(node).id(SVG.eid(node.nodeName))
+}
+
+// Add more bounding box properties
+function fullBox(b) {
+  if (b.x == null) {
+    b.x      = 0
+    b.y      = 0
+    b.width  = 0
+    b.height = 0
+  }
+
+  b.w  = b.width
+  b.h  = b.height
+  b.x2 = b.x + b.width
+  b.y2 = b.y + b.height
+  b.cx = b.x + b.width / 2
+  b.cy = b.y + b.height / 2
+
+  return b
+}
+
+// Get id from reference string
+function idFromReference(url) {
+  var m = (url || '').toString().match(SVG.regex.reference)
+
+  if (m) return m[1]
+}
+
+// If values like 1e-88 are passed, this is not a valid 32 bit float,
+// but in those cases, we are so close to 0 that 0 works well!
+function float32String(v) {
+  return Math.abs(v) > 1e-37 ? v : 0
+}
+
+// Create matrix array for looping
+var abcdef = 'abcdef'.split('')
+
+// Add CustomEvent to IE9 and IE10
+if (typeof window.CustomEvent !== 'function') {
+  // Code from: https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent
+  var CustomEventPoly = function(event, options) {
+    options = options || { bubbles: false, cancelable: false, detail: undefined }
+    var e = document.createEvent('CustomEvent')
+    e.initCustomEvent(event, options.bubbles, options.cancelable, options.detail)
+    return e
+  }
+
+  CustomEventPoly.prototype = window.Event.prototype
+
+  SVG.CustomEvent = CustomEventPoly
+} else {
+  SVG.CustomEvent = window.CustomEvent
+}
+
+// requestAnimationFrame / cancelAnimationFrame Polyfill with fallback based on Paul Irish
+(function(w) {
+  var lastTime = 0
+  var vendors = ['moz', 'webkit']
+
+  for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    w.requestAnimationFrame = w[vendors[x] + 'RequestAnimationFrame']
+    w.cancelAnimationFrame  = w[vendors[x] + 'CancelAnimationFrame'] ||
+                              w[vendors[x] + 'CancelRequestAnimationFrame']
+  }
+
+  w.requestAnimationFrame = w.requestAnimationFrame ||
+    function(callback) {
+      var currTime = new Date().getTime()
+      var timeToCall = Math.max(0, 16 - (currTime - lastTime))
+
+      var id = w.setTimeout(function() {
+        callback(currTime + timeToCall)
+      }, timeToCall)
+
+      lastTime = currTime + timeToCall
+      return id
+    }
+
+  w.cancelAnimationFrame = w.cancelAnimationFrame || w.clearTimeout;
+
+}(window))
+
+return SVG
+
+}));
 
 /***/ }),
 
@@ -7357,7 +12632,7 @@ __webpack_require__(/*! !.-render-fabric/node_modules/script-loader/addScript.js
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var uxele_core_1 = __webpack_require__(/*! uxele-core */ "../uxele-utils/node_modules/uxele-core/build/index.js");
+var uxele_core_1 = __webpack_require__(/*! uxele-core */ "../uxele-core/build/index.js");
 function adjustPixelRect(rect, c) {
     var trimRect = trimOffsetCanvas(c);
     if (trimRect) {
@@ -7588,16 +12863,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var uxele_i18n_1 = __webpack_require__(/*! uxele-i18n */ "../uxele-utils/node_modules/uxele-i18n/build/index.js");
+var uxele_i18n_1 = __webpack_require__(/*! uxele-i18n */ "../uxele-i18n/build/index.js");
 function canvasToImg(canvas) {
     var img = document.createElement("img");
     return new Promise(function (resolve, reject) {
         canvas.toBlob(function (blob) {
             if (blob) {
-                var src_1 = URL.createObjectURL(blob);
-                img.src = src_1;
+                var src = URL.createObjectURL(blob);
+                img.src = src;
                 img.onload = function () {
-                    URL.revokeObjectURL(src_1);
+                    // URL.revokeObjectURL(src);
                     resolve(img);
                 };
             }
@@ -7659,18 +12934,18 @@ function zoomImg(img, zoom) {
 }
 exports.zoomImg = zoomImg;
 function cropCanvas(canvas, rect) {
-    if (rect.right > canvas.width) {
-        rect.right = canvas.width;
-    }
-    if (rect.left < 0) {
-        rect.left = 0;
-    }
-    if (rect.top < 0) {
-        rect.top = 0;
-    }
-    if (rect.bottom > canvas.height) {
-        rect.bottom = canvas.height;
-    }
+    // if (rect.right > canvas.width) {
+    //   rect.right = canvas.width;
+    // }
+    // if (rect.left < 0) {
+    //   rect.left = 0;
+    // }
+    // if (rect.top < 0) {
+    //   rect.top = 0;
+    // }
+    // if (rect.bottom > canvas.height) {
+    //   rect.bottom = canvas.height;
+    // }
     var newCanvas = document.createElement("canvas");
     newCanvas.width = rect.width;
     newCanvas.height = rect.height;
@@ -7716,7 +12991,8 @@ function imgToCanvas(img) {
     return canvas;
 }
 exports.imgToCanvas = imgToCanvas;
-function scaleCanvas(oriCanvas, scale) {
+function scaleCanvas(oriCanvas, scale, smooth) {
+    if (smooth === void 0) { smooth = true; }
     if (scale === 1) {
         return oriCanvas;
     }
@@ -7724,11 +13000,56 @@ function scaleCanvas(oriCanvas, scale) {
     rtn.width = oriCanvas.width * scale;
     rtn.height = oriCanvas.height * scale;
     var ctx = rtn.getContext("2d");
+    if (!smooth) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.webkitImageSmoothingEnabled = false;
+        ctx.mozImageSmoothingEnabled = false;
+        var style = rtn.style;
+        style["image-rendering"] = "auto";
+        style["image-rendering"] = "crisp-edges";
+        style["image-rendering"] = "pixelated";
+    }
     ctx.drawImage(oriCanvas, 0, 0, oriCanvas.width, oriCanvas.height, 0, 0, rtn.width, rtn.height);
     return rtn;
 }
 exports.scaleCanvas = scaleCanvas;
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-utils/src/canvas.js.map
+
+/***/ }),
+
+/***/ "../uxele-utils/build/color.js":
+/*!******************************!*\
+  !*** .-utils/build/color.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+exports.rgbToHex = rgbToHex;
+var numReg = /\d+/g;
+function rgbStrToHex(rgb) {
+    if (!rgb) {
+        return rgbToHex(0, 0, 0);
+    }
+    var matches = rgb.match(numReg);
+    if (matches) {
+        return rgbToHex(parseInt(matches[0]), parseInt(matches[1]), parseInt(matches[2]));
+    }
+    else {
+        return "";
+    }
+}
+exports.rgbStrToHex = rgbStrToHex;
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-utils/src/color.js.map
 
 /***/ }),
 
@@ -7782,6 +13103,8 @@ var canvas = __importStar(__webpack_require__(/*! ./canvas */ "../uxele-utils/bu
 exports.canvas = canvas;
 var layer = __importStar(__webpack_require__(/*! ./layer */ "../uxele-utils/build/layer.js"));
 exports.layer = layer;
+var color = __importStar(__webpack_require__(/*! ./color */ "../uxele-utils/build/color.js"));
+exports.color = color;
 __export(__webpack_require__(/*! ./cachePromise */ "../uxele-utils/build/cachePromise.js"));
 __export(__webpack_require__(/*! ./sleep */ "../uxele-utils/build/sleep.js"));
 __export(__webpack_require__(/*! ./loadRemoteFile */ "../uxele-utils/build/loadRemoteFile.js"));
@@ -7789,6 +13112,8 @@ __export(__webpack_require__(/*! ./adjustPixelRect */ "../uxele-utils/build/adju
 __export(__webpack_require__(/*! ./canvas */ "../uxele-utils/build/canvas.js"));
 __export(__webpack_require__(/*! ./svg */ "../uxele-utils/build/svg.js"));
 __export(__webpack_require__(/*! ./copyToClipboard */ "../uxele-utils/build/copyToClipboard.js"));
+var render = __importStar(__webpack_require__(/*! ./render */ "../uxele-utils/build/render.js"));
+exports.render = render;
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-utils/src/index.js.map
 
 /***/ }),
@@ -7856,9 +13181,8 @@ function isFolderLayer(layer) {
 exports.isFolderLayer = isFolderLayer;
 /**
  *
- * @param x x coords on design file
- * @param y y coords on design file
- * @param layers
+ * @param coords the coords that is relative to the page where layers belong to
+ * @param layers the layers to search in.
  */
 function bestLayerByCoords(coords, layers) {
     return __awaiter(this, void 0, void 0, function () {
@@ -7942,7 +13266,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var path = __importStar(__webpack_require__(/*! path */ "./node_modules/path-browserify/index.js"));
-var uxele_core_1 = __webpack_require__(/*! uxele-core */ "../uxele-utils/node_modules/uxele-core/build/index.js");
+var uxele_core_1 = __webpack_require__(/*! uxele-core */ "../uxele-core/build/index.js");
 function loadRemoteFile(params) {
     var rtn = new uxele_core_1.Progress();
     var xhr = new XMLHttpRequest();
@@ -7991,6 +13315,124 @@ function loadRemoteFile(params) {
 }
 exports.loadRemoteFile = loadRemoteFile;
 //# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-utils/src/loadRemoteFile.js.map
+
+/***/ }),
+
+/***/ "../uxele-utils/build/render.js":
+/*!*******************************!*\
+  !*** .-utils/build/render.js ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var build_1 = __webpack_require__(/*! uxele-core/build */ "../uxele-core/build/index.js");
+var gridMargin = 20;
+var itemPerRow = 4;
+/**
+ * scan all pages and prepare the layout. The layout is like below:
+ * [pagesA]
+ * -------
+ * [pagesB]
+ *
+ * pagesA group contains pages that come with offsetx and offsety attributes (e.g. adobe psd artboards)
+ * pagesB group are pages without original offset (e.g. a static image  / pdf file etc)
+ * 1. pages that has offsetx and offsety will be rendered in pagesA
+ * 2. other pages with not offset will be rendered in pagesB in a 4*n grid system
+ * 3. each page will render its name and preview
+ * 4. name is above each page.
+ */
+function pagesToLayout(pages) {
+    var rectA;
+    var dynamicRects = [];
+    var rtn = [];
+    var pagesA = [];
+    var pagesB = [];
+    pages.forEach(function (page) {
+        if (page.offsetX !== undefined && page.offsetY !== undefined) {
+            pagesA.push(page);
+        }
+        else {
+            pagesB.push(page);
+        }
+    });
+    pagesA.forEach(function (page) {
+        var rect = new build_1.Rect(page.offsetX, page.offsetY, page.offsetX + page.width, page.offsetY + page.height);
+        if (rectA) {
+            rectA = rectA.combine(rect);
+        }
+        else {
+            rectA = rect;
+        }
+        rtn.push({
+            page: page,
+            rect: rect
+        });
+    });
+    if (rectA) {
+        if (rectA.left !== 0 || rectA.top !== 0) {
+            for (var _i = 0, rtn_1 = rtn; _i < rtn_1.length; _i++) {
+                var item = rtn_1[_i];
+                item.rect = item.rect.pan(-rectA.left, -rectA.top);
+            }
+            rectA = rectA.pan(-rectA.left, -rectA.top);
+        }
+    }
+    pagesB.forEach(function (page) {
+        var nextOffset = nextGridSlot(dynamicRects);
+        if (rectA) {
+            nextOffset.y += rectA.height + gridMargin;
+        }
+        var rect = new build_1.Rect(nextOffset.x, nextOffset.y, page.width, page.height);
+        dynamicRects.push(rect);
+        rtn.push({
+            page: page,
+            rect: rect
+        });
+    });
+    return rtn;
+}
+exports.pagesToLayout = pagesToLayout;
+function nextGridSlot(grid) {
+    var rowNum = Math.floor(grid.length / itemPerRow);
+    var colNum = grid.length % itemPerRow;
+    var x = grid.slice(rowNum * itemPerRow).reduce(function (lastLeft, item) { return lastLeft + item.width + gridMargin; }, 0);
+    var y = 0;
+    if (colNum > 0) {
+        y = grid[rowNum * itemPerRow + colNum - 1].top;
+    }
+    else {
+        for (var i = 0; i < rowNum; i++) {
+            for (var j = 0; j < itemPerRow; j++) {
+                var item = grid[i * itemPerRow + j];
+                y = Math.max(y, item.top + item.height);
+            }
+            y += gridMargin;
+        }
+    }
+    return { x: x, y: y };
+}
+exports.nextGridSlot = nextGridSlot;
+/**
+ * immutable
+ * calc scaled page layouts
+ * @param pageLayouts the original page layout that are not scaled. (zoom =1)
+ */
+function scalePageLayouts(pageLayouts, scale) {
+    if (scale === 1) {
+        return pageLayouts;
+    }
+    return pageLayouts.map(function (pageLayout) {
+        return {
+            page: pageLayout.page,
+            rect: pageLayout.rect.zoom(scale)
+        };
+    });
+}
+exports.scalePageLayouts = scalePageLayouts;
+//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-utils/src/render.js.map
 
 /***/ }),
 
@@ -9052,1110 +14494,14 @@ module.exports = closest;
 
 /***/ }),
 
-/***/ "../uxele-utils/node_modules/sprintf-js/src/sprintf.js":
-/*!******************************************************!*\
-  !*** .-utils/node_modules/sprintf-js/src/sprintf.js ***!
-  \******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
-
-!function() {
-    'use strict'
-
-    var re = {
-        not_string: /[^s]/,
-        not_bool: /[^t]/,
-        not_type: /[^T]/,
-        not_primitive: /[^v]/,
-        number: /[diefg]/,
-        numeric_arg: /[bcdiefguxX]/,
-        json: /[j]/,
-        not_json: /[^j]/,
-        text: /^[^\x25]+/,
-        modulo: /^\x25{2}/,
-        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,
-        key: /^([a-z_][a-z_\d]*)/i,
-        key_access: /^\.([a-z_][a-z_\d]*)/i,
-        index_access: /^\[(\d+)\]/,
-        sign: /^[\+\-]/
-    }
-
-    function sprintf(key) {
-        // `arguments` is not an array, but should be fine for this call
-        return sprintf_format(sprintf_parse(key), arguments)
-    }
-
-    function vsprintf(fmt, argv) {
-        return sprintf.apply(null, [fmt].concat(argv || []))
-    }
-
-    function sprintf_format(parse_tree, argv) {
-        var cursor = 1, tree_length = parse_tree.length, arg, output = '', i, k, match, pad, pad_character, pad_length, is_positive, sign
-        for (i = 0; i < tree_length; i++) {
-            if (typeof parse_tree[i] === 'string') {
-                output += parse_tree[i]
-            }
-            else if (Array.isArray(parse_tree[i])) {
-                match = parse_tree[i] // convenience purposes only
-                if (match[2]) { // keyword argument
-                    arg = argv[cursor]
-                    for (k = 0; k < match[2].length; k++) {
-                        if (!arg.hasOwnProperty(match[2][k])) {
-                            throw new Error(sprintf('[sprintf] property "%s" does not exist', match[2][k]))
-                        }
-                        arg = arg[match[2][k]]
-                    }
-                }
-                else if (match[1]) { // positional argument (explicit)
-                    arg = argv[match[1]]
-                }
-                else { // positional argument (implicit)
-                    arg = argv[cursor++]
-                }
-
-                if (re.not_type.test(match[8]) && re.not_primitive.test(match[8]) && arg instanceof Function) {
-                    arg = arg()
-                }
-
-                if (re.numeric_arg.test(match[8]) && (typeof arg !== 'number' && isNaN(arg))) {
-                    throw new TypeError(sprintf('[sprintf] expecting number but found %T', arg))
-                }
-
-                if (re.number.test(match[8])) {
-                    is_positive = arg >= 0
-                }
-
-                switch (match[8]) {
-                    case 'b':
-                        arg = parseInt(arg, 10).toString(2)
-                        break
-                    case 'c':
-                        arg = String.fromCharCode(parseInt(arg, 10))
-                        break
-                    case 'd':
-                    case 'i':
-                        arg = parseInt(arg, 10)
-                        break
-                    case 'j':
-                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
-                        break
-                    case 'e':
-                        arg = match[7] ? parseFloat(arg).toExponential(match[7]) : parseFloat(arg).toExponential()
-                        break
-                    case 'f':
-                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
-                        break
-                    case 'g':
-                        arg = match[7] ? String(Number(arg.toPrecision(match[7]))) : parseFloat(arg)
-                        break
-                    case 'o':
-                        arg = (parseInt(arg, 10) >>> 0).toString(8)
-                        break
-                    case 's':
-                        arg = String(arg)
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 't':
-                        arg = String(!!arg)
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'T':
-                        arg = Object.prototype.toString.call(arg).slice(8, -1).toLowerCase()
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'u':
-                        arg = parseInt(arg, 10) >>> 0
-                        break
-                    case 'v':
-                        arg = arg.valueOf()
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'x':
-                        arg = (parseInt(arg, 10) >>> 0).toString(16)
-                        break
-                    case 'X':
-                        arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase()
-                        break
-                }
-                if (re.json.test(match[8])) {
-                    output += arg
-                }
-                else {
-                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
-                        sign = is_positive ? '+' : '-'
-                        arg = arg.toString().replace(re.sign, '')
-                    }
-                    else {
-                        sign = ''
-                    }
-                    pad_character = match[4] ? match[4] === '0' ? '0' : match[4].charAt(1) : ' '
-                    pad_length = match[6] - (sign + arg).length
-                    pad = match[6] ? (pad_length > 0 ? pad_character.repeat(pad_length) : '') : ''
-                    output += match[5] ? sign + arg + pad : (pad_character === '0' ? sign + pad + arg : pad + sign + arg)
-                }
-            }
-        }
-        return output
-    }
-
-    var sprintf_cache = Object.create(null)
-
-    function sprintf_parse(fmt) {
-        if (sprintf_cache[fmt]) {
-            return sprintf_cache[fmt]
-        }
-
-        var _fmt = fmt, match, parse_tree = [], arg_names = 0
-        while (_fmt) {
-            if ((match = re.text.exec(_fmt)) !== null) {
-                parse_tree.push(match[0])
-            }
-            else if ((match = re.modulo.exec(_fmt)) !== null) {
-                parse_tree.push('%')
-            }
-            else if ((match = re.placeholder.exec(_fmt)) !== null) {
-                if (match[2]) {
-                    arg_names |= 1
-                    var field_list = [], replacement_field = match[2], field_match = []
-                    if ((field_match = re.key.exec(replacement_field)) !== null) {
-                        field_list.push(field_match[1])
-                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
-                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
-                                field_list.push(field_match[1])
-                            }
-                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
-                                field_list.push(field_match[1])
-                            }
-                            else {
-                                throw new SyntaxError('[sprintf] failed to parse named argument key')
-                            }
-                        }
-                    }
-                    else {
-                        throw new SyntaxError('[sprintf] failed to parse named argument key')
-                    }
-                    match[2] = field_list
-                }
-                else {
-                    arg_names |= 2
-                }
-                if (arg_names === 3) {
-                    throw new Error('[sprintf] mixing positional and named placeholders is not (yet) supported')
-                }
-                parse_tree.push(match)
-            }
-            else {
-                throw new SyntaxError('[sprintf] unexpected placeholder')
-            }
-            _fmt = _fmt.substring(match[0].length)
-        }
-        return sprintf_cache[fmt] = parse_tree
-    }
-
-    /**
-     * export to either browser or node.js
-     */
-    /* eslint-disable quote-props */
-    if (true) {
-        exports['sprintf'] = sprintf
-        exports['vsprintf'] = vsprintf
-    }
-    if (typeof window !== 'undefined') {
-        window['sprintf'] = sprintf
-        window['vsprintf'] = vsprintf
-
-        if (true) {
-            !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
-                return {
-                    'sprintf': sprintf,
-                    'vsprintf': vsprintf
-                }
-            }).call(exports, __webpack_require__, exports, module),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
-        }
-    }
-    /* eslint-enable quote-props */
-}()
-
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-core/build/BaseRenderer.js":
-/*!*************************************************************!*\
-  !*** .-utils/node_modules/uxele-core/build/BaseRenderer.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var BasicEvents_1 = __webpack_require__(/*! ./BasicEvents */ "../uxele-utils/node_modules/uxele-core/build/BasicEvents.js");
-var BaseRenderer = /** @class */ (function (_super) {
-    __extends(BaseRenderer, _super);
-    function BaseRenderer(ele, renderWidth, renderHeight) {
-        var _this = _super.call(this) || this;
-        _this.ele = ele;
-        _this.renderWidth = renderWidth;
-        _this.renderHeight = renderHeight;
-        return _this;
-    }
-    Object.defineProperty(BaseRenderer.prototype, "minX", {
-        get: function () {
-            return -this.renderWidth / 2;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "minY", {
-        get: function () {
-            return -this.renderHeight / 2;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "maxX", {
-        get: function () {
-            return this.getPage().width * this.zoom() - this.renderWidth / 2;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "maxY", {
-        get: function () {
-            return this.getPage().height * this.zoom() - this.renderHeight / 2;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "imgWidth", {
-        get: function () {
-            return this.getPage().width * this.zoom();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseRenderer.prototype, "imgHeight", {
-        get: function () {
-            return this.getPage().height * this.zoom();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    BaseRenderer.prototype.mouseEventToCoords = function (evt) {
-        var e = evt.e;
-        return {
-            x: e.offsetX,
-            y: e.offsetY
-        };
-    };
-    BaseRenderer.prototype.rendererPointToRealPoint = function (rendererPoint) {
-        return {
-            x: Math.round(Math.min(Math.max(rendererPoint.x + this.panX(), 0), this.imgWidth) / this.zoom()),
-            y: Math.round(Math.min(Math.max(rendererPoint.y + this.panY(), 0), this.imgHeight) / this.zoom())
-        };
-    };
-    BaseRenderer.prototype.realPointToRendererPoint = function (realPoint) {
-        return {
-            x: Math.round(realPoint.x * this.zoom() - this.panX()),
-            y: Math.round(realPoint.y * this.zoom() - this.panY()),
-        };
-    };
-    BaseRenderer.prototype.getPage = function () {
-        return this.curPage;
-        // if (this.curPage) {
-        // } else {
-        //   throw new Error("No page is rendered.");
-        // }
-    };
-    BaseRenderer.prototype.renderPage = function (page) {
-        return __awaiter(this, void 0, void 0, function () {
-            var img;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.curPage = page;
-                        return [4 /*yield*/, page.getPreview(this.zoom())];
-                    case 1:
-                        img = _a.sent();
-                        this.setBackground(img);
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    BaseRenderer.prototype.realRectToRendererRect = function (realRect) {
-        return realRect.pan(-this.panX() / this.zoom(), -this.panY() / this.zoom()).zoom(this.zoom());
-    };
-    BaseRenderer.prototype.rendererRectToRealRect = function (rendererRect) {
-        return rendererRect.pan(this.panX(), this.panY()).zoom(1 / this.zoom());
-    };
-    return BaseRenderer;
-}(BasicEvents_1.BasicEvents));
-exports.BaseRenderer = BaseRenderer;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-core/src/BaseRenderer.js.map
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-core/build/BaseTool.js":
-/*!*********************************************************!*\
-  !*** .-utils/node_modules/uxele-core/build/BaseTool.js ***!
-  \*********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-// export type BaseToolEvents = "onActivated" | "onDeactivated";
-var BaseTool = /** @class */ (function () {
-    function BaseTool(renderer) {
-        this.renderer = renderer;
-        this.activated = false;
-    }
-    BaseTool.prototype.activate = function () {
-        var _this = this;
-        // renderer.clearDrawing();
-        return this.bindRenderer()
-            .then(function () {
-            _this.activated = true;
-        });
-    };
-    BaseTool.prototype.deactivate = function () {
-        var _this = this;
-        return this.unbindRenderer()
-            .then(function () {
-            _this.activated = false;
-        });
-    };
-    return BaseTool;
-}());
-exports.BaseTool = BaseTool;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-core/src/BaseTool.js.map
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-core/build/BasicEvents.js":
-/*!************************************************************!*\
-  !*** .-utils/node_modules/uxele-core/build/BasicEvents.js ***!
-  \************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var BasicEvents = /** @class */ (function () {
-    function BasicEvents() {
-        this.regEvents = {};
-    }
-    BasicEvents.prototype.off = function (evt, handler) {
-        if (evt === undefined) {
-            this.regEvents = {};
-        }
-        else {
-            if (handler === undefined) {
-                delete this.regEvents[evt];
-            }
-            else {
-                if (this.regEvents[evt]) {
-                    var idx = this.regEvents[evt].indexOf(handler);
-                    this.regEvents[evt].splice(idx, 1);
-                }
-            }
-        }
-    };
-    BasicEvents.prototype.on = function (evt, handler) {
-        if (!this.regEvents[evt]) {
-            this.regEvents[evt] = [];
-        }
-        if (this.regEvents[evt]) {
-            this.regEvents[evt].push(handler);
-        }
-    };
-    BasicEvents.prototype.once = function (evt, handler) {
-        var _this = this;
-        var wrapper = (function (arg) {
-            setTimeout(function () {
-                _this.off(evt, wrapper);
-            });
-            handler(arg);
-        });
-        this.on(evt, wrapper);
-    };
-    BasicEvents.prototype.emit = function (evt, value) {
-        if (this.regEvents[evt]) {
-            for (var _i = 0, _a = this.regEvents[evt]; _i < _a.length; _i++) {
-                var handler = _a[_i];
-                handler(value);
-            }
-        }
-    };
-    return BasicEvents;
-}());
-exports.BasicEvents = BasicEvents;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-core/src/BasicEvents.js.map
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-core/build/Progress.js":
-/*!*********************************************************!*\
-  !*** .-utils/node_modules/uxele-core/build/Progress.js ***!
-  \*********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Progress = /** @class */ (function () {
-    function Progress() {
-        var _this = this;
-        this._onProgress = function (num) { };
-        this._onComplete = function (data) { };
-        this._onError = function (err) { };
-        this._isFinished = false;
-        this.progress = function (num) {
-            if (!_this._isFinished) {
-                _this._onProgress(num);
-            }
-        };
-        this.error = function (err) {
-            if (!_this._isFinished) {
-                _this._err = err;
-                _this._isFinished = true;
-                _this._onError(err);
-            }
-        };
-        this.complete = function (data) {
-            if (!_this._isFinished) {
-                _this._data = data;
-                _this._isFinished = true;
-                try {
-                    _this._onComplete(data);
-                }
-                catch (e) {
-                    _this._err = e;
-                    _this._onError(e);
-                }
-            }
-        };
-    }
-    Progress.prototype.subscribe = function (onProgress, onError, onComplete) {
-        if (onProgress) {
-            this._onProgress = onProgress;
-        }
-        if (onError) {
-            this._onError = onError;
-        }
-        if (onComplete) {
-            this._onComplete = onComplete;
-        }
-        if (this._isFinished) {
-            this._onError(this._err);
-            this._onComplete(this._data);
-        }
-    };
-    Progress.prototype.toPromise = function () {
-        var _this = this;
-        if (this._isFinished) {
-            if (this._err) {
-                return Promise.reject(this._err);
-            }
-            else {
-                return Promise.resolve(this._data);
-            }
-        }
-        else {
-            return new Promise(function (resolve, reject) {
-                _this._onComplete = resolve;
-                _this._onError = reject;
-            });
-        }
-    };
-    return Progress;
-}());
-exports.Progress = Progress;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-core/src/Progress.js.map
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-core/build/Rect.js":
-/*!*****************************************************!*\
-  !*** .-utils/node_modules/uxele-core/build/Rect.js ***!
-  \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Rect = /** @class */ (function () {
-    function Rect(left, top, right, bottom) {
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
-        if (this.valid) {
-            this.norm();
-        }
-    }
-    Rect.fromJson = function (rectJson) {
-        return new Rect(rectJson.left, rectJson.top, rectJson.right, rectJson.bottom);
-    };
-    Rect.prototype.norm = function () {
-        if (this.right < this.left) {
-            var tmpV1 = this.right;
-            this.right = this.left;
-            this.left = tmpV1;
-        }
-        if (this.top > this.bottom) {
-            var tmpV2 = this.top;
-            this.top = this.bottom;
-            this.bottom = tmpV2;
-        }
-    };
-    Object.defineProperty(Rect.prototype, "valid", {
-        get: function () {
-            return this.left !== null && this.right !== null && this.top !== null && this.bottom !== null;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Rect.prototype, "width", {
-        get: function () {
-            return this.right - this.left;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Rect.prototype, "height", {
-        get: function () {
-            return this.bottom - this.top;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Rect.prototype, "centerPoint", {
-        get: function () {
-            return {
-                x: (this.left + this.right) / 2,
-                y: (this.top + this.bottom) / 2,
-            };
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Rect.prototype.contains = function (rect) {
-        return this.left <= rect.left && this.top <= rect.top && this.right >= rect.right && this.bottom >= rect.bottom;
-    };
-    Rect.prototype.containsCoords = function (x, y) {
-        return x >= this.left && x < this.right && y >= this.top && y < this.bottom;
-    };
-    Rect.prototype.zoom = function (ratio) {
-        return new Rect(this.left * ratio, this.top * ratio, this.right * ratio, this.bottom * ratio);
-    };
-    Rect.prototype.clone = function () {
-        return new Rect(this.left, this.top, this.right, this.bottom);
-    };
-    Rect.prototype.area = function () {
-        return this.width * this.height;
-    };
-    Rect.prototype.pan = function (x, y) {
-        var rtn = this.clone();
-        rtn.left += x;
-        rtn.right += x;
-        rtn.top += y;
-        rtn.bottom += y;
-        return rtn;
-    };
-    Rect.prototype.panMutate = function (x, y) {
-        this.left += x;
-        this.right += x;
-        this.top += y;
-        this.bottom += y;
-    };
-    Rect.prototype.combine = function (rect) {
-        if (!rect) {
-            return this.clone();
-        }
-        return new Rect(Math.min(this.left, rect.left), Math.min(this.top, rect.top), Math.max(this.right, rect.right), Math.max(this.bottom, rect.bottom));
-    };
-    /**
-     * return a new rect relative to current rect defined by a relative rect (start from 0,0); the result is clamped within current rect
-     * @param offset
-     */
-    Rect.prototype.clampedRelativeRect = function (relative) {
-        return this.relativeRect(relative).clampBy(this);
-    };
-    /**
-     * Convert absolute coords to relative coords to another rect
-     * @param rect the rect to compare to.
-     */
-    Rect.prototype.relativeTo = function (rect) {
-        return new Rect(this.left - rect.left, this.top - rect.top, this.right - rect.left, this.bottom - rect.top);
-    };
-    /**
-     * Relatively offset rect
-     * @param relative
-     */
-    Rect.prototype.relativeRect = function (relative) {
-        return new Rect(this.left + relative.left, this.top + relative.top, this.left + relative.right, this.top + relative.bottom);
-    };
-    Rect.prototype.clampBy = function (rect) {
-        return new Rect(Math.max(rect.left, this.left), Math.max(rect.top, this.top), Math.min(rect.right, this.right), Math.min(rect.bottom, this.bottom));
-    };
-    Rect.prototype.coordsToCenter = function (coord) {
-        var cx = (this.left + this.right) / 2;
-        var cy = (this.top + this.bottom) / 2;
-        return Math.sqrt(Math.pow((coord.x - cx), 2) + Math.pow((coord.y - cy), 2));
-    };
-    Rect.prototype.distanceToCoords = function (x, y) {
-        if (this.containsCoords(x, y)) {
-            return 0;
-        }
-        this.norm();
-        if (x >= this.left && x <= this.right) {
-            return Math.min(Math.abs(y - this.top), Math.abs(y - this.bottom));
-        }
-        if (y >= this.top && y <= this.bottom) {
-            return Math.min(Math.abs(x - this.left), Math.abs(x - this.right));
-        }
-        var dx = Math.min(Math.abs(x - this.left), Math.abs(x - this.right));
-        var dy = Math.min(Math.abs(y - this.top), Math.abs(y - this.bottom));
-        return Math.round(Math.sqrt(dx * dx + dy * dy));
-    };
-    Rect.prototype.includeCoordsMutate = function (x, y) {
-        this.left = Math.min(this.left, x);
-        this.right = Math.max(this.right, x);
-        this.top = Math.min(this.top, y);
-        this.bottom = Math.max(this.bottom, y);
-    };
-    Rect.prototype.isOverlapTo = function (t) {
-        return this.left < t.right && t.left < this.right && this.top < t.bottom && t.top < this.bottom;
-    };
-    Rect.prototype.distance = function (rect) {
-        var rect1 = this;
-        var rect2 = rect;
-        var rtn = {
-            ll: 0,
-            lr: 0,
-            rr: 0,
-            rl: 0,
-            tt: 0,
-            tb: 0,
-            bb: 0,
-            bt: 0,
-        };
-        for (var key in rtn) {
-            if (rtn.hasOwnProperty(key)) {
-                rtn[key] = getDistance(rect1, rect2, key);
-            }
-        }
-        var w1 = rect1.width;
-        var h1 = rect1.height;
-        if (rect1.left >= rect2.right) {
-            delete rtn.ll;
-        }
-        else {
-            delete rtn.lr;
-        }
-        if (rect1.right <= rect2.left) {
-            delete rtn.rr;
-        }
-        else {
-            delete rtn.rl;
-        }
-        var l = rtn.ll || rtn.lr;
-        var r = rtn.rr || rtn.rl;
-        var dlr = Math.abs(r - l);
-        if (Math.round(dlr - w1) === 0) {
-            if (l < r) {
-                delete rtn.rr;
-                delete rtn.rl;
-            }
-            else {
-                delete rtn.lr;
-                delete rtn.ll;
-            }
-        }
-        if (rect1.top >= rect2.bottom) {
-            delete rtn.tt;
-        }
-        else {
-            delete rtn.tb;
-        }
-        if (rect1.bottom <= rect2.top) {
-            delete rtn.bb;
-        }
-        else {
-            delete rtn.bt;
-        }
-        var t = rtn.tt || rtn.tb;
-        var b = rtn.bb || rtn.bt;
-        var dtb = Math.abs(t - b);
-        if (Math.round(dtb - h1) === 0) {
-            if (t < b) {
-                delete rtn.bb;
-                delete rtn.bt;
-            }
-            else {
-                delete rtn.tt;
-                delete rtn.tb;
-            }
-        }
-        return rtn;
-    };
-    return Rect;
-}());
-exports.Rect = Rect;
-function getDistance(rect1, rect2, mode) {
-    var map = {
-        l: "left",
-        r: "right",
-        t: "top",
-        b: "bottom",
-    };
-    var e1 = map[mode[0]];
-    var e2 = map[mode[1]];
-    var v1 = rect1[e1];
-    var v2 = rect2[e2];
-    return Math.abs(v1 - v2);
-}
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-core/src/Rect.js.map
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-core/build/index.js":
-/*!******************************************************!*\
-  !*** .-utils/node_modules/uxele-core/build/index.js ***!
-  \******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./types */ "../uxele-utils/node_modules/uxele-core/build/types.js"));
-__export(__webpack_require__(/*! ./Rect */ "../uxele-utils/node_modules/uxele-core/build/Rect.js"));
-__export(__webpack_require__(/*! ./Progress */ "../uxele-utils/node_modules/uxele-core/build/Progress.js"));
-var _layer = __importStar(__webpack_require__(/*! ./layer */ "../uxele-utils/node_modules/uxele-core/build/layer.js"));
-exports.layer = _layer;
-__export(__webpack_require__(/*! ./BaseRenderer */ "../uxele-utils/node_modules/uxele-core/build/BaseRenderer.js"));
-__export(__webpack_require__(/*! ./BasicEvents */ "../uxele-utils/node_modules/uxele-core/build/BasicEvents.js"));
-__export(__webpack_require__(/*! ./BaseTool */ "../uxele-utils/node_modules/uxele-core/build/BaseTool.js"));
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-core/src/index.js.map
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-core/build/layer.js":
-/*!******************************************************!*\
-  !*** .-utils/node_modules/uxele-core/build/layer.js ***!
-  \******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-function isPixelLayer(layer) {
-    return layer.getPixelImg !== undefined;
-}
-exports.isPixelLayer = isPixelLayer;
-function isVectorlLayer(layer) {
-    return layer.getSvgString !== undefined;
-}
-exports.isVectorlLayer = isVectorlLayer;
-function isTextLayer(layer) {
-    return layer.getText !== undefined;
-}
-exports.isTextLayer = isTextLayer;
-function isFolderLayer(layer) {
-    return layer.children !== undefined;
-}
-exports.isFolderLayer = isFolderLayer;
-/**
- *
- * @param x x coords on design file
- * @param y y coords on design file
- * @param layers
- */
-function bestLayerByCoords(coords, layers) {
-    return __awaiter(this, void 0, void 0, function () {
-        var curDist, curLayer, x, y, i, l, res, _a, _b, dist;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    curDist = 0;
-                    curLayer = undefined;
-                    x = coords.x, y = coords.y;
-                    i = layers.length - 1;
-                    _c.label = 1;
-                case 1:
-                    if (!(i >= 0)) return [3 /*break*/, 6];
-                    l = layers[i];
-                    if (!l.visible) {
-                        return [3 /*break*/, 5];
-                    }
-                    if (!l.rect.containsCoords(x, y)) {
-                        return [3 /*break*/, 5];
-                    }
-                    res = l;
-                    if (!isFolderLayer(l)) return [3 /*break*/, 4];
-                    if (!(l.childrenLength > 0)) return [3 /*break*/, 4];
-                    _a = bestLayerByCoords;
-                    _b = [coords];
-                    return [4 /*yield*/, l.children()];
-                case 2: return [4 /*yield*/, _a.apply(void 0, _b.concat([_c.sent()]))];
-                case 3:
-                    res = _c.sent();
-                    _c.label = 4;
-                case 4:
-                    if (!res) {
-                        return [3 /*break*/, 5];
-                    }
-                    dist = res.rect.coordsToCenter({ x: x, y: y });
-                    if (!curLayer) {
-                        curLayer = res;
-                        curDist = dist;
-                    }
-                    else if (curLayer.rect.contains(res.rect)) {
-                        curLayer = res;
-                        curDist = dist;
-                    }
-                    else if (res.rect.contains(curLayer.rect)) {
-                        return [3 /*break*/, 5];
-                    }
-                    else if (dist <= curDist) {
-                        curLayer = res;
-                        curDist = dist;
-                    }
-                    _c.label = 5;
-                case 5:
-                    i--;
-                    return [3 /*break*/, 1];
-                case 6: return [2 /*return*/, curLayer];
-            }
-        });
-    });
-}
-exports.bestLayerByCoords = bestLayerByCoords;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-core/src/layer.js.map
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-core/build/types.js":
-/*!******************************************************!*\
-  !*** .-utils/node_modules/uxele-core/build/types.js ***!
-  \******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var LayerType;
-(function (LayerType) {
-    LayerType["folder"] = "folder";
-    LayerType["pixel"] = "pixel";
-    LayerType["vector"] = "vector";
-    LayerType["text"] = "text";
-})(LayerType = exports.LayerType || (exports.LayerType = {}));
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-core/src/types.js.map
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-i18n/build/index.js":
-/*!******************************************************!*\
-  !*** .-utils/node_modules/uxele-i18n/build/index.js ***!
-  \******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./lang */ "../uxele-utils/node_modules/uxele-i18n/build/lang.js"));
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-i18n/src/index.js.map
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-i18n/build/lang.js":
-/*!*****************************************************!*\
-  !*** .-utils/node_modules/uxele-i18n/build/lang.js ***!
-  \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var sprintf_js_1 = __webpack_require__(/*! sprintf-js */ "../uxele-utils/node_modules/sprintf-js/src/sprintf.js");
-var en_1 = __webpack_require__(/*! ./langs/en */ "../uxele-utils/node_modules/uxele-i18n/build/langs/en.js");
-var langs = [en_1.en];
-var curLang = en_1.en;
-function lang(key) {
-    var args = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        args[_i - 1] = arguments[_i];
-    }
-    return sprintf_js_1.sprintf.apply(void 0, [curLang.dict[key]].concat(args));
-}
-exports.lang = lang;
-function setCurLang(_lang) {
-    curLang = _lang;
-}
-exports.setCurLang = setCurLang;
-function getLangs() {
-    return langs;
-}
-exports.getLangs = getLangs;
-function getCurLang() {
-    return curLang;
-}
-exports.getCurLang = getCurLang;
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-i18n/src/lang.js.map
-
-/***/ }),
-
-/***/ "../uxele-utils/node_modules/uxele-i18n/build/langs/en.js":
-/*!*********************************************************!*\
-  !*** .-utils/node_modules/uxele-i18n/build/langs/en.js ***!
-  \*********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.en = {
-    "name": "English",
-    "slug": "en",
-    "dict": {
-        error_openfile_no_adapter: "Cannot find decoder for file: %s",
-        error_canvas_convert_file_fail: "Cannot export canvas to blob with format %s. Detailed error: %s",
-        error_layerExport_exportImage_unsupported_layerType: "Cannot export layer: %s as an Image, unsupported layer type: %s",
-        tool_hand_name: "Hand",
-        ok: "OK",
-        no: "NO",
-        yes: "YES"
-    }
-};
-//# sourceMappingURL=/Users/kxiang/work/projects/psdetch/v3-new/uxele-i18n/src/langs/en.js.map
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/scss/base.scss":
 /*!*********************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/scss/base.scss ***!
   \*********************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic);", ""]);
-
-// module
-exports.push([module.i, "@-webkit-keyframes spinAround {\n  from {\n    -webkit-transform: rotate(0deg);\n            transform: rotate(0deg); }\n  to {\n    -webkit-transform: rotate(359deg);\n            transform: rotate(359deg); } }\n@keyframes spinAround {\n  from {\n    -webkit-transform: rotate(0deg);\n            transform: rotate(0deg); }\n  to {\n    -webkit-transform: rotate(359deg);\n            transform: rotate(359deg); } }\n\n.modal-close, .is-unselectable, .button {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none; }\n\n.navbar-link:not(.is-arrowless)::after {\n  border: 3px solid transparent;\n  border-radius: 2px;\n  border-right: 0;\n  border-top: 0;\n  content: \" \";\n  display: block;\n  height: 0.625em;\n  margin-top: -0.4375em;\n  pointer-events: none;\n  position: absolute;\n  top: 50%;\n  -webkit-transform: rotate(-45deg);\n          transform: rotate(-45deg);\n  -webkit-transform-origin: center;\n          transform-origin: center;\n  width: 0.625em; }\n\n.modal-close {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  background-color: rgba(10, 10, 10, 0.2);\n  border: none;\n  border-radius: 290486px;\n  cursor: pointer;\n  pointer-events: auto;\n  display: inline-block;\n  flex-grow: 0;\n  flex-shrink: 0;\n  font-size: 0;\n  height: 20px;\n  max-height: 20px;\n  max-width: 20px;\n  min-height: 20px;\n  min-width: 20px;\n  outline: none;\n  position: relative;\n  vertical-align: top;\n  width: 20px; }\n  .modal-close::before, .modal-close::after {\n    background-color: white;\n    content: \"\";\n    display: block;\n    left: 50%;\n    position: absolute;\n    top: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);\n            transform: translateX(-50%) translateY(-50%) rotate(45deg);\n    -webkit-transform-origin: center center;\n            transform-origin: center center; }\n  .modal-close::before {\n    height: 2px;\n    width: 50%; }\n  .modal-close::after {\n    height: 50%;\n    width: 2px; }\n  .modal-close:hover, .modal-close:focus {\n    background-color: rgba(10, 10, 10, 0.3); }\n  .modal-close:active {\n    background-color: rgba(10, 10, 10, 0.4); }\n  .is-small.modal-close {\n    height: 16px;\n    max-height: 16px;\n    max-width: 16px;\n    min-height: 16px;\n    min-width: 16px;\n    width: 16px; }\n  .is-medium.modal-close {\n    height: 24px;\n    max-height: 24px;\n    max-width: 24px;\n    min-height: 24px;\n    min-width: 24px;\n    width: 24px; }\n  .is-large.modal-close {\n    height: 32px;\n    max-height: 32px;\n    max-width: 32px;\n    min-height: 32px;\n    min-width: 32px;\n    width: 32px; }\n\n.button.is-loading::after {\n  -webkit-animation: spinAround 500ms infinite linear;\n          animation: spinAround 500ms infinite linear;\n  border: 2px solid #dbdee0;\n  border-radius: 290486px;\n  border-right-color: transparent;\n  border-top-color: transparent;\n  content: \"\";\n  display: block;\n  height: 1em;\n  position: relative;\n  width: 1em; }\n\n.is-overlay, .modal, .modal-background {\n  bottom: 0;\n  left: 0;\n  position: absolute;\n  right: 0;\n  top: 0; }\n\n.button {\n  -moz-appearance: none;\n  -webkit-appearance: none;\n  align-items: center;\n  border: 1px solid transparent;\n  border-radius: 0.4em;\n  box-shadow: none;\n  display: inline-flex;\n  font-size: 15px;\n  height: 2.25em;\n  justify-content: flex-start;\n  line-height: 1.5;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: calc(0.625em - 1px);\n  padding-right: calc(0.625em - 1px);\n  padding-top: calc(0.375em - 1px);\n  position: relative;\n  vertical-align: top; }\n  .button:focus, .is-focused.button, .button:active, .is-active.button {\n    outline: none; }\n  .button[disabled] {\n    cursor: not-allowed; }\n\n/*! minireset.css v0.0.3 | MIT License | github.com/jgthms/minireset.css */\nhtml,\nbody,\np,\nol,\nul,\nli,\ndl,\ndt,\ndd,\nblockquote,\nfigure,\nfieldset,\nlegend,\ntextarea,\npre,\niframe,\nhr,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  margin: 0;\n  padding: 0; }\n\nh1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n  font-size: 100%;\n  font-weight: normal; }\n\nul {\n  list-style: none; }\n\nbutton,\ninput,\nselect,\ntextarea {\n  margin: 0; }\n\nhtml {\n  box-sizing: border-box; }\n\n*, *::before, *::after {\n  box-sizing: inherit; }\n\nimg,\naudio,\nvideo {\n  height: auto;\n  max-width: 100%; }\n\niframe {\n  border: 0; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\ntd,\nth {\n  padding: 0;\n  text-align: left; }\n\nhtml {\n  background-color: #1f2424;\n  font-size: 15px;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  min-width: 300px;\n  overflow-x: hidden;\n  overflow-y: scroll;\n  text-rendering: optimizeLegibility;\n  -webkit-text-size-adjust: 100%;\n     -moz-text-size-adjust: 100%;\n      -ms-text-size-adjust: 100%;\n          text-size-adjust: 100%; }\n\narticle,\naside,\nfigure,\nfooter,\nheader,\nhgroup,\nsection {\n  display: block; }\n\nbody,\nbutton,\ninput,\nselect,\ntextarea {\n  font-family: \"Lato\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Helvetica Neue\", \"Helvetica\", \"Arial\", sans-serif; }\n\ncode,\npre {\n  -moz-osx-font-smoothing: auto;\n  -webkit-font-smoothing: auto;\n  font-family: \"Inconsolata\", \"Consolas\", \"Monaco\", monospace; }\n\nbody {\n  color: #fff;\n  font-size: 1rem;\n  font-weight: 400;\n  line-height: 1.5; }\n\na {\n  color: #1abc9c;\n  cursor: pointer;\n  text-decoration: none; }\n  a strong {\n    color: currentColor; }\n  a:hover {\n    color: #1dd2af; }\n\ncode {\n  background-color: #282f2f;\n  color: #e74c3c;\n  font-size: 0.875em;\n  font-weight: normal;\n  padding: 0.25em 0.5em 0.25em; }\n\nhr {\n  background-color: #282f2f;\n  border: none;\n  display: block;\n  height: 2px;\n  margin: 1.5rem 0; }\n\nimg {\n  height: auto;\n  max-width: 100%; }\n\ninput[type=\"checkbox\"],\ninput[type=\"radio\"] {\n  vertical-align: baseline; }\n\nsmall {\n  font-size: 0.875em; }\n\nspan {\n  font-style: inherit;\n  font-weight: inherit; }\n\nstrong {\n  color: #f2f2f2;\n  font-weight: 700; }\n\npre {\n  -webkit-overflow-scrolling: touch;\n  background-color: #282f2f;\n  color: #fff;\n  font-size: 0.875em;\n  overflow-x: auto;\n  padding: 1.25rem 1.5rem;\n  white-space: pre;\n  word-wrap: normal; }\n  pre code {\n    background-color: transparent;\n    color: currentColor;\n    font-size: 1em;\n    padding: 0; }\n\ntable td,\ntable th {\n  text-align: left;\n  vertical-align: top; }\n\ntable th {\n  color: #f2f2f2; }\n\n.is-clearfix::after {\n  clear: both;\n  content: \" \";\n  display: table; }\n\n.is-pulled-left {\n  float: left !important; }\n\n.is-pulled-right {\n  float: right !important; }\n\n.is-clipped {\n  overflow: hidden !important; }\n\n.is-size-1 {\n  font-size: 3rem !important; }\n\n.is-size-2 {\n  font-size: 2.5rem !important; }\n\n.is-size-3 {\n  font-size: 2rem !important; }\n\n.is-size-4 {\n  font-size: 1.5rem !important; }\n\n.is-size-5 {\n  font-size: 1.25rem !important; }\n\n.is-size-6 {\n  font-size: 15px !important; }\n\n.is-size-7 {\n  font-size: 0.85em !important; }\n\n@media screen and (max-width: 768px) {\n  .is-size-1-mobile {\n    font-size: 3rem !important; }\n  .is-size-2-mobile {\n    font-size: 2.5rem !important; }\n  .is-size-3-mobile {\n    font-size: 2rem !important; }\n  .is-size-4-mobile {\n    font-size: 1.5rem !important; }\n  .is-size-5-mobile {\n    font-size: 1.25rem !important; }\n  .is-size-6-mobile {\n    font-size: 15px !important; }\n  .is-size-7-mobile {\n    font-size: 0.85em !important; } }\n\n@media screen and (min-width: 769px), print {\n  .is-size-1-tablet {\n    font-size: 3rem !important; }\n  .is-size-2-tablet {\n    font-size: 2.5rem !important; }\n  .is-size-3-tablet {\n    font-size: 2rem !important; }\n  .is-size-4-tablet {\n    font-size: 1.5rem !important; }\n  .is-size-5-tablet {\n    font-size: 1.25rem !important; }\n  .is-size-6-tablet {\n    font-size: 15px !important; }\n  .is-size-7-tablet {\n    font-size: 0.85em !important; } }\n\n@media screen and (max-width: 1087px) {\n  .is-size-1-touch {\n    font-size: 3rem !important; }\n  .is-size-2-touch {\n    font-size: 2.5rem !important; }\n  .is-size-3-touch {\n    font-size: 2rem !important; }\n  .is-size-4-touch {\n    font-size: 1.5rem !important; }\n  .is-size-5-touch {\n    font-size: 1.25rem !important; }\n  .is-size-6-touch {\n    font-size: 15px !important; }\n  .is-size-7-touch {\n    font-size: 0.85em !important; } }\n\n@media screen and (min-width: 1088px) {\n  .is-size-1-desktop {\n    font-size: 3rem !important; }\n  .is-size-2-desktop {\n    font-size: 2.5rem !important; }\n  .is-size-3-desktop {\n    font-size: 2rem !important; }\n  .is-size-4-desktop {\n    font-size: 1.5rem !important; }\n  .is-size-5-desktop {\n    font-size: 1.25rem !important; }\n  .is-size-6-desktop {\n    font-size: 15px !important; }\n  .is-size-7-desktop {\n    font-size: 0.85em !important; } }\n\n@media screen and (min-width: 1280px) {\n  .is-size-1-widescreen {\n    font-size: 3rem !important; }\n  .is-size-2-widescreen {\n    font-size: 2.5rem !important; }\n  .is-size-3-widescreen {\n    font-size: 2rem !important; }\n  .is-size-4-widescreen {\n    font-size: 1.5rem !important; }\n  .is-size-5-widescreen {\n    font-size: 1.25rem !important; }\n  .is-size-6-widescreen {\n    font-size: 15px !important; }\n  .is-size-7-widescreen {\n    font-size: 0.85em !important; } }\n\n@media screen and (min-width: 1472px) {\n  .is-size-1-fullhd {\n    font-size: 3rem !important; }\n  .is-size-2-fullhd {\n    font-size: 2.5rem !important; }\n  .is-size-3-fullhd {\n    font-size: 2rem !important; }\n  .is-size-4-fullhd {\n    font-size: 1.5rem !important; }\n  .is-size-5-fullhd {\n    font-size: 1.25rem !important; }\n  .is-size-6-fullhd {\n    font-size: 15px !important; }\n  .is-size-7-fullhd {\n    font-size: 0.85em !important; } }\n\n.has-text-centered {\n  text-align: center !important; }\n\n.has-text-justified {\n  text-align: justify !important; }\n\n.has-text-left {\n  text-align: left !important; }\n\n.has-text-right {\n  text-align: right !important; }\n\n@media screen and (max-width: 768px) {\n  .has-text-centered-mobile {\n    text-align: center !important; } }\n\n@media screen and (min-width: 769px), print {\n  .has-text-centered-tablet {\n    text-align: center !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .has-text-centered-tablet-only {\n    text-align: center !important; } }\n\n@media screen and (max-width: 1087px) {\n  .has-text-centered-touch {\n    text-align: center !important; } }\n\n@media screen and (min-width: 1088px) {\n  .has-text-centered-desktop {\n    text-align: center !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .has-text-centered-desktop-only {\n    text-align: center !important; } }\n\n@media screen and (min-width: 1280px) {\n  .has-text-centered-widescreen {\n    text-align: center !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .has-text-centered-widescreen-only {\n    text-align: center !important; } }\n\n@media screen and (min-width: 1472px) {\n  .has-text-centered-fullhd {\n    text-align: center !important; } }\n\n@media screen and (max-width: 768px) {\n  .has-text-justified-mobile {\n    text-align: justify !important; } }\n\n@media screen and (min-width: 769px), print {\n  .has-text-justified-tablet {\n    text-align: justify !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .has-text-justified-tablet-only {\n    text-align: justify !important; } }\n\n@media screen and (max-width: 1087px) {\n  .has-text-justified-touch {\n    text-align: justify !important; } }\n\n@media screen and (min-width: 1088px) {\n  .has-text-justified-desktop {\n    text-align: justify !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .has-text-justified-desktop-only {\n    text-align: justify !important; } }\n\n@media screen and (min-width: 1280px) {\n  .has-text-justified-widescreen {\n    text-align: justify !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .has-text-justified-widescreen-only {\n    text-align: justify !important; } }\n\n@media screen and (min-width: 1472px) {\n  .has-text-justified-fullhd {\n    text-align: justify !important; } }\n\n@media screen and (max-width: 768px) {\n  .has-text-left-mobile {\n    text-align: left !important; } }\n\n@media screen and (min-width: 769px), print {\n  .has-text-left-tablet {\n    text-align: left !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .has-text-left-tablet-only {\n    text-align: left !important; } }\n\n@media screen and (max-width: 1087px) {\n  .has-text-left-touch {\n    text-align: left !important; } }\n\n@media screen and (min-width: 1088px) {\n  .has-text-left-desktop {\n    text-align: left !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .has-text-left-desktop-only {\n    text-align: left !important; } }\n\n@media screen and (min-width: 1280px) {\n  .has-text-left-widescreen {\n    text-align: left !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .has-text-left-widescreen-only {\n    text-align: left !important; } }\n\n@media screen and (min-width: 1472px) {\n  .has-text-left-fullhd {\n    text-align: left !important; } }\n\n@media screen and (max-width: 768px) {\n  .has-text-right-mobile {\n    text-align: right !important; } }\n\n@media screen and (min-width: 769px), print {\n  .has-text-right-tablet {\n    text-align: right !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .has-text-right-tablet-only {\n    text-align: right !important; } }\n\n@media screen and (max-width: 1087px) {\n  .has-text-right-touch {\n    text-align: right !important; } }\n\n@media screen and (min-width: 1088px) {\n  .has-text-right-desktop {\n    text-align: right !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .has-text-right-desktop-only {\n    text-align: right !important; } }\n\n@media screen and (min-width: 1280px) {\n  .has-text-right-widescreen {\n    text-align: right !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .has-text-right-widescreen-only {\n    text-align: right !important; } }\n\n@media screen and (min-width: 1472px) {\n  .has-text-right-fullhd {\n    text-align: right !important; } }\n\n.is-capitalized {\n  text-transform: capitalize !important; }\n\n.is-lowercase {\n  text-transform: lowercase !important; }\n\n.is-uppercase {\n  text-transform: uppercase !important; }\n\n.is-italic {\n  font-style: italic !important; }\n\n.has-text-white {\n  color: white !important; }\n\na.has-text-white:hover, a.has-text-white:focus {\n  color: #e6e6e6 !important; }\n\n.has-background-white {\n  background-color: white !important; }\n\n.has-text-black {\n  color: #0a0a0a !important; }\n\na.has-text-black:hover, a.has-text-black:focus {\n  color: black !important; }\n\n.has-background-black {\n  background-color: #0a0a0a !important; }\n\n.has-text-light {\n  color: #ecf0f1 !important; }\n\na.has-text-light:hover, a.has-text-light:focus {\n  color: #cfd9db !important; }\n\n.has-background-light {\n  background-color: #ecf0f1 !important; }\n\n.has-text-dark {\n  color: #282f2f !important; }\n\na.has-text-dark:hover, a.has-text-dark:focus {\n  color: #111414 !important; }\n\n.has-background-dark {\n  background-color: #282f2f !important; }\n\n.has-text-primary {\n  color: #375a7f !important; }\n\na.has-text-primary:hover, a.has-text-primary:focus {\n  color: #28415b !important; }\n\n.has-background-primary {\n  background-color: #375a7f !important; }\n\n.has-text-link {\n  color: #1abc9c !important; }\n\na.has-text-link:hover, a.has-text-link:focus {\n  color: #148f77 !important; }\n\n.has-background-link {\n  background-color: #1abc9c !important; }\n\n.has-text-info {\n  color: #209cee !important; }\n\na.has-text-info:hover, a.has-text-info:focus {\n  color: #0f81cc !important; }\n\n.has-background-info {\n  background-color: #209cee !important; }\n\n.has-text-success {\n  color: #2ecc71 !important; }\n\na.has-text-success:hover, a.has-text-success:focus {\n  color: #25a25a !important; }\n\n.has-background-success {\n  background-color: #2ecc71 !important; }\n\n.has-text-warning {\n  color: #f1b70e !important; }\n\na.has-text-warning:hover, a.has-text-warning:focus {\n  color: #c1920b !important; }\n\n.has-background-warning {\n  background-color: #f1b70e !important; }\n\n.has-text-danger {\n  color: #e74c3c !important; }\n\na.has-text-danger:hover, a.has-text-danger:focus {\n  color: #d62c1a !important; }\n\n.has-background-danger {\n  background-color: #e74c3c !important; }\n\n.has-text-black-bis {\n  color: #121212 !important; }\n\n.has-background-black-bis {\n  background-color: #121212 !important; }\n\n.has-text-black-ter {\n  color: #242424 !important; }\n\n.has-background-black-ter {\n  background-color: #242424 !important; }\n\n.has-text-grey-darker {\n  color: #282f2f !important; }\n\n.has-background-grey-darker {\n  background-color: #282f2f !important; }\n\n.has-text-grey-dark {\n  color: #343c3d !important; }\n\n.has-background-grey-dark {\n  background-color: #343c3d !important; }\n\n.has-text-grey {\n  color: #5e6d6f !important; }\n\n.has-background-grey {\n  background-color: #5e6d6f !important; }\n\n.has-text-grey-light {\n  color: #8c9b9d !important; }\n\n.has-background-grey-light {\n  background-color: #8c9b9d !important; }\n\n.has-text-grey-lighter {\n  color: #dbdee0 !important; }\n\n.has-background-grey-lighter {\n  background-color: #dbdee0 !important; }\n\n.has-text-white-ter {\n  color: #ecf0f1 !important; }\n\n.has-background-white-ter {\n  background-color: #ecf0f1 !important; }\n\n.has-text-white-bis {\n  color: #fafafa !important; }\n\n.has-background-white-bis {\n  background-color: #fafafa !important; }\n\n.has-text-weight-light {\n  font-weight: 300 !important; }\n\n.has-text-weight-normal {\n  font-weight: 400 !important; }\n\n.has-text-weight-semibold {\n  font-weight: 600 !important; }\n\n.has-text-weight-bold {\n  font-weight: 700 !important; }\n\n.is-block {\n  display: block !important; }\n\n@media screen and (max-width: 768px) {\n  .is-block-mobile {\n    display: block !important; } }\n\n@media screen and (min-width: 769px), print {\n  .is-block-tablet {\n    display: block !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .is-block-tablet-only {\n    display: block !important; } }\n\n@media screen and (max-width: 1087px) {\n  .is-block-touch {\n    display: block !important; } }\n\n@media screen and (min-width: 1088px) {\n  .is-block-desktop {\n    display: block !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .is-block-desktop-only {\n    display: block !important; } }\n\n@media screen and (min-width: 1280px) {\n  .is-block-widescreen {\n    display: block !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .is-block-widescreen-only {\n    display: block !important; } }\n\n@media screen and (min-width: 1472px) {\n  .is-block-fullhd {\n    display: block !important; } }\n\n.is-flex {\n  display: flex !important; }\n\n@media screen and (max-width: 768px) {\n  .is-flex-mobile {\n    display: flex !important; } }\n\n@media screen and (min-width: 769px), print {\n  .is-flex-tablet {\n    display: flex !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .is-flex-tablet-only {\n    display: flex !important; } }\n\n@media screen and (max-width: 1087px) {\n  .is-flex-touch {\n    display: flex !important; } }\n\n@media screen and (min-width: 1088px) {\n  .is-flex-desktop {\n    display: flex !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .is-flex-desktop-only {\n    display: flex !important; } }\n\n@media screen and (min-width: 1280px) {\n  .is-flex-widescreen {\n    display: flex !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .is-flex-widescreen-only {\n    display: flex !important; } }\n\n@media screen and (min-width: 1472px) {\n  .is-flex-fullhd {\n    display: flex !important; } }\n\n.is-inline {\n  display: inline !important; }\n\n@media screen and (max-width: 768px) {\n  .is-inline-mobile {\n    display: inline !important; } }\n\n@media screen and (min-width: 769px), print {\n  .is-inline-tablet {\n    display: inline !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .is-inline-tablet-only {\n    display: inline !important; } }\n\n@media screen and (max-width: 1087px) {\n  .is-inline-touch {\n    display: inline !important; } }\n\n@media screen and (min-width: 1088px) {\n  .is-inline-desktop {\n    display: inline !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .is-inline-desktop-only {\n    display: inline !important; } }\n\n@media screen and (min-width: 1280px) {\n  .is-inline-widescreen {\n    display: inline !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .is-inline-widescreen-only {\n    display: inline !important; } }\n\n@media screen and (min-width: 1472px) {\n  .is-inline-fullhd {\n    display: inline !important; } }\n\n.is-inline-block {\n  display: inline-block !important; }\n\n@media screen and (max-width: 768px) {\n  .is-inline-block-mobile {\n    display: inline-block !important; } }\n\n@media screen and (min-width: 769px), print {\n  .is-inline-block-tablet {\n    display: inline-block !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .is-inline-block-tablet-only {\n    display: inline-block !important; } }\n\n@media screen and (max-width: 1087px) {\n  .is-inline-block-touch {\n    display: inline-block !important; } }\n\n@media screen and (min-width: 1088px) {\n  .is-inline-block-desktop {\n    display: inline-block !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .is-inline-block-desktop-only {\n    display: inline-block !important; } }\n\n@media screen and (min-width: 1280px) {\n  .is-inline-block-widescreen {\n    display: inline-block !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .is-inline-block-widescreen-only {\n    display: inline-block !important; } }\n\n@media screen and (min-width: 1472px) {\n  .is-inline-block-fullhd {\n    display: inline-block !important; } }\n\n.is-inline-flex {\n  display: inline-flex !important; }\n\n@media screen and (max-width: 768px) {\n  .is-inline-flex-mobile {\n    display: inline-flex !important; } }\n\n@media screen and (min-width: 769px), print {\n  .is-inline-flex-tablet {\n    display: inline-flex !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .is-inline-flex-tablet-only {\n    display: inline-flex !important; } }\n\n@media screen and (max-width: 1087px) {\n  .is-inline-flex-touch {\n    display: inline-flex !important; } }\n\n@media screen and (min-width: 1088px) {\n  .is-inline-flex-desktop {\n    display: inline-flex !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .is-inline-flex-desktop-only {\n    display: inline-flex !important; } }\n\n@media screen and (min-width: 1280px) {\n  .is-inline-flex-widescreen {\n    display: inline-flex !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .is-inline-flex-widescreen-only {\n    display: inline-flex !important; } }\n\n@media screen and (min-width: 1472px) {\n  .is-inline-flex-fullhd {\n    display: inline-flex !important; } }\n\n.is-hidden {\n  display: none !important; }\n\n.is-sr-only {\n  border: none !important;\n  clip: rect(0, 0, 0, 0) !important;\n  height: 0.01em !important;\n  overflow: hidden !important;\n  padding: 0 !important;\n  position: absolute !important;\n  white-space: nowrap !important;\n  width: 0.01em !important; }\n\n@media screen and (max-width: 768px) {\n  .is-hidden-mobile {\n    display: none !important; } }\n\n@media screen and (min-width: 769px), print {\n  .is-hidden-tablet {\n    display: none !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .is-hidden-tablet-only {\n    display: none !important; } }\n\n@media screen and (max-width: 1087px) {\n  .is-hidden-touch {\n    display: none !important; } }\n\n@media screen and (min-width: 1088px) {\n  .is-hidden-desktop {\n    display: none !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .is-hidden-desktop-only {\n    display: none !important; } }\n\n@media screen and (min-width: 1280px) {\n  .is-hidden-widescreen {\n    display: none !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .is-hidden-widescreen-only {\n    display: none !important; } }\n\n@media screen and (min-width: 1472px) {\n  .is-hidden-fullhd {\n    display: none !important; } }\n\n.is-invisible {\n  visibility: hidden !important; }\n\n@media screen and (max-width: 768px) {\n  .is-invisible-mobile {\n    visibility: hidden !important; } }\n\n@media screen and (min-width: 769px), print {\n  .is-invisible-tablet {\n    visibility: hidden !important; } }\n\n@media screen and (min-width: 769px) and (max-width: 1087px) {\n  .is-invisible-tablet-only {\n    visibility: hidden !important; } }\n\n@media screen and (max-width: 1087px) {\n  .is-invisible-touch {\n    visibility: hidden !important; } }\n\n@media screen and (min-width: 1088px) {\n  .is-invisible-desktop {\n    visibility: hidden !important; } }\n\n@media screen and (min-width: 1088px) and (max-width: 1279px) {\n  .is-invisible-desktop-only {\n    visibility: hidden !important; } }\n\n@media screen and (min-width: 1280px) {\n  .is-invisible-widescreen {\n    visibility: hidden !important; } }\n\n@media screen and (min-width: 1280px) and (max-width: 1471px) {\n  .is-invisible-widescreen-only {\n    visibility: hidden !important; } }\n\n@media screen and (min-width: 1472px) {\n  .is-invisible-fullhd {\n    visibility: hidden !important; } }\n\n.is-marginless {\n  margin: 0 !important; }\n\n.is-paddingless {\n  padding: 0 !important; }\n\n.is-radiusless {\n  border-radius: 0 !important; }\n\n.is-shadowless {\n  box-shadow: none !important; }\n\n.navbar {\n  background-color: #375a7f;\n  min-height: 4rem;\n  position: relative;\n  z-index: 30; }\n  .navbar.is-white {\n    background-color: white;\n    color: #0a0a0a; }\n    .navbar.is-white .navbar-brand > .navbar-item,\n    .navbar.is-white .navbar-brand .navbar-link {\n      color: #0a0a0a; }\n    .navbar.is-white .navbar-brand > a.navbar-item:hover, .navbar.is-white .navbar-brand > a.navbar-item.is-active,\n    .navbar.is-white .navbar-brand .navbar-link:hover,\n    .navbar.is-white .navbar-brand .navbar-link.is-active {\n      background-color: #f2f2f2;\n      color: #0a0a0a; }\n    .navbar.is-white .navbar-brand .navbar-link::after {\n      border-color: #0a0a0a; }\n    .navbar.is-white .navbar-burger {\n      color: #0a0a0a; }\n    @media screen and (min-width: 1088px) {\n      .navbar.is-white .navbar-start > .navbar-item,\n      .navbar.is-white .navbar-start .navbar-link,\n      .navbar.is-white .navbar-end > .navbar-item,\n      .navbar.is-white .navbar-end .navbar-link {\n        color: #0a0a0a; }\n      .navbar.is-white .navbar-start > a.navbar-item:hover, .navbar.is-white .navbar-start > a.navbar-item.is-active,\n      .navbar.is-white .navbar-start .navbar-link:hover,\n      .navbar.is-white .navbar-start .navbar-link.is-active,\n      .navbar.is-white .navbar-end > a.navbar-item:hover,\n      .navbar.is-white .navbar-end > a.navbar-item.is-active,\n      .navbar.is-white .navbar-end .navbar-link:hover,\n      .navbar.is-white .navbar-end .navbar-link.is-active {\n        background-color: #f2f2f2;\n        color: #0a0a0a; }\n      .navbar.is-white .navbar-start .navbar-link::after,\n      .navbar.is-white .navbar-end .navbar-link::after {\n        border-color: #0a0a0a; }\n      .navbar.is-white .navbar-item.has-dropdown:hover .navbar-link,\n      .navbar.is-white .navbar-item.has-dropdown.is-active .navbar-link {\n        background-color: #f2f2f2;\n        color: #0a0a0a; }\n      .navbar.is-white .navbar-dropdown a.navbar-item.is-active {\n        background-color: white;\n        color: #0a0a0a; } }\n  .navbar.is-black {\n    background-color: #0a0a0a;\n    color: white; }\n    .navbar.is-black .navbar-brand > .navbar-item,\n    .navbar.is-black .navbar-brand .navbar-link {\n      color: white; }\n    .navbar.is-black .navbar-brand > a.navbar-item:hover, .navbar.is-black .navbar-brand > a.navbar-item.is-active,\n    .navbar.is-black .navbar-brand .navbar-link:hover,\n    .navbar.is-black .navbar-brand .navbar-link.is-active {\n      background-color: black;\n      color: white; }\n    .navbar.is-black .navbar-brand .navbar-link::after {\n      border-color: white; }\n    .navbar.is-black .navbar-burger {\n      color: white; }\n    @media screen and (min-width: 1088px) {\n      .navbar.is-black .navbar-start > .navbar-item,\n      .navbar.is-black .navbar-start .navbar-link,\n      .navbar.is-black .navbar-end > .navbar-item,\n      .navbar.is-black .navbar-end .navbar-link {\n        color: white; }\n      .navbar.is-black .navbar-start > a.navbar-item:hover, .navbar.is-black .navbar-start > a.navbar-item.is-active,\n      .navbar.is-black .navbar-start .navbar-link:hover,\n      .navbar.is-black .navbar-start .navbar-link.is-active,\n      .navbar.is-black .navbar-end > a.navbar-item:hover,\n      .navbar.is-black .navbar-end > a.navbar-item.is-active,\n      .navbar.is-black .navbar-end .navbar-link:hover,\n      .navbar.is-black .navbar-end .navbar-link.is-active {\n        background-color: black;\n        color: white; }\n      .navbar.is-black .navbar-start .navbar-link::after,\n      .navbar.is-black .navbar-end .navbar-link::after {\n        border-color: white; }\n      .navbar.is-black .navbar-item.has-dropdown:hover .navbar-link,\n      .navbar.is-black .navbar-item.has-dropdown.is-active .navbar-link {\n        background-color: black;\n        color: white; }\n      .navbar.is-black .navbar-dropdown a.navbar-item.is-active {\n        background-color: #0a0a0a;\n        color: white; } }\n  .navbar.is-light {\n    background-color: #ecf0f1;\n    color: #282f2f; }\n    .navbar.is-light .navbar-brand > .navbar-item,\n    .navbar.is-light .navbar-brand .navbar-link {\n      color: #282f2f; }\n    .navbar.is-light .navbar-brand > a.navbar-item:hover, .navbar.is-light .navbar-brand > a.navbar-item.is-active,\n    .navbar.is-light .navbar-brand .navbar-link:hover,\n    .navbar.is-light .navbar-brand .navbar-link.is-active {\n      background-color: #dde4e6;\n      color: #282f2f; }\n    .navbar.is-light .navbar-brand .navbar-link::after {\n      border-color: #282f2f; }\n    .navbar.is-light .navbar-burger {\n      color: #282f2f; }\n    @media screen and (min-width: 1088px) {\n      .navbar.is-light .navbar-start > .navbar-item,\n      .navbar.is-light .navbar-start .navbar-link,\n      .navbar.is-light .navbar-end > .navbar-item,\n      .navbar.is-light .navbar-end .navbar-link {\n        color: #282f2f; }\n      .navbar.is-light .navbar-start > a.navbar-item:hover, .navbar.is-light .navbar-start > a.navbar-item.is-active,\n      .navbar.is-light .navbar-start .navbar-link:hover,\n      .navbar.is-light .navbar-start .navbar-link.is-active,\n      .navbar.is-light .navbar-end > a.navbar-item:hover,\n      .navbar.is-light .navbar-end > a.navbar-item.is-active,\n      .navbar.is-light .navbar-end .navbar-link:hover,\n      .navbar.is-light .navbar-end .navbar-link.is-active {\n        background-color: #dde4e6;\n        color: #282f2f; }\n      .navbar.is-light .navbar-start .navbar-link::after,\n      .navbar.is-light .navbar-end .navbar-link::after {\n        border-color: #282f2f; }\n      .navbar.is-light .navbar-item.has-dropdown:hover .navbar-link,\n      .navbar.is-light .navbar-item.has-dropdown.is-active .navbar-link {\n        background-color: #dde4e6;\n        color: #282f2f; }\n      .navbar.is-light .navbar-dropdown a.navbar-item.is-active {\n        background-color: #ecf0f1;\n        color: #282f2f; } }\n  .navbar.is-dark {\n    background-color: #282f2f;\n    color: #ecf0f1; }\n    .navbar.is-dark .navbar-brand > .navbar-item,\n    .navbar.is-dark .navbar-brand .navbar-link {\n      color: #ecf0f1; }\n    .navbar.is-dark .navbar-brand > a.navbar-item:hover, .navbar.is-dark .navbar-brand > a.navbar-item.is-active,\n    .navbar.is-dark .navbar-brand .navbar-link:hover,\n    .navbar.is-dark .navbar-brand .navbar-link.is-active {\n      background-color: #1d2122;\n      color: #ecf0f1; }\n    .navbar.is-dark .navbar-brand .navbar-link::after {\n      border-color: #ecf0f1; }\n    .navbar.is-dark .navbar-burger {\n      color: #ecf0f1; }\n    @media screen and (min-width: 1088px) {\n      .navbar.is-dark .navbar-start > .navbar-item,\n      .navbar.is-dark .navbar-start .navbar-link,\n      .navbar.is-dark .navbar-end > .navbar-item,\n      .navbar.is-dark .navbar-end .navbar-link {\n        color: #ecf0f1; }\n      .navbar.is-dark .navbar-start > a.navbar-item:hover, .navbar.is-dark .navbar-start > a.navbar-item.is-active,\n      .navbar.is-dark .navbar-start .navbar-link:hover,\n      .navbar.is-dark .navbar-start .navbar-link.is-active,\n      .navbar.is-dark .navbar-end > a.navbar-item:hover,\n      .navbar.is-dark .navbar-end > a.navbar-item.is-active,\n      .navbar.is-dark .navbar-end .navbar-link:hover,\n      .navbar.is-dark .navbar-end .navbar-link.is-active {\n        background-color: #1d2122;\n        color: #ecf0f1; }\n      .navbar.is-dark .navbar-start .navbar-link::after,\n      .navbar.is-dark .navbar-end .navbar-link::after {\n        border-color: #ecf0f1; }\n      .navbar.is-dark .navbar-item.has-dropdown:hover .navbar-link,\n      .navbar.is-dark .navbar-item.has-dropdown.is-active .navbar-link {\n        background-color: #1d2122;\n        color: #ecf0f1; }\n      .navbar.is-dark .navbar-dropdown a.navbar-item.is-active {\n        background-color: #282f2f;\n        color: #ecf0f1; } }\n  .navbar.is-primary {\n    background-color: #375a7f;\n    color: #fff; }\n    .navbar.is-primary .navbar-brand > .navbar-item,\n    .navbar.is-primary .navbar-brand .navbar-link {\n      color: #fff; }\n    .navbar.is-primary .navbar-brand > a.navbar-item:hover, .navbar.is-primary .navbar-brand > a.navbar-item.is-active,\n    .navbar.is-primary .navbar-brand .navbar-link:hover,\n    .navbar.is-primary .navbar-brand .navbar-link.is-active {\n      background-color: #2f4d6d;\n      color: #fff; }\n    .navbar.is-primary .navbar-brand .navbar-link::after {\n      border-color: #fff; }\n    .navbar.is-primary .navbar-burger {\n      color: #fff; }\n    @media screen and (min-width: 1088px) {\n      .navbar.is-primary .navbar-start > .navbar-item,\n      .navbar.is-primary .navbar-start .navbar-link,\n      .navbar.is-primary .navbar-end > .navbar-item,\n      .navbar.is-primary .navbar-end .navbar-link {\n        color: #fff; }\n      .navbar.is-primary .navbar-start > a.navbar-item:hover, .navbar.is-primary .navbar-start > a.navbar-item.is-active,\n      .navbar.is-primary .navbar-start .navbar-link:hover,\n      .navbar.is-primary .navbar-start .navbar-link.is-active,\n      .navbar.is-primary .navbar-end > a.navbar-item:hover,\n      .navbar.is-primary .navbar-end > a.navbar-item.is-active,\n      .navbar.is-primary .navbar-end .navbar-link:hover,\n      .navbar.is-primary .navbar-end .navbar-link.is-active {\n        background-color: #2f4d6d;\n        color: #fff; }\n      .navbar.is-primary .navbar-start .navbar-link::after,\n      .navbar.is-primary .navbar-end .navbar-link::after {\n        border-color: #fff; }\n      .navbar.is-primary .navbar-item.has-dropdown:hover .navbar-link,\n      .navbar.is-primary .navbar-item.has-dropdown.is-active .navbar-link {\n        background-color: #2f4d6d;\n        color: #fff; }\n      .navbar.is-primary .navbar-dropdown a.navbar-item.is-active {\n        background-color: #375a7f;\n        color: #fff; } }\n  .navbar.is-link {\n    background-color: #1abc9c;\n    color: #fff; }\n    .navbar.is-link .navbar-brand > .navbar-item,\n    .navbar.is-link .navbar-brand .navbar-link {\n      color: #fff; }\n    .navbar.is-link .navbar-brand > a.navbar-item:hover, .navbar.is-link .navbar-brand > a.navbar-item.is-active,\n    .navbar.is-link .navbar-brand .navbar-link:hover,\n    .navbar.is-link .navbar-brand .navbar-link.is-active {\n      background-color: #17a689;\n      color: #fff; }\n    .navbar.is-link .navbar-brand .navbar-link::after {\n      border-color: #fff; }\n    .navbar.is-link .navbar-burger {\n      color: #fff; }\n    @media screen and (min-width: 1088px) {\n      .navbar.is-link .navbar-start > .navbar-item,\n      .navbar.is-link .navbar-start .navbar-link,\n      .navbar.is-link .navbar-end > .navbar-item,\n      .navbar.is-link .navbar-end .navbar-link {\n        color: #fff; }\n      .navbar.is-link .navbar-start > a.navbar-item:hover, .navbar.is-link .navbar-start > a.navbar-item.is-active,\n      .navbar.is-link .navbar-start .navbar-link:hover,\n      .navbar.is-link .navbar-start .navbar-link.is-active,\n      .navbar.is-link .navbar-end > a.navbar-item:hover,\n      .navbar.is-link .navbar-end > a.navbar-item.is-active,\n      .navbar.is-link .navbar-end .navbar-link:hover,\n      .navbar.is-link .navbar-end .navbar-link.is-active {\n        background-color: #17a689;\n        color: #fff; }\n      .navbar.is-link .navbar-start .navbar-link::after,\n      .navbar.is-link .navbar-end .navbar-link::after {\n        border-color: #fff; }\n      .navbar.is-link .navbar-item.has-dropdown:hover .navbar-link,\n      .navbar.is-link .navbar-item.has-dropdown.is-active .navbar-link {\n        background-color: #17a689;\n        color: #fff; }\n      .navbar.is-link .navbar-dropdown a.navbar-item.is-active {\n        background-color: #1abc9c;\n        color: #fff; } }\n  .navbar.is-info {\n    background-color: #209cee;\n    color: #fff; }\n    .navbar.is-info .navbar-brand > .navbar-item,\n    .navbar.is-info .navbar-brand .navbar-link {\n      color: #fff; }\n    .navbar.is-info .navbar-brand > a.navbar-item:hover, .navbar.is-info .navbar-brand > a.navbar-item.is-active,\n    .navbar.is-info .navbar-brand .navbar-link:hover,\n    .navbar.is-info .navbar-brand .navbar-link.is-active {\n      background-color: #118fe4;\n      color: #fff; }\n    .navbar.is-info .navbar-brand .navbar-link::after {\n      border-color: #fff; }\n    .navbar.is-info .navbar-burger {\n      color: #fff; }\n    @media screen and (min-width: 1088px) {\n      .navbar.is-info .navbar-start > .navbar-item,\n      .navbar.is-info .navbar-start .navbar-link,\n      .navbar.is-info .navbar-end > .navbar-item,\n      .navbar.is-info .navbar-end .navbar-link {\n        color: #fff; }\n      .navbar.is-info .navbar-start > a.navbar-item:hover, .navbar.is-info .navbar-start > a.navbar-item.is-active,\n      .navbar.is-info .navbar-start .navbar-link:hover,\n      .navbar.is-info .navbar-start .navbar-link.is-active,\n      .navbar.is-info .navbar-end > a.navbar-item:hover,\n      .navbar.is-info .navbar-end > a.navbar-item.is-active,\n      .navbar.is-info .navbar-end .navbar-link:hover,\n      .navbar.is-info .navbar-end .navbar-link.is-active {\n        background-color: #118fe4;\n        color: #fff; }\n      .navbar.is-info .navbar-start .navbar-link::after,\n      .navbar.is-info .navbar-end .navbar-link::after {\n        border-color: #fff; }\n      .navbar.is-info .navbar-item.has-dropdown:hover .navbar-link,\n      .navbar.is-info .navbar-item.has-dropdown.is-active .navbar-link {\n        background-color: #118fe4;\n        color: #fff; }\n      .navbar.is-info .navbar-dropdown a.navbar-item.is-active {\n        background-color: #209cee;\n        color: #fff; } }\n  .navbar.is-success {\n    background-color: #2ecc71;\n    color: #fff; }\n    .navbar.is-success .navbar-brand > .navbar-item,\n    .navbar.is-success .navbar-brand .navbar-link {\n      color: #fff; }\n    .navbar.is-success .navbar-brand > a.navbar-item:hover, .navbar.is-success .navbar-brand > a.navbar-item.is-active,\n    .navbar.is-success .navbar-brand .navbar-link:hover,\n    .navbar.is-success .navbar-brand .navbar-link.is-active {\n      background-color: #29b765;\n      color: #fff; }\n    .navbar.is-success .navbar-brand .navbar-link::after {\n      border-color: #fff; }\n    .navbar.is-success .navbar-burger {\n      color: #fff; }\n    @media screen and (min-width: 1088px) {\n      .navbar.is-success .navbar-start > .navbar-item,\n      .navbar.is-success .navbar-start .navbar-link,\n      .navbar.is-success .navbar-end > .navbar-item,\n      .navbar.is-success .navbar-end .navbar-link {\n        color: #fff; }\n      .navbar.is-success .navbar-start > a.navbar-item:hover, .navbar.is-success .navbar-start > a.navbar-item.is-active,\n      .navbar.is-success .navbar-start .navbar-link:hover,\n      .navbar.is-success .navbar-start .navbar-link.is-active,\n      .navbar.is-success .navbar-end > a.navbar-item:hover,\n      .navbar.is-success .navbar-end > a.navbar-item.is-active,\n      .navbar.is-success .navbar-end .navbar-link:hover,\n      .navbar.is-success .navbar-end .navbar-link.is-active {\n        background-color: #29b765;\n        color: #fff; }\n      .navbar.is-success .navbar-start .navbar-link::after,\n      .navbar.is-success .navbar-end .navbar-link::after {\n        border-color: #fff; }\n      .navbar.is-success .navbar-item.has-dropdown:hover .navbar-link,\n      .navbar.is-success .navbar-item.has-dropdown.is-active .navbar-link {\n        background-color: #29b765;\n        color: #fff; }\n      .navbar.is-success .navbar-dropdown a.navbar-item.is-active {\n        background-color: #2ecc71;\n        color: #fff; } }\n  .navbar.is-warning {\n    background-color: #f1b70e;\n    color: #fff; }\n    .navbar.is-warning .navbar-brand > .navbar-item,\n    .navbar.is-warning .navbar-brand .navbar-link {\n      color: #fff; }\n    .navbar.is-warning .navbar-brand > a.navbar-item:hover, .navbar.is-warning .navbar-brand > a.navbar-item.is-active,\n    .navbar.is-warning .navbar-brand .navbar-link:hover,\n    .navbar.is-warning .navbar-brand .navbar-link.is-active {\n      background-color: #d9a50d;\n      color: #fff; }\n    .navbar.is-warning .navbar-brand .navbar-link::after {\n      border-color: #fff; }\n    .navbar.is-warning .navbar-burger {\n      color: #fff; }\n    @media screen and (min-width: 1088px) {\n      .navbar.is-warning .navbar-start > .navbar-item,\n      .navbar.is-warning .navbar-start .navbar-link,\n      .navbar.is-warning .navbar-end > .navbar-item,\n      .navbar.is-warning .navbar-end .navbar-link {\n        color: #fff; }\n      .navbar.is-warning .navbar-start > a.navbar-item:hover, .navbar.is-warning .navbar-start > a.navbar-item.is-active,\n      .navbar.is-warning .navbar-start .navbar-link:hover,\n      .navbar.is-warning .navbar-start .navbar-link.is-active,\n      .navbar.is-warning .navbar-end > a.navbar-item:hover,\n      .navbar.is-warning .navbar-end > a.navbar-item.is-active,\n      .navbar.is-warning .navbar-end .navbar-link:hover,\n      .navbar.is-warning .navbar-end .navbar-link.is-active {\n        background-color: #d9a50d;\n        color: #fff; }\n      .navbar.is-warning .navbar-start .navbar-link::after,\n      .navbar.is-warning .navbar-end .navbar-link::after {\n        border-color: #fff; }\n      .navbar.is-warning .navbar-item.has-dropdown:hover .navbar-link,\n      .navbar.is-warning .navbar-item.has-dropdown.is-active .navbar-link {\n        background-color: #d9a50d;\n        color: #fff; }\n      .navbar.is-warning .navbar-dropdown a.navbar-item.is-active {\n        background-color: #f1b70e;\n        color: #fff; } }\n  .navbar.is-danger {\n    background-color: #e74c3c;\n    color: #fff; }\n    .navbar.is-danger .navbar-brand > .navbar-item,\n    .navbar.is-danger .navbar-brand .navbar-link {\n      color: #fff; }\n    .navbar.is-danger .navbar-brand > a.navbar-item:hover, .navbar.is-danger .navbar-brand > a.navbar-item.is-active,\n    .navbar.is-danger .navbar-brand .navbar-link:hover,\n    .navbar.is-danger .navbar-brand .navbar-link.is-active {\n      background-color: #e43725;\n      color: #fff; }\n    .navbar.is-danger .navbar-brand .navbar-link::after {\n      border-color: #fff; }\n    .navbar.is-danger .navbar-burger {\n      color: #fff; }\n    @media screen and (min-width: 1088px) {\n      .navbar.is-danger .navbar-start > .navbar-item,\n      .navbar.is-danger .navbar-start .navbar-link,\n      .navbar.is-danger .navbar-end > .navbar-item,\n      .navbar.is-danger .navbar-end .navbar-link {\n        color: #fff; }\n      .navbar.is-danger .navbar-start > a.navbar-item:hover, .navbar.is-danger .navbar-start > a.navbar-item.is-active,\n      .navbar.is-danger .navbar-start .navbar-link:hover,\n      .navbar.is-danger .navbar-start .navbar-link.is-active,\n      .navbar.is-danger .navbar-end > a.navbar-item:hover,\n      .navbar.is-danger .navbar-end > a.navbar-item.is-active,\n      .navbar.is-danger .navbar-end .navbar-link:hover,\n      .navbar.is-danger .navbar-end .navbar-link.is-active {\n        background-color: #e43725;\n        color: #fff; }\n      .navbar.is-danger .navbar-start .navbar-link::after,\n      .navbar.is-danger .navbar-end .navbar-link::after {\n        border-color: #fff; }\n      .navbar.is-danger .navbar-item.has-dropdown:hover .navbar-link,\n      .navbar.is-danger .navbar-item.has-dropdown.is-active .navbar-link {\n        background-color: #e43725;\n        color: #fff; }\n      .navbar.is-danger .navbar-dropdown a.navbar-item.is-active {\n        background-color: #e74c3c;\n        color: #fff; } }\n  .navbar > .container {\n    align-items: stretch;\n    display: flex;\n    min-height: 4rem;\n    width: 100%; }\n  .navbar.has-shadow {\n    box-shadow: 0 2px 0 0 #282f2f; }\n  .navbar.is-fixed-bottom, .navbar.is-fixed-top {\n    left: 0;\n    position: fixed;\n    right: 0;\n    z-index: 30; }\n  .navbar.is-fixed-bottom {\n    bottom: 0; }\n    .navbar.is-fixed-bottom.has-shadow {\n      box-shadow: 0 -2px 0 0 #282f2f; }\n  .navbar.is-fixed-top {\n    top: 0; }\n\nhtml.has-navbar-fixed-top,\nbody.has-navbar-fixed-top {\n  padding-top: 4rem; }\n\nhtml.has-navbar-fixed-bottom,\nbody.has-navbar-fixed-bottom {\n  padding-bottom: 4rem; }\n\n.navbar-brand,\n.navbar-tabs {\n  align-items: stretch;\n  display: flex;\n  flex-shrink: 0;\n  min-height: 4rem; }\n\n.navbar-brand a.navbar-item:hover {\n  background-color: transparent; }\n\n.navbar-tabs {\n  -webkit-overflow-scrolling: touch;\n  max-width: 100vw;\n  overflow-x: auto;\n  overflow-y: hidden; }\n\n.navbar-burger {\n  color: #fff;\n  cursor: pointer;\n  display: block;\n  height: 4rem;\n  position: relative;\n  width: 4rem;\n  margin-left: auto; }\n  .navbar-burger span {\n    background-color: currentColor;\n    display: block;\n    height: 1px;\n    left: calc(50% - 8px);\n    position: absolute;\n    -webkit-transform-origin: center;\n            transform-origin: center;\n    transition-duration: 86ms;\n    transition-property: background-color, opacity, -webkit-transform;\n    transition-property: background-color, opacity, transform;\n    transition-property: background-color, opacity, transform, -webkit-transform;\n    transition-timing-function: ease-out;\n    width: 16px; }\n    .navbar-burger span:nth-child(1) {\n      top: calc(50% - 6px); }\n    .navbar-burger span:nth-child(2) {\n      top: calc(50% - 1px); }\n    .navbar-burger span:nth-child(3) {\n      top: calc(50% + 4px); }\n  .navbar-burger:hover {\n    background-color: rgba(0, 0, 0, 0.05); }\n  .navbar-burger.is-active span:nth-child(1) {\n    -webkit-transform: translateY(5px) rotate(45deg);\n            transform: translateY(5px) rotate(45deg); }\n  .navbar-burger.is-active span:nth-child(2) {\n    opacity: 0; }\n  .navbar-burger.is-active span:nth-child(3) {\n    -webkit-transform: translateY(-5px) rotate(-45deg);\n            transform: translateY(-5px) rotate(-45deg); }\n\n.navbar-menu {\n  display: none; }\n\n.navbar-item,\n.navbar-link {\n  color: #fff;\n  display: block;\n  line-height: 1.5;\n  padding: 0.5rem 0.75rem;\n  position: relative; }\n  .navbar-item .icon:only-child,\n  .navbar-link .icon:only-child {\n    margin-left: -0.25rem;\n    margin-right: -0.25rem; }\n\na.navbar-item,\n.navbar-link {\n  cursor: pointer; }\n  a.navbar-item:hover, a.navbar-item.is-active,\n  .navbar-link:hover,\n  .navbar-link.is-active {\n    background-color: transparent;\n    color: #1abc9c; }\n\n.navbar-item {\n  display: block;\n  flex-grow: 0;\n  flex-shrink: 0; }\n  .navbar-item img {\n    max-height: 1.75rem; }\n  .navbar-item.has-dropdown {\n    padding: 0; }\n  .navbar-item.is-expanded {\n    flex-grow: 1;\n    flex-shrink: 1; }\n  .navbar-item.is-tab {\n    border-bottom: 1px solid transparent;\n    min-height: 4rem;\n    padding-bottom: calc(0.5rem - 1px); }\n    .navbar-item.is-tab:hover {\n      background-color: transparent;\n      border-bottom-color: #1abc9c; }\n    .navbar-item.is-tab.is-active {\n      background-color: transparent;\n      border-bottom-color: #1abc9c;\n      border-bottom-style: solid;\n      border-bottom-width: 3px;\n      color: #1abc9c;\n      padding-bottom: calc(0.5rem - 3px); }\n\n.navbar-content {\n  flex-grow: 1;\n  flex-shrink: 1; }\n\n.navbar-link:not(.is-arrowless) {\n  padding-right: 2.5em; }\n  .navbar-link:not(.is-arrowless)::after {\n    border-color: #fff;\n    margin-top: -0.375em;\n    right: 1.125em; }\n\n.navbar-dropdown {\n  font-size: 0.875rem;\n  padding-bottom: 0.5rem;\n  padding-top: 0.5rem; }\n  .navbar-dropdown .navbar-item {\n    padding-left: 1.5rem;\n    padding-right: 1.5rem; }\n\n.navbar-divider {\n  background-color: rgba(0, 0, 0, 0.2);\n  border: none;\n  display: none;\n  height: 2px;\n  margin: 0.5rem 0; }\n\n@media screen and (max-width: 1087px) {\n  .navbar > .container {\n    display: block; }\n  .navbar-brand .navbar-item,\n  .navbar-tabs .navbar-item {\n    align-items: center;\n    display: flex; }\n  .navbar-link::after {\n    display: none; }\n  .navbar-menu {\n    background-color: #375a7f;\n    box-shadow: 0 8px 16px rgba(10, 10, 10, 0.1);\n    padding: 0.5rem 0; }\n    .navbar-menu.is-active {\n      display: block; }\n  .navbar.is-fixed-bottom-touch, .navbar.is-fixed-top-touch {\n    left: 0;\n    position: fixed;\n    right: 0;\n    z-index: 30; }\n  .navbar.is-fixed-bottom-touch {\n    bottom: 0; }\n    .navbar.is-fixed-bottom-touch.has-shadow {\n      box-shadow: 0 -2px 3px rgba(10, 10, 10, 0.1); }\n  .navbar.is-fixed-top-touch {\n    top: 0; }\n  .navbar.is-fixed-top .navbar-menu, .navbar.is-fixed-top-touch .navbar-menu {\n    -webkit-overflow-scrolling: touch;\n    max-height: calc(100vh - 4rem);\n    overflow: auto; }\n  html.has-navbar-fixed-top-touch,\n  body.has-navbar-fixed-top-touch {\n    padding-top: 4rem; }\n  html.has-navbar-fixed-bottom-touch,\n  body.has-navbar-fixed-bottom-touch {\n    padding-bottom: 4rem; } }\n\n@media screen and (min-width: 1088px) {\n  .navbar,\n  .navbar-menu,\n  .navbar-start,\n  .navbar-end {\n    align-items: stretch;\n    display: flex; }\n  .navbar {\n    min-height: 4rem; }\n    .navbar.is-spaced {\n      padding: 1rem 2rem; }\n      .navbar.is-spaced .navbar-start,\n      .navbar.is-spaced .navbar-end {\n        align-items: center; }\n      .navbar.is-spaced a.navbar-item,\n      .navbar.is-spaced .navbar-link {\n        border-radius: 0.4em; }\n    .navbar.is-transparent a.navbar-item:hover, .navbar.is-transparent a.navbar-item.is-active,\n    .navbar.is-transparent .navbar-link:hover,\n    .navbar.is-transparent .navbar-link.is-active {\n      background-color: transparent !important; }\n    .navbar.is-transparent .navbar-item.has-dropdown.is-active .navbar-link, .navbar.is-transparent .navbar-item.has-dropdown.is-hoverable:hover .navbar-link {\n      background-color: transparent !important; }\n    .navbar.is-transparent .navbar-dropdown a.navbar-item:hover {\n      background-color: transparent;\n      color: #dbdee0; }\n    .navbar.is-transparent .navbar-dropdown a.navbar-item.is-active {\n      background-color: transparent;\n      color: #1abc9c; }\n  .navbar-burger {\n    display: none; }\n  .navbar-item,\n  .navbar-link {\n    align-items: center;\n    display: flex; }\n  .navbar-item {\n    display: flex; }\n    .navbar-item.has-dropdown {\n      align-items: stretch; }\n    .navbar-item.has-dropdown-up .navbar-link::after {\n      -webkit-transform: rotate(135deg) translate(0.25em, -0.25em);\n              transform: rotate(135deg) translate(0.25em, -0.25em); }\n    .navbar-item.has-dropdown-up .navbar-dropdown {\n      border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n      border-radius: 8px 8px 0 0;\n      border-top: none;\n      bottom: 100%;\n      box-shadow: 0 -8px 8px rgba(10, 10, 10, 0.1);\n      top: auto; }\n    .navbar-item.is-active .navbar-dropdown, .navbar-item.is-hoverable:hover .navbar-dropdown {\n      display: block; }\n      .navbar.is-spaced .navbar-item.is-active .navbar-dropdown, .navbar-item.is-active .navbar-dropdown.is-boxed, .navbar.is-spaced .navbar-item.is-hoverable:hover .navbar-dropdown, .navbar-item.is-hoverable:hover .navbar-dropdown.is-boxed {\n        opacity: 1;\n        pointer-events: auto;\n        -webkit-transform: translateY(0);\n                transform: translateY(0); }\n  .navbar-menu {\n    flex-grow: 1;\n    flex-shrink: 0; }\n  .navbar-start {\n    justify-content: flex-start;\n    margin-right: auto; }\n  .navbar-end {\n    justify-content: flex-end;\n    margin-left: auto; }\n  .navbar-dropdown {\n    background-color: #375a7f;\n    border-bottom-left-radius: 8px;\n    border-bottom-right-radius: 8px;\n    border-top: 1px solid rgba(0, 0, 0, 0.2);\n    box-shadow: 0 8px 8px rgba(10, 10, 10, 0.1);\n    display: none;\n    font-size: 0.875rem;\n    left: 0;\n    min-width: 100%;\n    position: absolute;\n    top: 100%;\n    z-index: 20; }\n    .navbar-dropdown .navbar-item {\n      padding: 0.375rem 1rem;\n      white-space: nowrap; }\n    .navbar-dropdown a.navbar-item {\n      padding-right: 3rem; }\n      .navbar-dropdown a.navbar-item:hover {\n        background-color: transparent;\n        color: #dbdee0; }\n      .navbar-dropdown a.navbar-item.is-active {\n        background-color: transparent;\n        color: #1abc9c; }\n    .navbar.is-spaced .navbar-dropdown, .navbar-dropdown.is-boxed {\n      border-radius: 8px;\n      border-top: none;\n      box-shadow: 0 8px 8px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);\n      display: block;\n      opacity: 0;\n      pointer-events: none;\n      top: calc(100% + (-4px));\n      -webkit-transform: translateY(-5px);\n              transform: translateY(-5px);\n      transition-duration: 86ms;\n      transition-property: opacity, -webkit-transform;\n      transition-property: opacity, transform;\n      transition-property: opacity, transform, -webkit-transform; }\n    .navbar-dropdown.is-right {\n      left: auto;\n      right: 0; }\n  .navbar-divider {\n    display: block; }\n  .navbar > .container .navbar-brand,\n  .container > .navbar .navbar-brand {\n    margin-left: -.75rem; }\n  .navbar > .container .navbar-menu,\n  .container > .navbar .navbar-menu {\n    margin-right: -.75rem; }\n  .navbar.is-fixed-bottom-desktop, .navbar.is-fixed-top-desktop {\n    left: 0;\n    position: fixed;\n    right: 0;\n    z-index: 30; }\n  .navbar.is-fixed-bottom-desktop {\n    bottom: 0; }\n    .navbar.is-fixed-bottom-desktop.has-shadow {\n      box-shadow: 0 -2px 3px rgba(10, 10, 10, 0.1); }\n  .navbar.is-fixed-top-desktop {\n    top: 0; }\n  html.has-navbar-fixed-top-desktop,\n  body.has-navbar-fixed-top-desktop {\n    padding-top: 4rem; }\n  html.has-navbar-fixed-bottom-desktop,\n  body.has-navbar-fixed-bottom-desktop {\n    padding-bottom: 4rem; }\n  html.has-spaced-navbar-fixed-top,\n  body.has-spaced-navbar-fixed-top {\n    padding-top: 6rem; }\n  html.has-spaced-navbar-fixed-bottom,\n  body.has-spaced-navbar-fixed-bottom {\n    padding-bottom: 6rem; }\n  a.navbar-item.is-active,\n  .navbar-link.is-active {\n    color: #1abc9c; }\n  a.navbar-item.is-active:not(:hover),\n  .navbar-link.is-active:not(:hover) {\n    background-color: transparent; }\n  .navbar-item.has-dropdown:hover .navbar-link, .navbar-item.has-dropdown.is-active .navbar-link {\n    background-color: transparent; } }\n\n.button {\n  background-color: #282f2f;\n  border-color: #4c5759;\n  border-width: 1px;\n  color: #375a7f;\n  cursor: pointer;\n  justify-content: center;\n  padding-bottom: calc(0.375em - 1px);\n  padding-left: 0.75em;\n  padding-right: 0.75em;\n  padding-top: calc(0.375em - 1px);\n  text-align: center;\n  white-space: nowrap; }\n  .button strong {\n    color: inherit; }\n  .button .icon, .button .icon.is-small, .button .icon.is-medium, .button .icon.is-large {\n    height: 1.5em;\n    width: 1.5em; }\n  .button .icon:first-child:not(:last-child) {\n    margin-left: calc(-0.375em - 1px);\n    margin-right: 0.1875em; }\n  .button .icon:last-child:not(:first-child) {\n    margin-left: 0.1875em;\n    margin-right: calc(-0.375em - 1px); }\n  .button .icon:first-child:last-child {\n    margin-left: calc(-0.375em - 1px);\n    margin-right: calc(-0.375em - 1px); }\n  .button:hover, .button.is-hovered {\n    border-color: #8c9b9d;\n    color: #f2f2f2; }\n  .button:focus, .button.is-focused {\n    border-color: #8c9b9d;\n    color: #17a689; }\n    .button:focus:not(:active), .button.is-focused:not(:active) {\n      box-shadow: 0 0 0 0.125em rgba(26, 188, 156, 0.25); }\n  .button:active, .button.is-active {\n    border-color: #343c3d;\n    color: #f2f2f2; }\n  .button.is-text {\n    background-color: transparent;\n    border-color: transparent;\n    color: #fff;\n    text-decoration: underline; }\n    .button.is-text:hover, .button.is-text.is-hovered, .button.is-text:focus, .button.is-text.is-focused {\n      background-color: #282f2f;\n      color: #f2f2f2; }\n    .button.is-text:active, .button.is-text.is-active {\n      background-color: #1d2122;\n      color: #f2f2f2; }\n    .button.is-text[disabled] {\n      background-color: transparent;\n      border-color: transparent;\n      box-shadow: none; }\n  .button.is-white {\n    background-color: white;\n    border-color: transparent;\n    color: #0a0a0a; }\n    .button.is-white:hover, .button.is-white.is-hovered {\n      background-color: #f9f9f9;\n      border-color: transparent;\n      color: #0a0a0a; }\n    .button.is-white:focus, .button.is-white.is-focused {\n      border-color: transparent;\n      color: #0a0a0a; }\n      .button.is-white:focus:not(:active), .button.is-white.is-focused:not(:active) {\n        box-shadow: 0 0 0 0.125em rgba(255, 255, 255, 0.25); }\n    .button.is-white:active, .button.is-white.is-active {\n      background-color: #f2f2f2;\n      border-color: transparent;\n      color: #0a0a0a; }\n    .button.is-white[disabled] {\n      background-color: white;\n      border-color: transparent;\n      box-shadow: none; }\n    .button.is-white.is-inverted {\n      background-color: #0a0a0a;\n      color: white; }\n      .button.is-white.is-inverted:hover {\n        background-color: black; }\n      .button.is-white.is-inverted[disabled] {\n        background-color: #0a0a0a;\n        border-color: transparent;\n        box-shadow: none;\n        color: white; }\n    .button.is-white.is-loading::after {\n      border-color: transparent transparent #0a0a0a #0a0a0a !important; }\n    .button.is-white.is-outlined {\n      background-color: transparent;\n      border-color: white;\n      color: white; }\n      .button.is-white.is-outlined:hover, .button.is-white.is-outlined:focus {\n        background-color: white;\n        border-color: white;\n        color: #0a0a0a; }\n      .button.is-white.is-outlined.is-loading::after {\n        border-color: transparent transparent white white !important; }\n      .button.is-white.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: white;\n        box-shadow: none;\n        color: white; }\n    .button.is-white.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #0a0a0a;\n      color: #0a0a0a; }\n      .button.is-white.is-inverted.is-outlined:hover, .button.is-white.is-inverted.is-outlined:focus {\n        background-color: #0a0a0a;\n        color: white; }\n      .button.is-white.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #0a0a0a;\n        box-shadow: none;\n        color: #0a0a0a; }\n  .button.is-black {\n    background-color: #0a0a0a;\n    border-color: transparent;\n    color: white; }\n    .button.is-black:hover, .button.is-black.is-hovered {\n      background-color: #040404;\n      border-color: transparent;\n      color: white; }\n    .button.is-black:focus, .button.is-black.is-focused {\n      border-color: transparent;\n      color: white; }\n      .button.is-black:focus:not(:active), .button.is-black.is-focused:not(:active) {\n        box-shadow: 0 0 0 0.125em rgba(10, 10, 10, 0.25); }\n    .button.is-black:active, .button.is-black.is-active {\n      background-color: black;\n      border-color: transparent;\n      color: white; }\n    .button.is-black[disabled] {\n      background-color: #0a0a0a;\n      border-color: transparent;\n      box-shadow: none; }\n    .button.is-black.is-inverted {\n      background-color: white;\n      color: #0a0a0a; }\n      .button.is-black.is-inverted:hover {\n        background-color: #f2f2f2; }\n      .button.is-black.is-inverted[disabled] {\n        background-color: white;\n        border-color: transparent;\n        box-shadow: none;\n        color: #0a0a0a; }\n    .button.is-black.is-loading::after {\n      border-color: transparent transparent white white !important; }\n    .button.is-black.is-outlined {\n      background-color: transparent;\n      border-color: #0a0a0a;\n      color: #0a0a0a; }\n      .button.is-black.is-outlined:hover, .button.is-black.is-outlined:focus {\n        background-color: #0a0a0a;\n        border-color: #0a0a0a;\n        color: white; }\n      .button.is-black.is-outlined.is-loading::after {\n        border-color: transparent transparent #0a0a0a #0a0a0a !important; }\n      .button.is-black.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #0a0a0a;\n        box-shadow: none;\n        color: #0a0a0a; }\n    .button.is-black.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: white;\n      color: white; }\n      .button.is-black.is-inverted.is-outlined:hover, .button.is-black.is-inverted.is-outlined:focus {\n        background-color: white;\n        color: #0a0a0a; }\n      .button.is-black.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: white;\n        box-shadow: none;\n        color: white; }\n  .button.is-light {\n    background-color: #ecf0f1;\n    border-color: transparent;\n    color: #282f2f; }\n    .button.is-light:hover, .button.is-light.is-hovered {\n      background-color: #e5eaec;\n      border-color: transparent;\n      color: #282f2f; }\n    .button.is-light:focus, .button.is-light.is-focused {\n      border-color: transparent;\n      color: #282f2f; }\n      .button.is-light:focus:not(:active), .button.is-light.is-focused:not(:active) {\n        box-shadow: 0 0 0 0.125em rgba(236, 240, 241, 0.25); }\n    .button.is-light:active, .button.is-light.is-active {\n      background-color: #dde4e6;\n      border-color: transparent;\n      color: #282f2f; }\n    .button.is-light[disabled] {\n      background-color: #ecf0f1;\n      border-color: transparent;\n      box-shadow: none; }\n    .button.is-light.is-inverted {\n      background-color: #282f2f;\n      color: #ecf0f1; }\n      .button.is-light.is-inverted:hover {\n        background-color: #1d2122; }\n      .button.is-light.is-inverted[disabled] {\n        background-color: #282f2f;\n        border-color: transparent;\n        box-shadow: none;\n        color: #ecf0f1; }\n    .button.is-light.is-loading::after {\n      border-color: transparent transparent #282f2f #282f2f !important; }\n    .button.is-light.is-outlined {\n      background-color: transparent;\n      border-color: #ecf0f1;\n      color: #ecf0f1; }\n      .button.is-light.is-outlined:hover, .button.is-light.is-outlined:focus {\n        background-color: #ecf0f1;\n        border-color: #ecf0f1;\n        color: #282f2f; }\n      .button.is-light.is-outlined.is-loading::after {\n        border-color: transparent transparent #ecf0f1 #ecf0f1 !important; }\n      .button.is-light.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #ecf0f1;\n        box-shadow: none;\n        color: #ecf0f1; }\n    .button.is-light.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #282f2f;\n      color: #282f2f; }\n      .button.is-light.is-inverted.is-outlined:hover, .button.is-light.is-inverted.is-outlined:focus {\n        background-color: #282f2f;\n        color: #ecf0f1; }\n      .button.is-light.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #282f2f;\n        box-shadow: none;\n        color: #282f2f; }\n  .button.is-dark {\n    background-color: #282f2f;\n    border-color: transparent;\n    color: #ecf0f1; }\n    .button.is-dark:hover, .button.is-dark.is-hovered {\n      background-color: #232829;\n      border-color: transparent;\n      color: #ecf0f1; }\n    .button.is-dark:focus, .button.is-dark.is-focused {\n      border-color: transparent;\n      color: #ecf0f1; }\n      .button.is-dark:focus:not(:active), .button.is-dark.is-focused:not(:active) {\n        box-shadow: 0 0 0 0.125em rgba(40, 47, 47, 0.25); }\n    .button.is-dark:active, .button.is-dark.is-active {\n      background-color: #1d2122;\n      border-color: transparent;\n      color: #ecf0f1; }\n    .button.is-dark[disabled] {\n      background-color: #282f2f;\n      border-color: transparent;\n      box-shadow: none; }\n    .button.is-dark.is-inverted {\n      background-color: #ecf0f1;\n      color: #282f2f; }\n      .button.is-dark.is-inverted:hover {\n        background-color: #dde4e6; }\n      .button.is-dark.is-inverted[disabled] {\n        background-color: #ecf0f1;\n        border-color: transparent;\n        box-shadow: none;\n        color: #282f2f; }\n    .button.is-dark.is-loading::after {\n      border-color: transparent transparent #ecf0f1 #ecf0f1 !important; }\n    .button.is-dark.is-outlined {\n      background-color: transparent;\n      border-color: #282f2f;\n      color: #282f2f; }\n      .button.is-dark.is-outlined:hover, .button.is-dark.is-outlined:focus {\n        background-color: #282f2f;\n        border-color: #282f2f;\n        color: #ecf0f1; }\n      .button.is-dark.is-outlined.is-loading::after {\n        border-color: transparent transparent #282f2f #282f2f !important; }\n      .button.is-dark.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #282f2f;\n        box-shadow: none;\n        color: #282f2f; }\n    .button.is-dark.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #ecf0f1;\n      color: #ecf0f1; }\n      .button.is-dark.is-inverted.is-outlined:hover, .button.is-dark.is-inverted.is-outlined:focus {\n        background-color: #ecf0f1;\n        color: #282f2f; }\n      .button.is-dark.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #ecf0f1;\n        box-shadow: none;\n        color: #ecf0f1; }\n  .button.is-primary {\n    background-color: #375a7f;\n    border-color: transparent;\n    color: #fff; }\n    .button.is-primary:hover, .button.is-primary.is-hovered {\n      background-color: #335476;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-primary:focus, .button.is-primary.is-focused {\n      border-color: transparent;\n      color: #fff; }\n      .button.is-primary:focus:not(:active), .button.is-primary.is-focused:not(:active) {\n        box-shadow: 0 0 0 0.125em rgba(55, 90, 127, 0.25); }\n    .button.is-primary:active, .button.is-primary.is-active {\n      background-color: #2f4d6d;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-primary[disabled] {\n      background-color: #375a7f;\n      border-color: transparent;\n      box-shadow: none; }\n    .button.is-primary.is-inverted {\n      background-color: #fff;\n      color: #375a7f; }\n      .button.is-primary.is-inverted:hover {\n        background-color: #f2f2f2; }\n      .button.is-primary.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #375a7f; }\n    .button.is-primary.is-loading::after {\n      border-color: transparent transparent #fff #fff !important; }\n    .button.is-primary.is-outlined {\n      background-color: transparent;\n      border-color: #375a7f;\n      color: #375a7f; }\n      .button.is-primary.is-outlined:hover, .button.is-primary.is-outlined:focus {\n        background-color: #375a7f;\n        border-color: #375a7f;\n        color: #fff; }\n      .button.is-primary.is-outlined.is-loading::after {\n        border-color: transparent transparent #375a7f #375a7f !important; }\n      .button.is-primary.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #375a7f;\n        box-shadow: none;\n        color: #375a7f; }\n    .button.is-primary.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff; }\n      .button.is-primary.is-inverted.is-outlined:hover, .button.is-primary.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #375a7f; }\n      .button.is-primary.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff; }\n  .button.is-link {\n    background-color: #1abc9c;\n    border-color: transparent;\n    color: #fff; }\n    .button.is-link:hover, .button.is-link.is-hovered {\n      background-color: #18b193;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-link:focus, .button.is-link.is-focused {\n      border-color: transparent;\n      color: #fff; }\n      .button.is-link:focus:not(:active), .button.is-link.is-focused:not(:active) {\n        box-shadow: 0 0 0 0.125em rgba(26, 188, 156, 0.25); }\n    .button.is-link:active, .button.is-link.is-active {\n      background-color: #17a689;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-link[disabled] {\n      background-color: #1abc9c;\n      border-color: transparent;\n      box-shadow: none; }\n    .button.is-link.is-inverted {\n      background-color: #fff;\n      color: #1abc9c; }\n      .button.is-link.is-inverted:hover {\n        background-color: #f2f2f2; }\n      .button.is-link.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #1abc9c; }\n    .button.is-link.is-loading::after {\n      border-color: transparent transparent #fff #fff !important; }\n    .button.is-link.is-outlined {\n      background-color: transparent;\n      border-color: #1abc9c;\n      color: #1abc9c; }\n      .button.is-link.is-outlined:hover, .button.is-link.is-outlined:focus {\n        background-color: #1abc9c;\n        border-color: #1abc9c;\n        color: #fff; }\n      .button.is-link.is-outlined.is-loading::after {\n        border-color: transparent transparent #1abc9c #1abc9c !important; }\n      .button.is-link.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #1abc9c;\n        box-shadow: none;\n        color: #1abc9c; }\n    .button.is-link.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff; }\n      .button.is-link.is-inverted.is-outlined:hover, .button.is-link.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #1abc9c; }\n      .button.is-link.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff; }\n  .button.is-info {\n    background-color: #209cee;\n    border-color: transparent;\n    color: #fff; }\n    .button.is-info:hover, .button.is-info.is-hovered {\n      background-color: #1496ed;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-info:focus, .button.is-info.is-focused {\n      border-color: transparent;\n      color: #fff; }\n      .button.is-info:focus:not(:active), .button.is-info.is-focused:not(:active) {\n        box-shadow: 0 0 0 0.125em rgba(32, 156, 238, 0.25); }\n    .button.is-info:active, .button.is-info.is-active {\n      background-color: #118fe4;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-info[disabled] {\n      background-color: #209cee;\n      border-color: transparent;\n      box-shadow: none; }\n    .button.is-info.is-inverted {\n      background-color: #fff;\n      color: #209cee; }\n      .button.is-info.is-inverted:hover {\n        background-color: #f2f2f2; }\n      .button.is-info.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #209cee; }\n    .button.is-info.is-loading::after {\n      border-color: transparent transparent #fff #fff !important; }\n    .button.is-info.is-outlined {\n      background-color: transparent;\n      border-color: #209cee;\n      color: #209cee; }\n      .button.is-info.is-outlined:hover, .button.is-info.is-outlined:focus {\n        background-color: #209cee;\n        border-color: #209cee;\n        color: #fff; }\n      .button.is-info.is-outlined.is-loading::after {\n        border-color: transparent transparent #209cee #209cee !important; }\n      .button.is-info.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #209cee;\n        box-shadow: none;\n        color: #209cee; }\n    .button.is-info.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff; }\n      .button.is-info.is-inverted.is-outlined:hover, .button.is-info.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #209cee; }\n      .button.is-info.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff; }\n  .button.is-success {\n    background-color: #2ecc71;\n    border-color: transparent;\n    color: #fff; }\n    .button.is-success:hover, .button.is-success.is-hovered {\n      background-color: #2cc26b;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-success:focus, .button.is-success.is-focused {\n      border-color: transparent;\n      color: #fff; }\n      .button.is-success:focus:not(:active), .button.is-success.is-focused:not(:active) {\n        box-shadow: 0 0 0 0.125em rgba(46, 204, 113, 0.25); }\n    .button.is-success:active, .button.is-success.is-active {\n      background-color: #29b765;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-success[disabled] {\n      background-color: #2ecc71;\n      border-color: transparent;\n      box-shadow: none; }\n    .button.is-success.is-inverted {\n      background-color: #fff;\n      color: #2ecc71; }\n      .button.is-success.is-inverted:hover {\n        background-color: #f2f2f2; }\n      .button.is-success.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #2ecc71; }\n    .button.is-success.is-loading::after {\n      border-color: transparent transparent #fff #fff !important; }\n    .button.is-success.is-outlined {\n      background-color: transparent;\n      border-color: #2ecc71;\n      color: #2ecc71; }\n      .button.is-success.is-outlined:hover, .button.is-success.is-outlined:focus {\n        background-color: #2ecc71;\n        border-color: #2ecc71;\n        color: #fff; }\n      .button.is-success.is-outlined.is-loading::after {\n        border-color: transparent transparent #2ecc71 #2ecc71 !important; }\n      .button.is-success.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #2ecc71;\n        box-shadow: none;\n        color: #2ecc71; }\n    .button.is-success.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff; }\n      .button.is-success.is-inverted.is-outlined:hover, .button.is-success.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #2ecc71; }\n      .button.is-success.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff; }\n  .button.is-warning {\n    background-color: #f1b70e;\n    border-color: transparent;\n    color: #fff; }\n    .button.is-warning:hover, .button.is-warning.is-hovered {\n      background-color: #e5ae0d;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-warning:focus, .button.is-warning.is-focused {\n      border-color: transparent;\n      color: #fff; }\n      .button.is-warning:focus:not(:active), .button.is-warning.is-focused:not(:active) {\n        box-shadow: 0 0 0 0.125em rgba(241, 183, 14, 0.25); }\n    .button.is-warning:active, .button.is-warning.is-active {\n      background-color: #d9a50d;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-warning[disabled] {\n      background-color: #f1b70e;\n      border-color: transparent;\n      box-shadow: none; }\n    .button.is-warning.is-inverted {\n      background-color: #fff;\n      color: #f1b70e; }\n      .button.is-warning.is-inverted:hover {\n        background-color: #f2f2f2; }\n      .button.is-warning.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #f1b70e; }\n    .button.is-warning.is-loading::after {\n      border-color: transparent transparent #fff #fff !important; }\n    .button.is-warning.is-outlined {\n      background-color: transparent;\n      border-color: #f1b70e;\n      color: #f1b70e; }\n      .button.is-warning.is-outlined:hover, .button.is-warning.is-outlined:focus {\n        background-color: #f1b70e;\n        border-color: #f1b70e;\n        color: #fff; }\n      .button.is-warning.is-outlined.is-loading::after {\n        border-color: transparent transparent #f1b70e #f1b70e !important; }\n      .button.is-warning.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #f1b70e;\n        box-shadow: none;\n        color: #f1b70e; }\n    .button.is-warning.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff; }\n      .button.is-warning.is-inverted.is-outlined:hover, .button.is-warning.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #f1b70e; }\n      .button.is-warning.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff; }\n  .button.is-danger {\n    background-color: #e74c3c;\n    border-color: transparent;\n    color: #fff; }\n    .button.is-danger:hover, .button.is-danger.is-hovered {\n      background-color: #e64231;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-danger:focus, .button.is-danger.is-focused {\n      border-color: transparent;\n      color: #fff; }\n      .button.is-danger:focus:not(:active), .button.is-danger.is-focused:not(:active) {\n        box-shadow: 0 0 0 0.125em rgba(231, 76, 60, 0.25); }\n    .button.is-danger:active, .button.is-danger.is-active {\n      background-color: #e43725;\n      border-color: transparent;\n      color: #fff; }\n    .button.is-danger[disabled] {\n      background-color: #e74c3c;\n      border-color: transparent;\n      box-shadow: none; }\n    .button.is-danger.is-inverted {\n      background-color: #fff;\n      color: #e74c3c; }\n      .button.is-danger.is-inverted:hover {\n        background-color: #f2f2f2; }\n      .button.is-danger.is-inverted[disabled] {\n        background-color: #fff;\n        border-color: transparent;\n        box-shadow: none;\n        color: #e74c3c; }\n    .button.is-danger.is-loading::after {\n      border-color: transparent transparent #fff #fff !important; }\n    .button.is-danger.is-outlined {\n      background-color: transparent;\n      border-color: #e74c3c;\n      color: #e74c3c; }\n      .button.is-danger.is-outlined:hover, .button.is-danger.is-outlined:focus {\n        background-color: #e74c3c;\n        border-color: #e74c3c;\n        color: #fff; }\n      .button.is-danger.is-outlined.is-loading::after {\n        border-color: transparent transparent #e74c3c #e74c3c !important; }\n      .button.is-danger.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #e74c3c;\n        box-shadow: none;\n        color: #e74c3c; }\n    .button.is-danger.is-inverted.is-outlined {\n      background-color: transparent;\n      border-color: #fff;\n      color: #fff; }\n      .button.is-danger.is-inverted.is-outlined:hover, .button.is-danger.is-inverted.is-outlined:focus {\n        background-color: #fff;\n        color: #e74c3c; }\n      .button.is-danger.is-inverted.is-outlined[disabled] {\n        background-color: transparent;\n        border-color: #fff;\n        box-shadow: none;\n        color: #fff; }\n  .button.is-small {\n    border-radius: 3px;\n    font-size: 0.85em; }\n  .button.is-medium {\n    font-size: 1.25rem; }\n  .button.is-large {\n    font-size: 1.5rem; }\n  .button[disabled] {\n    background-color: #8c9b9d;\n    border-color: #dbdee0;\n    box-shadow: none;\n    opacity: 0.5; }\n  .button.is-fullwidth {\n    display: flex;\n    width: 100%; }\n  .button.is-loading {\n    color: transparent !important;\n    pointer-events: none; }\n    .button.is-loading::after {\n      position: absolute;\n      left: calc(50% - (1em / 2));\n      top: calc(50% - (1em / 2));\n      position: absolute !important; }\n  .button.is-static {\n    background-color: #ecf0f1;\n    border-color: #dbdee0;\n    color: #5e6d6f;\n    box-shadow: none;\n    pointer-events: none; }\n  .button.is-rounded {\n    border-radius: 290486px;\n    padding-left: 1em;\n    padding-right: 1em; }\n\n.buttons {\n  align-items: center;\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: flex-start; }\n  .buttons .button {\n    margin-bottom: 0.5rem; }\n    .buttons .button:not(:last-child):not(.is-fullwidth) {\n      margin-right: 0.5rem; }\n  .buttons:last-child {\n    margin-bottom: -0.5rem; }\n  .buttons:not(:last-child) {\n    margin-bottom: 1rem; }\n  .buttons.has-addons .button:not(:first-child) {\n    border-bottom-left-radius: 0;\n    border-top-left-radius: 0; }\n  .buttons.has-addons .button:not(:last-child) {\n    border-bottom-right-radius: 0;\n    border-top-right-radius: 0;\n    margin-right: -1px; }\n  .buttons.has-addons .button:last-child {\n    margin-right: 0; }\n  .buttons.has-addons .button:hover, .buttons.has-addons .button.is-hovered {\n    z-index: 2; }\n  .buttons.has-addons .button:focus, .buttons.has-addons .button.is-focused, .buttons.has-addons .button:active, .buttons.has-addons .button.is-active, .buttons.has-addons .button.is-selected {\n    z-index: 3; }\n    .buttons.has-addons .button:focus:hover, .buttons.has-addons .button.is-focused:hover, .buttons.has-addons .button:active:hover, .buttons.has-addons .button.is-active:hover, .buttons.has-addons .button.is-selected:hover {\n      z-index: 4; }\n  .buttons.has-addons .button.is-expanded {\n    flex-grow: 1; }\n  .buttons.is-centered {\n    justify-content: center; }\n  .buttons.is-right {\n    justify-content: flex-end; }\n\n.modal {\n  align-items: center;\n  display: none;\n  flex-direction: column;\n  justify-content: center;\n  overflow: hidden;\n  position: fixed;\n  z-index: 40; }\n  .modal.is-active {\n    display: flex; }\n\n.modal-background {\n  background-color: rgba(10, 10, 10, 0.86); }\n\n.modal-content,\n.modal-card {\n  margin: 0 20px;\n  max-height: calc(100vh - 160px);\n  overflow: auto;\n  position: relative;\n  width: 100%; }\n  @media screen and (min-width: 769px), print {\n    .modal-content,\n    .modal-card {\n      margin: 0 auto;\n      max-height: calc(100vh - 40px);\n      width: 640px; } }\n\n.modal-close {\n  background: none;\n  height: 40px;\n  position: fixed;\n  right: 20px;\n  top: 20px;\n  width: 40px; }\n\n.modal-card {\n  display: flex;\n  flex-direction: column;\n  max-height: calc(100vh - 40px);\n  overflow: hidden;\n  -ms-overflow-y: visible; }\n\n.modal-card-head,\n.modal-card-foot {\n  align-items: center;\n  background-color: #282f2f;\n  display: flex;\n  flex-shrink: 0;\n  justify-content: flex-start;\n  padding: 20px;\n  position: relative; }\n\n.modal-card-head {\n  border-bottom: 1px solid #5e6d6f;\n  border-top-left-radius: 8px;\n  border-top-right-radius: 8px; }\n\n.modal-card-title {\n  color: #f2f2f2;\n  flex-grow: 1;\n  flex-shrink: 0;\n  font-size: 1.5rem;\n  line-height: 1; }\n\n.modal-card-foot {\n  border-bottom-left-radius: 8px;\n  border-bottom-right-radius: 8px;\n  border-top: 1px solid #5e6d6f; }\n  .modal-card-foot .button:not(:last-child) {\n    margin-right: 10px; }\n\n.modal-card-body {\n  -webkit-overflow-scrolling: touch;\n  background-color: white;\n  flex-grow: 1;\n  flex-shrink: 1;\n  overflow: auto;\n  padding: 20px; }\n\n.dropdown {\n  display: inline-flex;\n  position: relative;\n  vertical-align: top; }\n  .dropdown.is-active .dropdown-menu, .dropdown.is-hoverable:hover .dropdown-menu {\n    display: block; }\n  .dropdown.is-right .dropdown-menu {\n    left: auto;\n    right: 0; }\n  .dropdown.is-up .dropdown-menu {\n    bottom: 100%;\n    padding-bottom: 4px;\n    padding-top: initial;\n    top: auto; }\n\n.dropdown-menu {\n  display: none;\n  left: 0;\n  min-width: 12rem;\n  padding-top: 4px;\n  position: absolute;\n  top: 100%;\n  z-index: 20; }\n\n.dropdown-content {\n  background-color: #282f2f;\n  border-radius: 0.4em;\n  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);\n  padding-bottom: 0.5rem;\n  padding-top: 0.5rem; }\n\n.dropdown-item {\n  color: #fff;\n  display: block;\n  font-size: 0.875rem;\n  line-height: 1.5;\n  padding: 0.375rem 1rem;\n  position: relative; }\n\na.dropdown-item,\nbutton.dropdown-item {\n  padding-right: 3rem;\n  text-align: left;\n  white-space: nowrap;\n  width: 100%; }\n  a.dropdown-item:hover,\n  button.dropdown-item:hover {\n    background-color: #282f2f;\n    color: #0a0a0a; }\n  a.dropdown-item.is-active,\n  button.dropdown-item.is-active {\n    background-color: #1abc9c;\n    color: #fff; }\n\n.dropdown-divider {\n  background-color: #5e6d6f;\n  border: none;\n  display: block;\n  height: 1px;\n  margin: 0.5rem 0; }\n\nhr {\n  height: 2px; }\n\nh6 {\n  text-transform: uppercase;\n  letter-spacing: 0.5px; }\n\n.hero {\n  background-color: #343c3d; }\n\n.box {\n  box-shadow: none;\n  background-color: #343c3d; }\n\na {\n  transition: all 200ms ease; }\n\n.button {\n  transition: all 200ms ease;\n  border-width: 2px;\n  color: white; }\n  .button.is-active, .button.is-focused, .button:active, .button:focus {\n    box-shadow: 0 0 0 2px rgba(140, 155, 157, 0.5); }\n  .button.is-white.is-hovered, .button.is-white:hover {\n    background-color: white; }\n  .button.is-white.is-active, .button.is-white.is-focused, .button.is-white:active, .button.is-white:focus {\n    border-color: white;\n    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); }\n  .button.is-black.is-hovered, .button.is-black:hover {\n    background-color: #1d1d1d; }\n  .button.is-black.is-active, .button.is-black.is-focused, .button.is-black:active, .button.is-black:focus {\n    border-color: #0a0a0a;\n    box-shadow: 0 0 0 2px rgba(10, 10, 10, 0.5); }\n  .button.is-light.is-hovered, .button.is-light:hover {\n    background-color: white; }\n  .button.is-light.is-active, .button.is-light.is-focused, .button.is-light:active, .button.is-light:focus {\n    border-color: #ecf0f1;\n    box-shadow: 0 0 0 2px rgba(236, 240, 241, 0.5); }\n  .button.is-dark.is-hovered, .button.is-dark:hover {\n    background-color: #3a4344; }\n  .button.is-dark.is-active, .button.is-dark.is-focused, .button.is-dark:active, .button.is-dark:focus {\n    border-color: #282f2f;\n    box-shadow: 0 0 0 2px rgba(40, 47, 47, 0.5); }\n  .button.is-primary.is-hovered, .button.is-primary:hover {\n    background-color: #436d9a; }\n  .button.is-primary.is-active, .button.is-primary.is-focused, .button.is-primary:active, .button.is-primary:focus {\n    border-color: #375a7f;\n    box-shadow: 0 0 0 2px rgba(55, 90, 127, 0.5); }\n  .button.is-link.is-hovered, .button.is-link:hover {\n    background-color: #1fdeb8; }\n  .button.is-link.is-active, .button.is-link.is-focused, .button.is-link:active, .button.is-link:focus {\n    border-color: #1abc9c;\n    box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.5); }\n  .button.is-info.is-hovered, .button.is-info:hover {\n    background-color: #44acf1; }\n  .button.is-info.is-active, .button.is-info.is-focused, .button.is-info:active, .button.is-info:focus {\n    border-color: #209cee;\n    box-shadow: 0 0 0 2px rgba(32, 156, 238, 0.5); }\n  .button.is-success.is-hovered, .button.is-success:hover {\n    background-color: #4ad685; }\n  .button.is-success.is-active, .button.is-success.is-focused, .button.is-success:active, .button.is-success:focus {\n    border-color: #2ecc71;\n    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.5); }\n  .button.is-warning.is-hovered, .button.is-warning:hover {\n    background-color: #f3c232; }\n  .button.is-warning.is-active, .button.is-warning.is-focused, .button.is-warning:active, .button.is-warning:focus {\n    border-color: #f1b70e;\n    box-shadow: 0 0 0 2px rgba(241, 183, 14, 0.5); }\n  .button.is-danger.is-hovered, .button.is-danger:hover {\n    background-color: #eb6b5e; }\n  .button.is-danger.is-active, .button.is-danger.is-focused, .button.is-danger:active, .button.is-danger:focus {\n    border-color: #e74c3c;\n    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.5); }\n\n.label {\n  color: #dbdee0; }\n\n.button,\n.control.has-icons-left .icon,\n.control.has-icons-right .icon,\n.input,\n.pagination-ellipsis,\n.pagination-link,\n.pagination-next,\n.pagination-previous,\n.select,\n.select select,\n.textarea {\n  height: 2.5em; }\n\n.input,\n.textarea {\n  transition: all 200ms ease;\n  box-shadow: none;\n  border-width: 2px;\n  padding-left: 1em;\n  padding-right: 1em; }\n\n.select:after,\n.select select {\n  border-width: 2px; }\n\n.control.has-addons .button,\n.control.has-addons .input,\n.control.has-addons .select {\n  margin-right: -2px; }\n\n.notification {\n  background-color: #343c3d; }\n\n.card {\n  box-shadow: none;\n  border: 2px solid #343c3d;\n  background-color: #282f2f;\n  border-radius: 0.4em; }\n  .card .card-image img {\n    border-radius: 0.4em 0.4em 0 0; }\n  .card .card-header {\n    box-shadow: none;\n    background-color: rgba(18, 18, 18, 0.2);\n    border-radius: 0.4em 0.4em 0 0; }\n  .card .card-footer {\n    background-color: rgba(18, 18, 18, 0.2); }\n  .card .card-footer,\n  .card .card-footer-item {\n    border-width: 2px;\n    border-color: #343c3d; }\n\n.notification.is-white a:not(.button) {\n  color: #0a0a0a;\n  text-decoration: underline; }\n\n.notification.is-black a:not(.button) {\n  color: white;\n  text-decoration: underline; }\n\n.notification.is-light a:not(.button) {\n  color: #282f2f;\n  text-decoration: underline; }\n\n.notification.is-dark a:not(.button) {\n  color: #ecf0f1;\n  text-decoration: underline; }\n\n.notification.is-primary a:not(.button) {\n  color: #fff;\n  text-decoration: underline; }\n\n.notification.is-link a:not(.button) {\n  color: #fff;\n  text-decoration: underline; }\n\n.notification.is-info a:not(.button) {\n  color: #fff;\n  text-decoration: underline; }\n\n.notification.is-success a:not(.button) {\n  color: #fff;\n  text-decoration: underline; }\n\n.notification.is-warning a:not(.button) {\n  color: #fff;\n  text-decoration: underline; }\n\n.notification.is-danger a:not(.button) {\n  color: #fff;\n  text-decoration: underline; }\n\n.tag {\n  border-radius: 0.4em; }\n\n.menu-list a {\n  transition: all 300ms ease; }\n\n.modal-card-body {\n  background-color: #282f2f; }\n\n.modal-card-foot,\n.modal-card-head {\n  border-color: #343c3d; }\n\n.message-header {\n  font-weight: 700;\n  background-color: #343c3d;\n  color: white; }\n\n.message-body {\n  border-width: 2px;\n  border-color: #343c3d; }\n\n.navbar {\n  border-radius: 0.4em; }\n  .navbar.is-transparent {\n    background: none; }\n  .navbar.is-primary .navbar-dropdown a.navbar-item.is-active {\n    background-color: #1abc9c; }\n  @media screen and (max-width: 1087px) {\n    .navbar .navbar-menu {\n      background-color: #375a7f;\n      border-radius: 0 0 0.4em 0.4em; } }\n\n.hero .navbar,\nbody > .navbar {\n  border-radius: 0; }\n\n.pagination-link,\n.pagination-next,\n.pagination-previous {\n  border-width: 2px; }\n\n.panel-block,\n.panel-heading,\n.panel-tabs {\n  border-width: 2px; }\n  .panel-block:first-child,\n  .panel-heading:first-child,\n  .panel-tabs:first-child {\n    border-top-width: 2px; }\n\n.panel-heading {\n  font-weight: 700; }\n\n.panel-tabs a {\n  border-width: 2px;\n  margin-bottom: -2px; }\n  .panel-tabs a.is-active {\n    border-bottom-color: #17a689; }\n\n.panel-block:hover {\n  color: #1dd2af; }\n  .panel-block:hover .panel-icon {\n    color: #1dd2af; }\n\n.panel-block.is-active .panel-icon {\n  color: #17a689; }\n\n.tabs a {\n  border-bottom-width: 2px;\n  margin-bottom: -2px; }\n\n.tabs ul {\n  border-bottom-width: 2px; }\n\n.tabs.is-boxed a {\n  border-width: 2px; }\n\n.tabs.is-boxed li.is-active a {\n  background-color: #1f2424; }\n\n.tabs.is-toggle li a {\n  border-width: 2px;\n  margin-bottom: 0; }\n\n.tabs.is-toggle li + li {\n  margin-left: -2px; }\n\n.hero.is-white .navbar .navbar-dropdown .navbar-item:hover {\n  background-color: transparent; }\n\n.hero.is-black .navbar .navbar-dropdown .navbar-item:hover {\n  background-color: transparent; }\n\n.hero.is-light .navbar .navbar-dropdown .navbar-item:hover {\n  background-color: transparent; }\n\n.hero.is-dark .navbar .navbar-dropdown .navbar-item:hover {\n  background-color: transparent; }\n\n.hero.is-primary .navbar .navbar-dropdown .navbar-item:hover {\n  background-color: transparent; }\n\n.hero.is-link .navbar .navbar-dropdown .navbar-item:hover {\n  background-color: transparent; }\n\n.hero.is-info .navbar .navbar-dropdown .navbar-item:hover {\n  background-color: transparent; }\n\n.hero.is-success .navbar .navbar-dropdown .navbar-item:hover {\n  background-color: transparent; }\n\n.hero.is-warning .navbar .navbar-dropdown .navbar-item:hover {\n  background-color: transparent; }\n\n.hero.is-danger .navbar .navbar-dropdown .navbar-item:hover {\n  background-color: transparent; }\n\nbody {\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  right: 0;\n  min-width: 1000px;\n  overflow: hidden; }\n\n@-webkit-keyframes spin {\n  to {\n    -webkit-transform: rotate(360deg);\n            transform: rotate(360deg); } }\n\n@keyframes spin {\n  to {\n    -webkit-transform: rotate(360deg);\n            transform: rotate(360deg); } }\n\n.spin {\n  -webkit-animation: spin 1s linear;\n          animation: spin 1s linear; }\n\n.no-round-borders {\n  border-radius: 0px !important; }\n\n.flex1 {\n  flex: 1 0 auto; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10164,17 +14510,9 @@ exports.push([module.i, "@-webkit-keyframes spinAround {\n  from {\n    -webkit-
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/App.scss ***!
   \********************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".app {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  max-height: 100%; }\n  .app > .fileDropper {\n    flex: 1 1 auto; }\n  .app > .loading {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    flex: 1 1 auto; }\n    .app > .loading > i {\n      margin-right: 12px; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10183,17 +14521,9 @@ exports.push([module.i, ".app {\n  display: flex;\n  flex-direction: column;\n  
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/Canvas.scss ***!
   \***********************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".canvas {\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  cursor: default; }\n  .canvas .tools {\n    position: absolute;\n    bottom: 20px;\n    right: 20px;\n    background: rgba(0, 0, 0, 0.6);\n    padding: 8px;\n    padding-top: 3px;\n    padding-bottom: 3px;\n    z-index: 10;\n    display: flex;\n    -webkit-user-select: none;\n       -moz-user-select: none;\n        -ms-user-select: none;\n            user-select: none;\n    align-items: center;\n    border-radius: 8px; }\n    .canvas .tools .text {\n      font-size: 0.8em;\n      font-weight: bold;\n      margin-right: 5px; }\n    .canvas .tools .zoom {\n      margin-left: 8px;\n      margin-right: 8px;\n      cursor: pointer;\n      font-size: 1.2em; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10202,17 +14532,9 @@ exports.push([module.i, ".canvas {\n  position: absolute;\n  left: 0;\n  right: 
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/FileDropper.scss ***!
   \****************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".fileDropper {\n  text-align: center;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  cursor: pointer;\n  transition: all 300ms ease-out;\n  justify-content: center; }\n  .fileDropper.dragging {\n    background: rgba(0, 0, 0, 0.08); }\n    .fileDropper.dragging > .browseFile {\n      font-size: 0px;\n      padding: 0;\n      border: none; }\n    .fileDropper.dragging > .or {\n      font-size: 0px; }\n    .fileDropper.dragging > button {\n      opacity: 0; }\n  .fileDropper > * {\n    margin-bottom: 0.5em;\n    pointer-events: none;\n    transition: all 300ms ease-out; }\n  .fileDropper > .browseFile {\n    font-size: 1.2em;\n    font-weight: bold;\n    color: #57C4FA;\n    padding: 1em;\n    border: 3px solid #57C4FA;\n    border-radius: 0.7em; }\n  .fileDropper > .loadedFile {\n    color: #428CD0; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10221,17 +14543,9 @@ exports.push([module.i, ".fileDropper {\n  text-align: center;\n  display: flex;
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/Main.scss ***!
   \*********************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".mainContainer {\n  display: flex;\n  flex-grow: 1; }\n  .mainContainer .flexColumn {\n    flex-direction: column; }\n  .mainContainer .flexItem {\n    flex: 1; }\n\n.main {\n  order: 2;\n  border-left: 1px solid #777777;\n  border-right: 1px solid #777777;\n  display: flex; }\n  .main .canvasWrapper {\n    flex: 1 1 auto;\n    position: relative; }\n\n.sidebar {\n  width: 300px; }\n\n.sidebarLeft {\n  order: 1; }\n\n.sidebarRight {\n  order: 3; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10240,17 +14554,9 @@ exports.push([module.i, ".mainContainer {\n  display: flex;\n  flex-grow: 1; }\n
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/Modal.scss ***!
   \**********************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".psdetch-modal .modal-card-foot {\n  justify-content: flex-end; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10259,17 +14565,9 @@ exports.push([module.i, ".psdetch-modal .modal-card-foot {\n  justify-content: f
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/Nav.scss ***!
   \********************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, "nav.navbar {\n  display: flex;\n  min-height: 4rem;\n  align-items: stretch; }\n  nav.navbar .navbar-item {\n    display: flex;\n    align-items: center; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10278,17 +14576,9 @@ exports.push([module.i, "nav.navbar {\n  display: flex;\n  min-height: 4rem;\n  
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/ToolBar.scss ***!
   \************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".toolbar {\n  display: flex;\n  flex: 1 1 auto; }\n  .toolbar .toolBtn {\n    padding-left: 1rem;\n    padding-right: 1rem;\n    margin-right: 0.5rem;\n    font-size: 1.5rem;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    cursor: pointer; }\n    .toolbar .toolBtn:hover {\n      color: #85a7ca; }\n    .toolbar .toolBtn.active {\n      box-shadow: inset 1px 1px 2px 0 #222;\n      background: #1f2424;\n      color: #85a7ca; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10297,17 +14587,9 @@ exports.push([module.i, ".toolbar {\n  display: flex;\n  flex: 1 1 auto; }\n  .t
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/LayerItem.scss ***!
   \*******************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".layerItem {\n  padding: 8px;\n  width: 100%;\n  border-bottom: 1px solid #666;\n  color: #888;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  font-size: 0.9em;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none; }\n  .layerItem.active {\n    background-color: #1D3A7D; }\n  .layerItem.invisible {\n    color: #444; }\n  .layerItem .icon {\n    margin-right: 5px;\n    height: 16px; }\n    .layerItem .icon .material-icons {\n      font-size: 16px; }\n  .layerItem .indent {\n    flex-shrink: 0; }\n  .layerItem .name {\n    flex-shrink: 1;\n    min-width: 0;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10316,93 +14598,31 @@ exports.push([module.i, ".layerItem {\n  padding: 8px;\n  width: 100%;\n  border
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/LayerList.scss ***!
   \*******************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".layerList {\n  max-height: 94%;\n  overflow-y: auto;\n  margin-bottom: 6px; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreview.scss":
-/*!*********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreview.scss ***!
-  \*********************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/Left.scss":
+/*!**************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/Left.scss ***!
+  \**************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".pagePreview.card {\n  margin-bottom: 10px; }\n  .pagePreview.card .card-content {\n    padding: 0.5rem !important; }\n\n.pagePreview .activePage {\n  opacity: 0.5; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreviewImage.scss":
-/*!**************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreviewImage.scss ***!
-  \**************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PageList.scss":
+/*!******************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/PageList.scss ***!
+  \******************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagesPreview.scss":
-/*!**********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagesPreview.scss ***!
-  \**********************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".page-list {\n  max-height: 94%;\n  overflow-y: auto;\n  margin-bottom: 6px; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/ToggleToolBar.scss":
-/*!***********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/left/ToggleToolBar.scss ***!
-  \***********************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".toggle-bar {\n  height: 5%;\n  position: absolute;\n  bottom: 0px;\n  width: 300px; }\n  .toggle-bar .tabs {\n    position: relative; }\n    .toggle-bar .tabs:not(.\\--jsfied) {\n      overflow-x: auto;\n      -webkit-overflow-scrolling: touch; }\n    .toggle-bar .tabs .\\--hidden {\n      display: none; }\n    .toggle-bar .tabs a,\n    .toggle-bar .tabs button {\n      width: 100%;\n      height: 100%;\n      display: block;\n      font-size: 1em;\n      line-height: 1.2;\n      text-align: center;\n      color: white;\n      background-color: transparent; }\n    .toggle-bar .tabs .-primary {\n      display: flex;\n      flex: 1 1 auto; }\n      .toggle-bar .tabs .-primary li.has-text-primary {\n        border-top: 1px solid #aaa; }\n      .toggle-bar .tabs .-primary > li {\n        flex-grow: 1; }\n        .toggle-bar .tabs .-primary > li > a,\n        .toggle-bar .tabs .-primary > li > button {\n          white-space: nowrap;\n          padding: 0.6em 0.6em; }\n          .toggle-bar .tabs .-primary > li > a:hover,\n          .toggle-bar .tabs .-primary > li > button:hover {\n            background-color: #aaa; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10411,67 +14631,53 @@ exports.push([module.i, ".toggle-bar {\n  height: 5%;\n  position: absolute;\n  
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/right/ClickCopyDiv.scss ***!
   \***********************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".clickCopyDiv {\n  position: relative; }\n  .clickCopyDiv:hover .label {\n    color: #618dbb; }\n  .clickCopyDiv .copied {\n    position: absolute;\n    padding: 3px;\n    background: black;\n    border: 1px solid #999;\n    left: 30px;\n    top: -10px;\n    color: #fff; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/LayerBasic.scss":
-/*!*********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/right/LayerBasic.scss ***!
-  \*********************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/ColorTool/ColorPickedView.scss":
+/*!************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/right/ColorTool/ColorPickedView.scss ***!
+  \************************************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".layerBasicView .title {\n  display: flex; }\n  .layerBasicView .title .showCss {\n    padding-right: 8px;\n    font-size: 0.8em;\n    font-weight: bold;\n    cursor: pointer;\n    -webkit-user-select: none;\n       -moz-user-select: none;\n        -ms-user-select: none;\n            user-select: none; }\n\n.layerBasicView .cardBody {\n  padding-top: 10px;\n  padding-bottom: 10px;\n  font-size: 0.8em; }\n  .layerBasicView .cardBody table {\n    width: 100%; }\n    .layerBasicView .cardBody table tr td {\n      border-bottom: 1px solid #aaa;\n      padding-top: 5px;\n      padding-bottom: 5px; }\n    .layerBasicView .cardBody table tr td:first-child {\n      padding-right: 1em;\n      font-weight: bold;\n      text-align: right;\n      width: 50px;\n      padding-left: 1em; }\n    .layerBasicView .cardBody table tr td:last-child {\n      padding-left: 1em;\n      cursor: pointer; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/LayerExport.scss":
-/*!**********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/right/LayerExport.scss ***!
-  \**********************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/InspectTool/LayerBasic.scss":
+/*!*********************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/right/InspectTool/LayerBasic.scss ***!
+  \*********************************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-var escape = __webpack_require__(/*! ../../../node_modules/css-loader/lib/url/escape.js */ "./node_modules/css-loader/lib/url/escape.js");
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".layerExportView .cardBody .formats {\n  display: flex;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none; }\n  .layerExportView .cardBody .formats > span {\n    flex: 1 1 0;\n    padding-top: 10px;\n    padding-bottom: 10px;\n    text-align: center; }\n    .layerExportView .cardBody .formats > span.active {\n      background: #375a7f; }\n\n.layerExportView .cardBody .imgParam .preview {\n  position: relative;\n  height: 200px;\n  background: url(" + escape(__webpack_require__(/*! ../../img/ts_bg.png */ "./src/img/ts_bg.png")) + "); }\n  .layerExportView .cardBody .imgParam .preview > img {\n    max-width: 90%;\n    max-height: 90%;\n    position: absolute;\n    left: 50%;\n    top: 50%;\n    -webkit-transform: translate(-50%, -50%);\n            transform: translate(-50%, -50%); }\n\n.layerExportView .cardBody .imgParam .options {\n  display: flex;\n  flex-wrap: wrap; }\n  .layerExportView .cardBody .imgParam .options > * {\n    width: 50%;\n    border-bottom: 1px solid #343c3d; }\n  .layerExportView .cardBody .imgParam .options > *:nth-child(even) {\n    border-left: 1px solid #343c3d; }\n  .layerExportView .cardBody .imgParam .options .dropdown-content {\n    background: black; }\n\n.layerExportView .cardBody .row {\n  display: flex;\n  align-items: center; }\n  .layerExportView .cardBody .row > div {\n    padding: 8px;\n    flex: 1 0 auto; }\n\n.layerExportView .cardBody .fileExport {\n  padding: 10px; }\n  .layerExportView .cardBody .fileExport .fileName {\n    font-weight: bold;\n    font-size: 0.85em;\n    color: #d9d9d9; }\n  .layerExportView .cardBody .fileExport .exporters {\n    display: flex;\n    justify-content: space-around;\n    margin-top: 10px;\n    margin-bottom: 10px; }\n    .layerExportView .cardBody .fileExport .exporters > button > i {\n      margin-right: 5px; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/LayerView.scss":
-/*!********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/right/LayerView.scss ***!
-  \********************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/InspectTool/LayerExport.scss":
+/*!**********************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/right/InspectTool/LayerExport.scss ***!
+  \**********************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/InspectTool/LayerView.scss":
+/*!********************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/right/InspectTool/LayerView.scss ***!
+  \********************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
 // imports
 
 
@@ -10488,17 +14694,9 @@ exports.push([module.i, "", ""]);
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/right/Right.scss ***!
   \****************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".sidebarRight {\n  overflow-y: auto;\n  overflow-x: hidden; }\n  .sidebarRight .card .title {\n    font-size: 1em;\n    font-weight: bold;\n    padding: 3px;\n    padding-top: 5px;\n    padding-bottom: 5px;\n    margin: 0; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10507,17 +14705,9 @@ exports.push([module.i, ".sidebarRight {\n  overflow-y: auto;\n  overflow-x: hid
   !*** ./node_modules/css-loader!./node_modules/postcss-loader/lib!./node_modules/sass-loader/lib/loader.js!./src/view/right/SquareButton.scss ***!
   \***********************************************************************************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".squareButton {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding-top: 20px;\n  padding-bottom: 10px;\n  background: #282f2f;\n  color: white;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  width: 100%;\n  cursor: pointer; }\n  .squareButton .head {\n    position: absolute;\n    top: 5px;\n    left: 5px;\n    font-size: 0.85em;\n    font-weight: bold; }\n  .squareButton .value {\n    font-size: 1em; }\n  .squareButton.active {\n    background: #343c3d;\n    color: #618dbb; }\n", ""]);
-
-// exports
-
+throw new Error("Module build failed (from ./node_modules/sass-loader/lib/loader.js):\nError: Missing binding /Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/vendor/darwin-x64-64/binding.node\nNode Sass could not find a binding for your current environment: OS X 64-bit with Node.js 10.x\n\nFound bindings for the following environments:\n  - OS X 64-bit with Node.js 8.x\n\nThis usually happens because your environment has changed since running `npm install`.\nRun `npm rebuild node-sass` to download the binding for your current environment.\n    at module.exports (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/binding.js:15:13)\n    at Object.<anonymous> (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/node-sass/lib/index.js:14:35)\n    at Module._compile (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:178:30)\n    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)\n    at Module.load (internal/modules/cjs/loader.js:598:32)\n    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)\n    at Function.Module._load (internal/modules/cjs/loader.js:529:3)\n    at Module.require (internal/modules/cjs/loader.js:636:17)\n    at require (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)\n    at Object.sassLoader (/Users/kxiang/work/projects/psdetch/v3-new/uxele/node_modules/sass-loader/lib/loader.js:46:72)");
 
 /***/ }),
 
@@ -10603,33 +14793,6 @@ function toComment(sourceMap) {
 	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
 
 	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/lib/url/escape.js":
-/*!***************************************************!*\
-  !*** ./node_modules/css-loader/lib/url/escape.js ***!
-  \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = function escape(url) {
-    if (typeof url !== 'string') {
-        return url
-    }
-    // If url is already wrapped in quotes, remove them
-    if (/^['"].*['"]$/.test(url)) {
-        url = url.slice(1, -1);
-    }
-    // Should url be wrapped?
-    // See https://drafts.csswg.org/css-values-3/#urls
-    if (/["'() \t\n]/.test(url)) {
-        return '"' + url.replace(/"/g, '\\"').replace(/\n/g, '\\n') + '"'
-    }
-
-    return url
 }
 
 
@@ -12375,17 +16538,6 @@ module.exports = function(originalModule) {
 
 /***/ }),
 
-/***/ "./src/img/ts_bg.png":
-/*!***************************!*\
-  !*** ./src/img/ts_bg.png ***!
-  \***************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "assets/18037ba7420d2f2aada521c541c4aa0c.png";
-
-/***/ }),
-
 /***/ "./src/index.tsx":
 /*!***********************!*\
   !*** ./src/index.tsx ***!
@@ -12421,15 +16573,13 @@ var state = uxele_facade_1.facade.store.getState();
  * Bind redux store to a react component
  * constraints:
  * 1. the state type T should be flat object -- nested object not supported.
- * 2. this function has to be called in component constructor and pass in initState.
+ * 2. this function has to be called in component constructor
+ * 3. init state will be passed from reducer
  */
-function bindStore(component, initState, selector) {
-    var keys = Object.keys(initState);
+function bindStore(component, selector) {
     var selectorKeys = Object.keys(selector);
     var oldComponentDidMount = component.componentDidMount;
     var oldComponentWillUnmount = component.componentWillUnmount;
-    //setup init state
-    component.state = initState;
     var unsubscribe;
     component.componentDidMount = function () {
         var _this = this;
@@ -12455,6 +16605,13 @@ function bindStore(component, initState, selector) {
             oldComponentWillUnmount.call(component);
         }
     };
+    var state = uxele_facade_1.facade.store.getState();
+    var initState = {};
+    selectorKeys.forEach(function (key) {
+        var curVal = selector[key](state);
+        initState[key] = curVal;
+    });
+    component.state = initState;
 }
 exports.bindStore = bindStore;
 
@@ -12592,7 +16749,7 @@ var App = /** @class */ (function (_super) {
         _this.loadFile = function (_f) {
             _this.setState({ loading: true });
             uxele_facade_1.facade.projectOpenLocalFile(_f)
-                .then(function (proj) { return __awaiter(_this, void 0, void 0, function () {
+                .then(function () { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     return [2 /*return*/];
                 });
@@ -12691,8 +16848,7 @@ var Canvas = /** @class */ (function (_super) {
     __extends(Canvas, _super);
     function Canvas() {
         var _this = _super.call(this) || this;
-        _this.canvas = document.createElement("canvas");
-        bindStore_1.bindStore(_this, {}, {
+        bindStore_1.bindStore(_this, {
             coords: function (state) { return state.canvasStatus.coords; },
             zoomLevel: function (state) { return state.canvasStatus.zoomLevel; },
             curTool: function (state) { return state.choseTool.tool; },
@@ -12701,8 +16857,7 @@ var Canvas = /** @class */ (function (_super) {
         return _this;
     }
     Canvas.prototype.componentDidMount = function () {
-        this.canvasWrapper.appendChild(this.canvas);
-        uxele_facade_1.facade.bindCanvas(this.canvas, this.canvasWrapper);
+        uxele_facade_1.facade.bindCanvas(this.canvasWrapper);
     };
     Canvas.prototype.componentWillUnmount = function () {
         // session.off("curTool",this.onToolChange);
@@ -12943,29 +17098,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
 __webpack_require__(/*! ./Main.scss */ "./src/view/Main.scss");
 var Canvas_1 = __webpack_require__(/*! ./Canvas */ "./src/view/Canvas.tsx");
-var PagesPreview_1 = __webpack_require__(/*! ./left/PagesPreview */ "./src/view/left/PagesPreview.tsx");
-var LayerList_1 = __webpack_require__(/*! ./left/LayerList */ "./src/view/left/LayerList.tsx");
-var ToggleToolBar_1 = __webpack_require__(/*! ./left/ToggleToolBar */ "./src/view/left/ToggleToolBar.tsx");
 var Right_1 = __webpack_require__(/*! ./right/Right */ "./src/view/right/Right.tsx");
+var Left_1 = __webpack_require__(/*! ./left/Left */ "./src/view/left/Left.tsx");
 var Main = /** @class */ (function (_super) {
     __extends(Main, _super);
     function Main() {
         var _this = _super.call(this) || this;
         _this.onToggleView = function (isPreview) {
-            _this.setState({ isPreview: isPreview });
+            // this.setState({ isPreview: isPreview });
         };
         _this.state = {
-            isPreview: true
+        // isPreview: true
         };
         return _this;
     }
     Main.prototype.render = function () {
         return (preact_1.h("div", { class: "mainContainer flexColumn" },
             preact_1.h("div", { class: "mainContainer flexItem" },
-                preact_1.h("aside", { class: "sidebar sidebarLeft" },
-                    !this.state.isPreview && preact_1.h(LayerList_1.LayerList, null),
-                    this.state.isPreview && preact_1.h(PagesPreview_1.PagesPreview, null),
-                    preact_1.h(ToggleToolBar_1.ToggleToolBar, { onToggle: this.onToggleView })),
+                preact_1.h(Left_1.LeftView, null),
                 preact_1.h("main", { class: "flexItem main" },
                     preact_1.h("div", { class: "canvasWrapper" },
                         preact_1.h(Canvas_1.Canvas, null))),
@@ -13218,18 +17368,45 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
 var LogoText_1 = __webpack_require__(/*! ./LogoText */ "./src/view/LogoText.tsx");
-var ToolBar_1 = __webpack_require__(/*! ./ToolBar */ "./src/view/ToolBar.tsx");
 __webpack_require__(/*! ./Nav.scss */ "./src/view/Nav.scss");
+var bindStore_1 = __webpack_require__(/*! ../lib/bindStore */ "./src/lib/bindStore.ts");
+var build_1 = __webpack_require__(/*! uxele-facade/build */ "../uxele-facade/build/index.js");
+var pillars = ["inspect", "prototype"];
 var Nav = /** @class */ (function (_super) {
     __extends(Nav, _super);
     function Nav() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        bindStore_1.bindStore(_this, {
+            pillar: function (state) { return state.genearlView.pillar; },
+            loaded: function (state) { return state.project.project ? true : false; },
+            title: function (state) { return state.project.project ? state.project.project.name : ""; },
+            coords: function (state) { return state.canvasStatus.coords; },
+            zoomLevel: function (state) { return state.canvasStatus.zoomLevel; }
+        });
+        return _this;
     }
+    Nav.prototype.changePillar = function (pillar) {
+        build_1.facade.switchPillars(pillar);
+    };
     Nav.prototype.render = function () {
         return (preact_1.h("nav", { class: "navbar is-dark" },
+            preact_1.h("div", { class: "title" }, this.state.title),
             preact_1.h("div", { class: "navbar-item is-size-4 has-text-weight-bold" },
                 preact_1.h(LogoText_1.LogoText, null)),
-            preact_1.h(ToolBar_1.ToolBar, null)));
+            this.state.loaded ? this.renderNavTools() : null));
+    };
+    Nav.prototype.zoomIn = function () {
+        build_1.facade.zoomIn();
+    };
+    Nav.prototype.zoomOut = function () {
+        build_1.facade.zoomOut();
+    };
+    Nav.prototype.renderNavTools = function () {
+        var _this = this;
+        return ([preact_1.h("div", { class: "pillars" }, pillars.map(function (pillar) { return preact_1.h("div", { onClick: function () { return _this.changePillar(pillar); }, class: "pillar " + (_this.state.pillar === pillar ? "active" : "") },
+                preact_1.h("span", null, pillar.toUpperCase())); })),
+            preact_1.h("span", { class: "flex1" }),
+        ]);
     };
     return Nav;
 }(preact_1.Component));
@@ -13287,12 +17464,49 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
 __webpack_require__(/*! ./ToolBar.scss */ "./src/view/ToolBar.scss");
 // import { session } from "psdetch-faced";
 var uxele_facade_1 = __webpack_require__(/*! uxele-facade */ "../uxele-facade/build/index.js");
 var tools_1 = __webpack_require__(/*! uxele-facade/build/tools */ "../uxele-facade/build/tools/index.js");
+var bindStore_1 = __webpack_require__(/*! ../lib/bindStore */ "./src/lib/bindStore.ts");
+var GeneralView_1 = __webpack_require__(/*! uxele-facade/build/facade/states/GeneralView */ "../uxele-facade/build/facade/states/GeneralView.js");
 // const faMaper: any = {
 //   "tool_hand": "fas fa-hand-paper",
 //   "tool_inspect":"fas fa-mouse-pointer",
@@ -13302,69 +17516,67 @@ var ToolBar = /** @class */ (function (_super) {
     __extends(ToolBar, _super);
     function ToolBar() {
         var _this = _super.call(this) || this;
-        _this.state = { display: false };
+        bindStore_1.bindStore(_this, {
+            display: function (state) { return state.renderer.renderer ? true : false; },
+            pillar: function (state) { return state.genearlView.pillar; },
+            pageLayerList: function (state) { return state.genearlView.pageLayerList; }
+        });
         return _this;
     }
-    Object.defineProperty(ToolBar.prototype, "curTool", {
-        get: function () {
-            return uxele_facade_1.facade.store.getState().choseTool.tool;
-        },
-        set: function (v) {
-            uxele_facade_1.facade.store.dispatch(uxele_facade_1.facade.actionChoseTool(v));
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ToolBar.prototype, "renderer", {
-        get: function () {
-            return uxele_facade_1.facade.store.getState().renderer;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ToolBar.prototype.componentDidMount = function () {
-        var _this = this;
-        this.unsubscribe = uxele_facade_1.facade.store.subscribe(function () {
-            if (_this.state.display === false) {
-                if (_this.renderer.renderer) {
-                    _this.setState({ display: true });
-                    _this.toggleTool(uxele_facade_1.tools.getToolInst(tools_1.HandTool));
-                    _this.setExclusiveTool(uxele_facade_1.tools.getToolInst(tools_1.InspectTool));
-                }
-            }
-        });
-    };
-    ToolBar.prototype.componentWillUnmount = function () {
-        this.unsubscribe();
-    };
     ToolBar.prototype.render = function () {
-        var _this = this;
         if (this.state.display) {
-            return (preact_1.h("div", { class: "toolbar" }, uxele_facade_1.tools.getTools().filter(function (t) { return !(t instanceof uxele_facade_1.tools.HandTool); }).map(function (t) { return _this.bindExclusiveTool(t); })));
+            return (preact_1.h("div", { class: "toolbar" },
+                this.renderPillarTool(),
+                preact_1.h("div", { class: "flex1" }),
+                this.renderGeneralTools()));
+        }
+        else {
+            return null;
+        }
+    };
+    ToolBar.prototype.togglePageLayerList = function (item) {
+        uxele_facade_1.facade.store.dispatch(GeneralView_1.actionTogglePageLayerList(item));
+    };
+    ToolBar.prototype.renderGeneralTools = function () {
+        var _this = this;
+        return (uxele_facade_1.tools.tools.general.map(function (t) { return _this.bindToggleTool(t); })
+            .concat([
+            preact_1.h("div", { onClick: function () { return _this.togglePageLayerList("pageList"); }, class: "toolBtn toggle " + (this.state.pageLayerList === "pageList" ? 'active' : '') },
+                preact_1.h("i", { class: "fas fa-th" })),
+        ]));
+    };
+    ToolBar.prototype.renderPillarTool = function () {
+        var _this = this;
+        var pillar = this.state.pillar;
+        var pillarTools = uxele_facade_1.tools.tools[pillar];
+        return pillarTools.map(function (t) { return _this.bindExclusiveTool(t); });
+    };
+    ToolBar.prototype.renderToolForInspectPillar = function () {
+        var _this = this;
+        if (this.state.pillar === "inspect") {
+            return ([
+                [
+                    uxele_facade_1.tools.getToolInst(tools_1.InspectTool),
+                    uxele_facade_1.tools.getToolInst(tools_1.ColorTool),
+                ].map(function (t) { return _this.bindExclusiveTool(t); })
+            ]);
         }
         else {
             return null;
         }
     };
     ToolBar.prototype.setExclusiveTool = function (tool) {
-        var _this = this;
-        if (tool && this.curTool !== tool) {
-            if (this.curTool) {
-                this.curTool.deactivate();
-            }
-            tool.activate()
-                .then(function () {
-                _this.curTool = tool;
-                _this.forceUpdate();
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, uxele_facade_1.tools.setActiveTool(tool)];
+                    case 1:
+                        _a.sent();
+                        this.forceUpdate();
+                        return [2 /*return*/];
+                }
             });
-        }
-        else if (tool && this.curTool === tool) {
-            tool.deactivate()
-                .then(function () {
-                _this.curTool = undefined;
-                _this.forceUpdate();
-            });
-        }
+        });
     };
     ToolBar.prototype.bindExclusiveTool = function (tool) {
         var _this = this;
@@ -13377,26 +17589,22 @@ var ToolBar = /** @class */ (function (_super) {
         }
     };
     ToolBar.prototype.toggleTool = function (t) {
-        var _this = this;
-        if (t) {
-            if (t.activated) {
-                t.deactivate()
-                    .then(function () {
-                    _this.forceUpdate();
-                });
-            }
-            else {
-                t.activate()
-                    .then(function () {
-                    _this.forceUpdate();
-                });
-            }
-        }
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, uxele_facade_1.tools.toggleTool(t)];
+                    case 1:
+                        _a.sent();
+                        this.forceUpdate();
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     ToolBar.prototype.bindToggleTool = function (tool) {
         var _this = this;
         if (tool) {
-            return (preact_1.h("div", { onClick: function () { return _this.toggleTool(tool); }, class: "toolBtn " + (tool.activated ? 'active' : '') },
+            return (preact_1.h("div", { onClick: function () { return _this.toggleTool(tool); }, class: "toolBtn toggle " + (tool.activated ? 'active' : '') },
                 preact_1.h("i", { class: tool.cls })));
         }
     };
@@ -13751,15 +17959,15 @@ exports.LayerList = LayerList;
 
 /***/ }),
 
-/***/ "./src/view/left/PagePreview.scss":
-/*!****************************************!*\
-  !*** ./src/view/left/PagePreview.scss ***!
-  \****************************************/
+/***/ "./src/view/left/Left.scss":
+/*!*********************************!*\
+  !*** ./src/view/left/Left.scss ***!
+  \*********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./PagePreview.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreview.scss");
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./Left.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/Left.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -13781,10 +17989,92 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./src/view/left/PagePreview.tsx":
-/*!***************************************!*\
-  !*** ./src/view/left/PagePreview.tsx ***!
-  \***************************************/
+/***/ "./src/view/left/Left.tsx":
+/*!********************************!*\
+  !*** ./src/view/left/Left.tsx ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
+var ToolBar_1 = __webpack_require__(/*! ../ToolBar */ "./src/view/ToolBar.tsx");
+var bindStore_1 = __webpack_require__(/*! ../../lib/bindStore */ "./src/lib/bindStore.ts");
+__webpack_require__(/*! ./Left.scss */ "./src/view/left/Left.scss");
+var PageList_1 = __webpack_require__(/*! ./PageList */ "./src/view/left/PageList.tsx");
+var LeftView = /** @class */ (function (_super) {
+    __extends(LeftView, _super);
+    function LeftView() {
+        var _this = _super.call(this) || this;
+        bindStore_1.bindStore(_this, {
+            display: function (state) { return state.project.project ? true : false; },
+            pageLayerList: function (state) { return state.genearlView.pageLayerList; }
+        });
+        return _this;
+    }
+    LeftView.prototype.render = function () {
+        if (this.state.display) {
+            return (preact_1.h("aside", { class: "sidebar sidebarLeft" },
+                preact_1.h(ToolBar_1.ToolBar, null),
+                this.state.pageLayerList === "pageList" ? preact_1.h(PageList_1.PageListView, null) : null));
+        }
+        else {
+            return null;
+        }
+    };
+    return LeftView;
+}(preact_1.Component));
+exports.LeftView = LeftView;
+
+
+/***/ }),
+
+/***/ "./src/view/left/PageList.scss":
+/*!*************************************!*\
+  !*** ./src/view/left/PageList.scss ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./PageList.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PageList.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/view/left/PageList.tsx":
+/*!************************************!*\
+  !*** ./src/view/left/PageList.tsx ***!
+  \************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13837,352 +18127,62 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-var PagePreviewImage_1 = __webpack_require__(/*! ./PagePreviewImage */ "./src/view/left/PagePreviewImage.tsx");
-__webpack_require__(/*! ./PagePreview.scss */ "./src/view/left/PagePreview.scss");
-var PagePreview = /** @class */ (function (_super) {
-    __extends(PagePreview, _super);
-    function PagePreview() {
+var build_1 = __webpack_require__(/*! uxele-facade/build */ "../uxele-facade/build/index.js");
+__webpack_require__(/*! ./PageList.scss */ "./src/view/left/PageList.scss");
+var bindStore_1 = __webpack_require__(/*! ../../lib/bindStore */ "./src/lib/bindStore.ts");
+var facade_1 = __webpack_require__(/*! uxele-facade/build/facade */ "../uxele-facade/build/facade/index.js");
+var LayerList_1 = __webpack_require__(/*! ./LayerList */ "./src/view/left/LayerList.tsx");
+var PageListView = /** @class */ (function (_super) {
+    __extends(PageListView, _super);
+    function PageListView() {
         var _this = _super.call(this) || this;
-        _this.onPageSelect = _this.onPageSelect.bind(_this);
+        bindStore_1.bindStore(_this, {
+            chosePage: function (state) { return state.chosePage.page; }
+        });
         return _this;
     }
-    PagePreview.prototype.onPageSelect = function (event) {
-        this.props.onPageSelect(this.props.page);
-    };
-    PagePreview.prototype.componentWillMount = function () {
-        this.renderPageItem();
-    };
-    PagePreview.prototype.renderPageItem = function () {
+    PageListView.prototype.componentDidMount = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _pagePreview;
+            var project, pages;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.props.page.getPreview(1)];
+                    case 0:
+                        project = build_1.facade.store.getState().project.project;
+                        if (!project) return [3 /*break*/, 2];
+                        return [4 /*yield*/, project.getPages()];
                     case 1:
-                        _pagePreview = _a.sent();
-                        this.setState({ currentImage: _pagePreview });
-                        return [2 /*return*/];
+                        pages = _a.sent();
+                        this.setState({ pages: pages });
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
                 }
             });
         });
     };
-    PagePreview.prototype.render = function () {
-        var _index = this.props.index + 1;
-        var _pageName = this.props.page.name;
-        var currentImage = this.state.currentImage;
-        var _isActive = this.props.isActive;
-        return (preact_1.h("div", { class: "pagePreview card no-round-borders " + (_isActive ? "has-background-black-ter has-text-primary" : ""), onClick: this.onPageSelect },
-            preact_1.h("header", { class: "card-header" },
-                preact_1.h("div", { class: "card-header-title" },
-                    preact_1.h("div", { class: "media" },
-                        preact_1.h("div", { class: "media-content" },
-                            preact_1.h("span", null,
-                                "  ",
-                                _index,
-                                ".\u00A0"),
-                            preact_1.h("span", null,
-                                " ",
-                                _pageName))))),
-            preact_1.h("div", { class: "card-content no-borders" },
-                preact_1.h("div", { class: "media" },
-                    preact_1.h("div", { class: "media-content" }, currentImage && preact_1.h(PagePreviewImage_1.PagePreviewImage, { image: currentImage, width: this.props.page.width, height: this.props.page.height }))))));
+    PageListView.prototype.choosePage = function (page) {
+        setTimeout(function () {
+            build_1.facade.store.dispatch(facade_1.actionChosePage(page));
+        }, 10);
     };
-    return PagePreview;
-}(preact_1.Component));
-exports.PagePreview = PagePreview;
-
-
-/***/ }),
-
-/***/ "./src/view/left/PagePreviewImage.scss":
-/*!*********************************************!*\
-  !*** ./src/view/left/PagePreviewImage.scss ***!
-  \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./PagePreviewImage.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagePreviewImage.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./src/view/left/PagePreviewImage.tsx":
-/*!********************************************!*\
-  !*** ./src/view/left/PagePreviewImage.tsx ***!
-  \********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-__webpack_require__(/*! ./PagePreviewImage.scss */ "./src/view/left/PagePreviewImage.scss");
-var PagePreviewImage = /** @class */ (function (_super) {
-    __extends(PagePreviewImage, _super);
-    function PagePreviewImage() {
-        return _super.call(this) || this;
-    }
-    PagePreviewImage.prototype.componentDidMount = function () {
-        var _imagePreview = new Image();
-        _imagePreview = this.props.image;
-        this.previewContainer.appendChild(_imagePreview);
-    };
-    PagePreviewImage.prototype.render = function () {
+    PageListView.prototype.renderLayerList = function () {
         var _this = this;
-        return (preact_1.h("figure", { class: "image" },
-            preact_1.h("div", { ref: function (e) { return _this.previewContainer = e; } })));
+        return (preact_1.h("div", { class: "layerListWrapper" },
+            preact_1.h("div", { class: "back" },
+                preact_1.h("div", { onClick: function () { return _this.choosePage(); }, class: "backBtn" },
+                    preact_1.h("i", { class: "fas fa-arrow-left" })),
+                preact_1.h("div", { class: "pageName" }, this.state.chosePage.name)),
+            preact_1.h(LayerList_1.LayerList, null)));
     };
-    return PagePreviewImage;
-}(preact_1.Component));
-exports.PagePreviewImage = PagePreviewImage;
-
-
-/***/ }),
-
-/***/ "./src/view/left/PagesPreview.scss":
-/*!*****************************************!*\
-  !*** ./src/view/left/PagesPreview.scss ***!
-  \*****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./PagesPreview.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/PagesPreview.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./src/view/left/PagesPreview.tsx":
-/*!****************************************!*\
-  !*** ./src/view/left/PagesPreview.tsx ***!
-  \****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-__webpack_require__(/*! ./PagesPreview.scss */ "./src/view/left/PagesPreview.scss");
-// import { session } from "psdetch-faced";
-var PagePreview_1 = __webpack_require__(/*! ./PagePreview */ "./src/view/left/PagePreview.tsx");
-var uxele_facade_1 = __webpack_require__(/*! uxele-facade */ "../uxele-facade/build/index.js");
-var PagesPreview = /** @class */ (function (_super) {
-    __extends(PagesPreview, _super);
-    function PagesPreview() {
-        var _this = _super.call(this) || this;
-        _this.state = {
-            pages: [],
-            activePage: undefined
-        };
-        _this.onPageSelect = _this.onPageSelect.bind(_this);
-        return _this;
-    }
-    PagesPreview.prototype.onPageSelect = function (page) {
-        uxele_facade_1.facade.store.dispatch(uxele_facade_1.facade.actionChosePage(page));
-        this.setState({ activePage: page });
-    };
-    PagesPreview.prototype.setPages = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _pages;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.currentProject.getPages()];
-                    case 1:
-                        _pages = _a.sent();
-                        this.setState({ pages: _pages });
-                        this.setState({ activePage: _pages[0] });
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    PagesPreview.prototype.componentDidMount = function () {
-        // this.currentProject = session.get("curProject") as IProject;
-        this.currentProject = uxele_facade_1.facade.store.getState().project.project;
-        this.setPages();
-    };
-    PagesPreview.prototype.render = function () {
+    PageListView.prototype.renderPageList = function () {
         var _this = this;
-        var pages = this.state.pages;
-        return (preact_1.h("div", { class: "page-list" }, pages &&
-            pages.map(function (page, pageIndex, array) { return (preact_1.h(PagePreview_1.PagePreview, { page: page, index: pageIndex, onPageSelect: _this.onPageSelect, isActive: _this.state.activePage && _this.state.activePage === page })); })));
+        return this.state.pages && this.state.pages.map(function (page) { return preact_1.h("div", { onClick: function () { return _this.choosePage(page); }, class: "pageItem" }, page.name); });
     };
-    return PagesPreview;
+    PageListView.prototype.render = function () {
+        return (preact_1.h("div", { class: "pageList" }, this.state.chosePage ? this.renderLayerList() : this.renderPageList()));
+    };
+    return PageListView;
 }(preact_1.Component));
-exports.PagesPreview = PagesPreview;
-
-
-/***/ }),
-
-/***/ "./src/view/left/ToggleToolBar.scss":
-/*!******************************************!*\
-  !*** ./src/view/left/ToggleToolBar.scss ***!
-  \******************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./ToggleToolBar.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/left/ToggleToolBar.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./src/view/left/ToggleToolBar.tsx":
-/*!*****************************************!*\
-  !*** ./src/view/left/ToggleToolBar.tsx ***!
-  \*****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-__webpack_require__(/*! ./ToggleToolBar.scss */ "./src/view/left/ToggleToolBar.scss");
-var ToggleToolBar = /** @class */ (function (_super) {
-    __extends(ToggleToolBar, _super);
-    function ToggleToolBar() {
-        var _this = _super.call(this) || this;
-        _this.state = { isPreview: true };
-        return _this;
-    }
-    ToggleToolBar.prototype.render = function () {
-        var _this = this;
-        var isPreview = this.state.isPreview;
-        return (preact_1.h("div", { class: "toggle-bar" },
-            preact_1.h("nav", { class: "tabs" },
-                preact_1.h("ul", { class: "-primary" },
-                    preact_1.h("li", { className: (isPreview ? 'has-background-black-ter has-text-primary' : ''), onClick: function () { _this.props.onToggle(true); _this.setState({ isPreview: true }); } },
-                        preact_1.h("a", null,
-                            preact_1.h("span", { class: "icon is-small" },
-                                preact_1.h("i", { class: "fas fa-th", "aria-hidden": "true" })))),
-                    preact_1.h("li", { className: (!isPreview ? 'has-background-black-ter has-text-primary' : ''), onClick: function () { _this.props.onToggle(false); _this.setState({ isPreview: false }); } },
-                        preact_1.h("a", null,
-                            preact_1.h("span", { class: "icon is-small" },
-                                preact_1.h("i", { class: "fas fa-bars", "aria-hidden": "true" }))))))));
-    };
-    return ToggleToolBar;
-}(preact_1.Component));
-exports.ToggleToolBar = ToggleToolBar;
+exports.PageListView = PageListView;
 
 
 /***/ }),
@@ -14301,15 +18301,15 @@ exports.ClickCopyDiv = ClickCopyDiv;
 
 /***/ }),
 
-/***/ "./src/view/right/LayerBasic.scss":
-/*!****************************************!*\
-  !*** ./src/view/right/LayerBasic.scss ***!
-  \****************************************/
+/***/ "./src/view/right/ColorTool/ColorPickedView.scss":
+/*!*******************************************************!*\
+  !*** ./src/view/right/ColorTool/ColorPickedView.scss ***!
+  \*******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./LayerBasic.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/LayerBasic.scss");
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader!../../../../node_modules/postcss-loader/lib!../../../../node_modules/sass-loader/lib/loader.js!./ColorPickedView.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/ColorTool/ColorPickedView.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -14323,7 +18323,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -14331,10 +18331,107 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./src/view/right/LayerBasic.tsx":
-/*!***************************************!*\
-  !*** ./src/view/right/LayerBasic.tsx ***!
-  \***************************************/
+/***/ "./src/view/right/ColorTool/ColorPickedView.tsx":
+/*!******************************************************!*\
+  !*** ./src/view/right/ColorTool/ColorPickedView.tsx ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
+var bindStore_1 = __webpack_require__(/*! ../../../lib/bindStore */ "./src/lib/bindStore.ts");
+var uxele_facade_1 = __webpack_require__(/*! uxele-facade */ "../uxele-facade/build/index.js");
+var tools_1 = __webpack_require__(/*! uxele-facade/build/tools */ "../uxele-facade/build/tools/index.js");
+__webpack_require__(/*! ./ColorPickedView.scss */ "./src/view/right/ColorTool/ColorPickedView.scss");
+var ColorPickedView = /** @class */ (function (_super) {
+    __extends(ColorPickedView, _super);
+    function ColorPickedView() {
+        var _this = _super.call(this) || this;
+        bindStore_1.bindStore(_this, {
+            display: function (state) { return !!state.choseTool.tool && state.choseTool.tool instanceof tools_1.ColorTool; },
+            colors: function (state) { return state.colorTool.pickedColors; },
+            hoverColor: function (state) { return state.colorTool.hoverColor; }
+        });
+        return _this;
+    }
+    ColorPickedView.prototype.copyColor = function (color) {
+        uxele_facade_1.facade.copyColor(color);
+    };
+    ColorPickedView.prototype.render = function () {
+        var _this = this;
+        if (this.state.display) {
+            return (preact_1.h("div", { class: "card colorPickedView" },
+                preact_1.h("div", { class: "title" }, "Colors"),
+                preact_1.h("div", { class: "cardBody" },
+                    preact_1.h("div", { class: "hoverColor" },
+                        preact_1.h("div", { class: "preview", style: "background-color:" + this.state.hoverColor }),
+                        preact_1.h("div", { class: "txt" },
+                            preact_1.h("span", { class: "hex" }, uxele_facade_1.util.color.rgbStrToHex(this.state.hoverColor).toUpperCase()),
+                            preact_1.h("span", null, "Click to Copy"))),
+                    preact_1.h("div", { class: "pickedColors" }, this.state.colors.map(function (color) {
+                        return preact_1.h("div", { onClick: function () { return _this.copyColor(color); }, class: "pickedColor" },
+                            preact_1.h("div", { class: "preview", style: "background-color:" + color }),
+                            preact_1.h("span", null, uxele_facade_1.util.color.rgbStrToHex(color).toUpperCase()));
+                    })))));
+        }
+        else {
+            return null;
+        }
+    };
+    return ColorPickedView;
+}(preact_1.Component));
+exports.ColorPickedView = ColorPickedView;
+
+
+/***/ }),
+
+/***/ "./src/view/right/InspectTool/LayerBasic.scss":
+/*!****************************************************!*\
+  !*** ./src/view/right/InspectTool/LayerBasic.scss ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader!../../../../node_modules/postcss-loader/lib!../../../../node_modules/sass-loader/lib/loader.js!./LayerBasic.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/InspectTool/LayerBasic.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/view/right/InspectTool/LayerBasic.tsx":
+/*!***************************************************!*\
+  !*** ./src/view/right/InspectTool/LayerBasic.tsx ***!
+  \***************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14353,8 +18450,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
 var uxele_facade_1 = __webpack_require__(/*! uxele-facade */ "../uxele-facade/build/index.js");
-__webpack_require__(/*! ./LayerBasic.scss */ "./src/view/right/LayerBasic.scss");
-var ClickCopyDiv_1 = __webpack_require__(/*! ./ClickCopyDiv */ "./src/view/right/ClickCopyDiv.tsx");
+__webpack_require__(/*! ./LayerBasic.scss */ "./src/view/right/InspectTool/LayerBasic.scss");
+var ClickCopyDiv_1 = __webpack_require__(/*! ../ClickCopyDiv */ "./src/view/right/ClickCopyDiv.tsx");
 var LayerBasicView = /** @class */ (function (_super) {
     __extends(LayerBasicView, _super);
     function LayerBasicView() {
@@ -14427,15 +18524,15 @@ exports.LayerBasicView = LayerBasicView;
 
 /***/ }),
 
-/***/ "./src/view/right/LayerExport.scss":
-/*!*****************************************!*\
-  !*** ./src/view/right/LayerExport.scss ***!
-  \*****************************************/
+/***/ "./src/view/right/InspectTool/LayerExport.scss":
+/*!*****************************************************!*\
+  !*** ./src/view/right/InspectTool/LayerExport.scss ***!
+  \*****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./LayerExport.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/LayerExport.scss");
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader!../../../../node_modules/postcss-loader/lib!../../../../node_modules/sass-loader/lib/loader.js!./LayerExport.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/InspectTool/LayerExport.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -14449,7 +18546,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -14457,10 +18554,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./src/view/right/LayerExport.tsx":
-/*!****************************************!*\
-  !*** ./src/view/right/LayerExport.tsx ***!
-  \****************************************/
+/***/ "./src/view/right/InspectTool/LayerExport.tsx":
+/*!****************************************************!*\
+  !*** ./src/view/right/InspectTool/LayerExport.tsx ***!
+  \****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14521,9 +18618,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-__webpack_require__(/*! ./LayerExport.scss */ "./src/view/right/LayerExport.scss");
+__webpack_require__(/*! ./LayerExport.scss */ "./src/view/right/InspectTool/LayerExport.scss");
 var uxele_facade_1 = __webpack_require__(/*! uxele-facade */ "../uxele-facade/build/index.js");
-var SquareButton_1 = __webpack_require__(/*! ./SquareButton */ "./src/view/right/SquareButton.tsx");
+var SquareButton_1 = __webpack_require__(/*! ../SquareButton */ "./src/view/right/SquareButton.tsx");
 var LayerExportView = /** @class */ (function (_super) {
     __extends(LayerExportView, _super);
     function LayerExportView(props) {
@@ -14704,15 +18801,15 @@ exports.LayerExportView = LayerExportView;
 
 /***/ }),
 
-/***/ "./src/view/right/LayerView.scss":
-/*!***************************************!*\
-  !*** ./src/view/right/LayerView.scss ***!
-  \***************************************/
+/***/ "./src/view/right/InspectTool/LayerView.scss":
+/*!***************************************************!*\
+  !*** ./src/view/right/InspectTool/LayerView.scss ***!
+  \***************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/postcss-loader/lib!../../../node_modules/sass-loader/lib/loader.js!./LayerView.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/LayerView.scss");
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader!../../../../node_modules/postcss-loader/lib!../../../../node_modules/sass-loader/lib/loader.js!./LayerView.scss */ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/lib/index.js!./node_modules/sass-loader/lib/loader.js!./src/view/right/InspectTool/LayerView.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -14726,7 +18823,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -14734,10 +18831,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./src/view/right/LayerView.tsx":
-/*!**************************************!*\
-  !*** ./src/view/right/LayerView.tsx ***!
-  \**************************************/
+/***/ "./src/view/right/InspectTool/LayerView.tsx":
+/*!**************************************************!*\
+  !*** ./src/view/right/InspectTool/LayerView.tsx ***!
+  \**************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14755,35 +18852,23 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
-__webpack_require__(/*! ./LayerView.scss */ "./src/view/right/LayerView.scss");
-var uxele_facade_1 = __webpack_require__(/*! uxele-facade */ "../uxele-facade/build/index.js");
-var LayerBasic_1 = __webpack_require__(/*! ./LayerBasic */ "./src/view/right/LayerBasic.tsx");
-var LayerExport_1 = __webpack_require__(/*! ./LayerExport */ "./src/view/right/LayerExport.tsx");
+__webpack_require__(/*! ./LayerView.scss */ "./src/view/right/InspectTool/LayerView.scss");
+var LayerBasic_1 = __webpack_require__(/*! ./LayerBasic */ "./src/view/right/InspectTool/LayerBasic.tsx");
+var LayerExport_1 = __webpack_require__(/*! ./LayerExport */ "./src/view/right/InspectTool/LayerExport.tsx");
+var bindStore_1 = __webpack_require__(/*! ../../../lib/bindStore */ "./src/lib/bindStore.ts");
+var tools_1 = __webpack_require__(/*! uxele-facade/build/tools */ "../uxele-facade/build/tools/index.js");
 var LayerView = /** @class */ (function (_super) {
     __extends(LayerView, _super);
     function LayerView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Object.defineProperty(LayerView.prototype, "curLayerState", {
-        get: function () {
-            return uxele_facade_1.facade.store.getState().choseLayer;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    LayerView.prototype.componentWillUnmount = function () {
-        this.unsubscribe();
-    };
-    LayerView.prototype.componentDidMount = function () {
-        var _this = this;
-        this.unsubscribe = uxele_facade_1.facade.store.subscribe(function () {
-            if (_this.state.layer !== _this.curLayerState.layer) {
-                _this.setState({ layer: _this.curLayerState.layer });
-            }
+        var _this = _super.call(this) || this;
+        bindStore_1.bindStore(_this, {
+            layer: function (state) { return state.choseLayer.layer; },
+            display: function (state) { return state.choseTool.tool && state.choseTool.tool instanceof tools_1.InspectTool; }
         });
-    };
+        return _this;
+    }
     LayerView.prototype.render = function () {
-        if (this.state.layer) {
+        if (this.state.display && this.state.layer) {
             return (preact_1.h("div", null,
                 preact_1.h(LayerBasic_1.LayerBasicView, { layer: this.state.layer }),
                 preact_1.h(LayerExport_1.LayerExportView, { layer: this.state.layer })));
@@ -14852,7 +18937,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var preact_1 = __webpack_require__(/*! preact */ "./node_modules/preact/dist/preact.mjs");
 __webpack_require__(/*! ./Right.scss */ "./src/view/right/Right.scss");
 var uxele_facade_1 = __webpack_require__(/*! uxele-facade */ "../uxele-facade/build/index.js");
-var LayerView_1 = __webpack_require__(/*! ./LayerView */ "./src/view/right/LayerView.tsx");
+var LayerView_1 = __webpack_require__(/*! ./InspectTool/LayerView */ "./src/view/right/InspectTool/LayerView.tsx");
+var ColorPickedView_1 = __webpack_require__(/*! ./ColorTool/ColorPickedView */ "./src/view/right/ColorTool/ColorPickedView.tsx");
 var RightView = /** @class */ (function (_super) {
     __extends(RightView, _super);
     function RightView() {
@@ -14878,7 +18964,8 @@ var RightView = /** @class */ (function (_super) {
     };
     RightView.prototype.render = function () {
         return (preact_1.h("aside", { class: "sidebar sidebarRight" },
-            preact_1.h(LayerView_1.LayerView, null)));
+            preact_1.h(LayerView_1.LayerView, null),
+            preact_1.h(ColorPickedView_1.ColorPickedView, null)));
     };
     return RightView;
 }(preact_1.Component));

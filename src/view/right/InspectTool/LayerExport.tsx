@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 import "./LayerExport.scss";
 import { facade, Core } from "uxele-facade";
-import { SquareButton } from "./SquareButton";
+import { SquareButton } from "../SquareButton";
 type ExportType = "image" | "svg" | "text";
 interface LayerExportViewProps {
   layer: Core.ILayer;

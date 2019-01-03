@@ -1,4 +1,4 @@
-@import "../../scss/variables.scss";
+@import "../../../scss/variables.scss";
 .layerExportView {
   .cardBody {
     .formats {
@@ -18,7 +18,7 @@
       .preview {
         position: relative;
         height: 200px;
-        background: url("../../img/ts_bg.png");
+        background: url("../../../img/ts_bg.png");
         >img {
           max-width: 90%;
           max-height: 90%;

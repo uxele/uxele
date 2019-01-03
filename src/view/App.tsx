@@ -29,7 +29,7 @@ export class App extends Component<{}, AppState> {
   loadFile = (_f: File) => {
     this.setState({ loading: true });
     facade.projectOpenLocalFile(_f)
-      .then(async (proj) => {
+      .then(async () => {
         // const pgs = await proj.getPages();
         // facade.store.dispatch(facade.actionChosePage(pgs[0]));
       }, (err: string) => {

@@ -12,18 +12,16 @@ interface Selector<T> {
  * Bind redux store to a react component
  * constraints:
  * 1. the state type T should be flat object -- nested object not supported.
- * 2. this function has to be called in component constructor and pass in initState.
+ * 2. this function has to be called in component constructor 
+ * 3. init state will be passed from reducer 
  */
-export function bindStore<T extends { [key: string]: any }>(component: Component<any, T>, initState: T, selector: Selector<T>) {
+export function bindStore<T extends { [key: string]: any }>(component: Component<any, T>, selector: Selector<T>) {
 
-  const keys = Object.keys(initState);
   const selectorKeys = Object.keys(selector);
   const oldComponentDidMount = component.componentDidMount;
   const oldComponentWillUnmount = component.componentWillUnmount;
 
 
-  //setup init state
-  component.state = initState;
 
   let unsubscribe: Function;
   component.componentDidMount = function () {
@@ -48,4 +46,12 @@ export function bindStore<T extends { [key: string]: any }>(component: Component
       oldComponentWillUnmount.call(component);
     }
   }
+
+  const state = facade.store.getState();
+  const initState: any = {};
+  selectorKeys.forEach((key) => {
+    const curVal = selector[key](state);
+    initState[key] = curVal;
+  });
+  component.state = initState;
 }

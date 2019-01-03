@@ -17,12 +17,9 @@ interface CanvasState {
 }
 export class Canvas extends Component<CanvasProps, CanvasState>{
   private canvasWrapper?: HTMLElement;
-  private canvas: HTMLCanvasElement;
   constructor() {
     super();
-    this.canvas = document.createElement("canvas");
     bindStore<CanvasState>(this, {
-    }, {
         coords: (state) => state.canvasStatus.coords,
         zoomLevel: (state) => state.canvasStatus.zoomLevel,
         curTool:(state)=>state.choseTool.tool,
@@ -30,8 +27,7 @@ export class Canvas extends Component<CanvasProps, CanvasState>{
       })
   }
   componentDidMount() {
-    this.canvasWrapper!.appendChild(this.canvas);
-    facade.bindCanvas(this.canvas,this.canvasWrapper!);
+    facade.bindCanvas(this.canvasWrapper!);
   }
   componentWillUnmount() {
     // session.off("curTool",this.onToolChange);

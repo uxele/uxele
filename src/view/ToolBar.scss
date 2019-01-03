@@ -1,29 +1,32 @@
 @import "../scss/variables.scss";
-
-.toolbar{
+.toolbar {
   display: flex;
-  flex: 1 1 auto;
-  // align-items: center;
+  flex-direction: column;
+  background: lighten($background, 10); // align-items: center;
   // padding-top: 0.5rem;
   // padding-bottom: 0.5rem;
-  .toolBtn{
+  .toolBtn {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     padding-left: 1rem;
-    padding-right:1rem;
-    margin-right:0.5rem;
-    // height: 3rem;
+    padding-right: 1rem;
+    margin-bottom: 0.1rem; // height: 3rem;
     font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    &:hover{
-      color: lighten($primary,30);
+    &:hover {
+      color: lighten($primary, 30);
     }
-    &.active{
-      -webkit-box-shadow:inset 1px 1px 2px 0 #222;
-      box-shadow:inset 1px 1px 2px 0 #222;
-      background: $body-background-color;
-      color: lighten($primary,30);
+    &.active {
+      // -webkit-box-shadow:inset 1px 1px 2px 0 #222;
+      // box-shadow:inset 1px 1px 2px 0 #222;
+      // background: $body-background-color;
+      color: lighten($blue, 10);
+    }
+    &.toggle.active {
+      background: lighten($background,5);
     }
   }
 }
